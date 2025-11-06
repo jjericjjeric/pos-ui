@@ -6,26 +6,47 @@ export const InventoryProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Fetch products from API on component mount
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedProducts = await api.fetchProducts();
+      setProducts(fetchedProducts);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      setError(err.message);
+      // Set empty array on error to prevent crashes
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Auto-login on mount if token exists, otherwise login with default credentials
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const fetchedProducts = await api.fetchProducts();
-        setProducts(fetchedProducts);
-      } catch (err) {
-        console.error('Failed to load products:', err);
-        setError(err.message);
-        // Set empty array on error to prevent crashes
-        setProducts([]);
-      } finally {
-        setLoading(false);
+    const initializeAuth = async () => {
+      if (api.isAuthenticated()) {
+        setIsAuthenticated(true);
+        // Try to load products with existing token
+        await loadProducts();
+      } else {
+        // Auto-login with default credentials
+        try {
+          await api.login('admin', 'admin123');
+          setIsAuthenticated(true);
+          await loadProducts();
+        } catch (err) {
+          console.error('Auto-login failed:', err);
+          setError('Failed to authenticate. Please check API server.');
+          setLoading(false);
+        }
       }
     };
 
-    loadProducts();
+    initializeAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const refreshProducts = async () => {
@@ -36,6 +57,16 @@ export const InventoryProvider = ({ children }) => {
     } catch (err) {
       console.error('Failed to refresh products:', err);
       setError(err.message);
+      // If authentication error, try to re-authenticate
+      if (err.message.includes('Authentication required')) {
+        try {
+          await api.login('admin', 'admin123');
+          setIsAuthenticated(true);
+          await refreshProducts();
+        } catch (authErr) {
+          setIsAuthenticated(false);
+        }
+      }
     }
   };
 
@@ -115,6 +146,7 @@ export const InventoryProvider = ({ children }) => {
         products,
         loading,
         error,
+        isAuthenticated,
         refreshProducts,
         updateProductStock,
         updateInventoryAfterPurchase,
