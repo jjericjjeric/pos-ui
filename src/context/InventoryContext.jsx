@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as api from '../services/api';
 import { InventoryContext } from './InventoryContextObject';
 
@@ -6,7 +6,9 @@ export const InventoryProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(api.isAuthenticated());
+  const [user, setUser] = useState(api.getUser());
+  const expiryTimerRef = useRef(null);
 
   const loadProducts = async () => {
     try {
@@ -24,30 +26,47 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
-  // Auto-login on mount if token exists, otherwise login with default credentials
+  // On mount, if token already exists, load products; otherwise stop loading
   useEffect(() => {
-    const initializeAuth = async () => {
+    const init = async () => {
       if (api.isAuthenticated()) {
-        setIsAuthenticated(true);
-        // Try to load products with existing token
-        await loadProducts();
-      } else {
-        // Auto-login with default credentials
         try {
-          await api.login('admin', 'admin123');
-          setIsAuthenticated(true);
+          setUser(api.getUser());
           await loadProducts();
         } catch (err) {
-          console.error('Auto-login failed:', err);
-          setError('Failed to authenticate. Please check API server.');
-          setLoading(false);
+          console.error('Initial product load failed:', err);
         }
+      } else {
+        setLoading(false);
       }
     };
-
-    initializeAuth();
+    init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Setup auto-logout timer based on token expiry
+  useEffect(() => {
+    if (expiryTimerRef.current) {
+      clearTimeout(expiryTimerRef.current);
+      expiryTimerRef.current = null;
+    }
+    if (isAuthenticated) {
+      const exp = api.getTokenExpiry();
+      if (exp) {
+        const ms = Math.max(exp - Date.now(), 0);
+        expiryTimerRef.current = setTimeout(() => {
+          logoutUser();
+          alert('Session expired. Please log in again.');
+        }, ms);
+      }
+    }
+    return () => {
+      if (expiryTimerRef.current) {
+        clearTimeout(expiryTimerRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   const refreshProducts = async () => {
     try {
@@ -59,15 +78,32 @@ export const InventoryProvider = ({ children }) => {
       setError(err.message);
       // If authentication error, try to re-authenticate
       if (err.message.includes('Authentication required')) {
-        try {
-          await api.login('admin', 'admin123');
-          setIsAuthenticated(true);
-          await refreshProducts();
-        } catch (authErr) {
-          setIsAuthenticated(false);
-        }
+        setIsAuthenticated(false);
       }
     }
+  };
+
+  const loginUser = async (username, password, remember = true) => {
+    try {
+      setLoading(true);
+      const data = await api.login(username, password, remember);
+      setIsAuthenticated(true);
+      setUser({ username: data.username, role: data.role });
+      await loadProducts();
+      return { success: true };
+    } catch (err) {
+      setIsAuthenticated(false);
+      setError(err.message || 'Login failed');
+      setLoading(false);
+      return { success: false, error: err.message || 'Login failed' };
+    }
+  };
+
+  const logoutUser = () => {
+    api.logout();
+    setIsAuthenticated(false);
+    setProducts([]);
+    setUser(null);
   };
 
   const updateProductStock = async (productId, quantitySold) => {
@@ -147,6 +183,9 @@ export const InventoryProvider = ({ children }) => {
         loading,
         error,
         isAuthenticated,
+        user,
+        loginUser,
+        logoutUser,
         refreshProducts,
         updateProductStock,
         updateInventoryAfterPurchase,

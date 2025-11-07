@@ -70,8 +70,8 @@ const AddProductPage = () => {
 
       await addProduct(newProduct);
       
-      alert('Product added successfully!');
-      navigate('/');
+  alert('Product added successfully!');
+  navigate('/pos');
     } catch (error) {
       alert('Error adding product: ' + error.message);
     } finally {
@@ -80,7 +80,7 @@ const AddProductPage = () => {
   };
 
   const handleCancel = () => {
-    navigate('/');
+  navigate('/pos');
   };
 
   return (

@@ -1,8 +1,83 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
-// Token management
-const getToken = () => {
-  return localStorage.getItem('jwt_token');
+// Storage keys
+const TOKEN_KEY = 'jwt_token';
+const USER_KEY = 'jwt_user';
+
+// Base64url decode helper
+const base64UrlDecode = (str) => {
+  try {
+    const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+    const decoded = atob(padded);
+    // decode UTF-8
+    try {
+      return decodeURIComponent(
+        decoded
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+    } catch {
+      return decoded;
+    }
+  } catch {
+    return '{}';
+  }
+};
+
+// Read auth from either localStorage (remembered) or sessionStorage (this session only)
+const getStored = (key) => {
+  const local = localStorage.getItem(key);
+  if (local) return local;
+  return sessionStorage.getItem(key);
+};
+
+export const getToken = () => getStored(TOKEN_KEY);
+export const getUser = () => {
+  const raw = getStored(USER_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+};
+
+export const setAuth = ({ token, username, role }, remember) => {
+  // Clear from both first to avoid mixed states
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
+
+  const storage = remember ? localStorage : sessionStorage;
+  storage.setItem(TOKEN_KEY, token);
+  storage.setItem(USER_KEY, JSON.stringify({ username, role }));
+};
+
+export const clearAuth = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
+};
+
+export const getTokenExpiry = () => {
+  const token = getStored(TOKEN_KEY);
+  if (!token) return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const payload = JSON.parse(base64UrlDecode(parts[1]));
+    if (!payload.exp) return null;
+    // exp is seconds since epoch
+    return payload.exp * 1000;
+  } catch {
+    return null;
+  }
+};
+
+export const isTokenExpired = () => {
+  const exp = getTokenExpiry();
+  if (!exp) return false;
+  return Date.now() >= exp;
 };
 
 const getAuthHeaders = () => {
@@ -19,7 +94,7 @@ const getAuthHeaders = () => {
 /**
  * Login and get JWT token
  */
-export const login = async (username, password) => {
+export const login = async (username, password, remember = true) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
@@ -32,8 +107,8 @@ export const login = async (username, password) => {
       throw new Error('Invalid username or password');
     }
     const data = await response.json();
-    // Store token
-    localStorage.setItem('jwt_token', data.token);
+    // Store auth based on remember flag
+    setAuth({ token: data.token, username: data.username, role: data.role }, remember);
     return data;
   } catch (error) {
     console.error('Error logging in:', error);
@@ -45,14 +120,20 @@ export const login = async (username, password) => {
  * Logout (clear token)
  */
 export const logout = () => {
-  localStorage.removeItem('jwt_token');
+  clearAuth();
 };
 
 /**
  * Check if user is authenticated
  */
 export const isAuthenticated = () => {
-  return !!getToken();
+  const token = getToken();
+  if (!token) return false;
+  if (isTokenExpired()) {
+    clearAuth();
+    return false;
+  }
+  return true;
 };
 
 /**

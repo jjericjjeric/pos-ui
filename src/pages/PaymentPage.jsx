@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Modal from '../components/Modal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import './PaymentPage.css';
@@ -8,18 +9,33 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   const { updateInventoryAfterPurchase } = useInventory();
   const cart = location.state?.cart || [];
+  const orderItemsRef = useRef(null);
 
   const [amountPaid, setAmountPaid] = useState('');
   const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [finalChange, setFinalChange] = useState(0);
+  const autoCloseTimer = useRef(null);
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const change = amountPaid ? parseFloat(amountPaid) - totalPrice : 0;
 
   useEffect(() => {
     if (cart.length === 0) {
-      navigate('/');
+      navigate('/pos');
     }
   }, [cart, navigate]);
+
+  // Auto scroll order summary to bottom on mount and when cart updates
+  useEffect(() => {
+    const el = orderItemsRef.current;
+    if (el) {
+      // Use requestAnimationFrame to ensure DOM is painted
+      requestAnimationFrame(() => {
+        el.scrollTop = el.scrollHeight;
+      });
+    }
+  }, [cart]);
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
@@ -41,28 +57,35 @@ const PaymentPage = () => {
       // Update inventory via API
       await updateInventoryAfterPurchase(cart);
 
-      // Show success message
-      alert('Purchase completed successfully!');
-      
-      // Navigate back to POS
-      navigate('/');
+      // Set modal state with change and show
+      setFinalChange(paid - totalPrice);
+      setShowModal(true);
+      // Auto-close after 30 seconds
+      if (autoCloseTimer.current) {
+        clearTimeout(autoCloseTimer.current);
+      }
+      autoCloseTimer.current = setTimeout(() => {
+        setShowModal(false);
+        navigate('/pos');
+      }, 30000);
     } catch (error) {
       alert('Error completing purchase: ' + error.message);
     }
   };
 
   const handleCancel = () => {
-    navigate('/');
+    navigate('/pos');
   };
 
   return (
+    <>
     <div className="payment-container">
       <div className="payment-content">
         <h1>Payment</h1>
         
         <div className="order-summary">
           <h2>Order Summary</h2>
-          <div className="order-items">
+          <div className="order-items" ref={orderItemsRef}>
             {cart.map(item => (
               <div key={item.id} className="order-item">
                 <div className="order-item-details">
@@ -96,13 +119,6 @@ const PaymentPage = () => {
             />
             {error && <span className="error-message">{error}</span>}
           </div>
-
-          <div className="change-display">
-            <h3>Change:</h3>
-            <div className={`change-amount ${change >= 0 ? 'positive' : 'negative'}`}>
-              ₱{change >= 0 ? change.toFixed(2) : '0.00'}
-            </div>
-          </div>
         </div>
 
         <div className="payment-actions">
@@ -119,6 +135,35 @@ const PaymentPage = () => {
         </div>
       </div>
     </div>
+
+    <Modal
+      isOpen={showModal}
+      title="Purchase Complete"
+      onClose={() => {
+        setShowModal(false);
+        navigate('/pos');
+      }}
+      actions={(
+        <>
+          <button
+            className="modal-btn secondary"
+            onClick={() => {
+              setShowModal(false);
+              navigate('/pos');
+            }}
+          >
+            New Sale
+          </button>
+        </>
+      )}
+    >
+      <div className="success-icon-wrapper">
+        <div className="success-icon" />
+      </div>
+      <p style={{ textAlign: 'center' }}>Transaction successful.</p>
+      <p><strong>Change:</strong> ₱{finalChange.toFixed(2)}</p>
+    </Modal>
+    </>
   );
 };
 

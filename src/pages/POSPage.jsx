@@ -6,7 +6,7 @@ import Cart from '../components/Cart';
 import './POSPage.css';
 
 const POSPage = () => {
-  const { products, loading, error } = useInventory();
+  const { products, loading, error, logoutUser, user } = useInventory();
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
 
@@ -74,8 +74,24 @@ const POSPage = () => {
   return (
     <div className="pos-container">
       <div className="pos-header">
-        <h1>Free POS PH</h1>
-        <p>Point of Sale System</p>
+        <div className="branding">
+          <h1>Free POS PH</h1>
+          <p>Point of Sale System</p>
+        </div>
+        <div className="user-actions">
+          {user && (
+            <span className="user-info">Signed in as <strong>{user.username}</strong>{user.role ? ` (${user.role})` : ''}</span>
+          )}
+          <button
+            className="logout-btn"
+            onClick={() => {
+              logoutUser();
+              navigate('/');
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
       
       <div className="pos-content">
