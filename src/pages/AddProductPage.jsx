@@ -83,9 +83,9 @@ const AddProductPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] p-8 sm:p-4 flex justify-center items-center">
-      <div className="bg-white rounded-xl p-8 sm:p-6 max-w-[500px] w-full shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
-        <h1 className="m-0 mb-8 sm:mb-6 text-gray-800 text-center text-3xl sm:text-2xl">Add New Product</h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4 sm:p-8 flex justify-center items-center">
+      <div className="bg-white rounded-xl p-6 sm:p-8 max-w-[500px] w-full shadow-[0_10px_40px_rgba(0,0,0,0.1)]">
+        <h1 className="m-0 mb-6 sm:mb-8 text-gray-800 text-center text-2xl sm:text-3xl">Add New Product</h1>
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
