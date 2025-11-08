@@ -217,3 +217,145 @@
   transform: translateY(0);
 }
 
+/* Responsive Design */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .payment-container {
+    padding: 1.5rem;
+  }
+
+  .payment-content {
+    padding: 1.75rem;
+  }
+
+  .payment-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .order-summary h2 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .payment-container {
+    padding: 1rem;
+  }
+
+  .payment-content {
+    padding: 1.5rem;
+    max-height: 95vh;
+  }
+
+  .payment-content h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .order-summary {
+    margin-bottom: 1.5rem;
+  }
+
+  .order-summary h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .order-items {
+    max-height: 200px;
+  }
+
+  .order-item {
+    padding: 0.6rem;
+  }
+
+  .order-item-name {
+    font-size: 0.9rem;
+  }
+
+  .order-item-quantity {
+    font-size: 0.8rem;
+  }
+
+  .order-item-price {
+    font-size: 1rem;
+  }
+
+  .order-total {
+    font-size: 1.3rem;
+    padding: 0.75rem;
+  }
+
+  .payment-inputs {
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .input-group label {
+    font-size: 1rem;
+  }
+
+  .input-group input {
+    padding: 0.65rem;
+    font-size: 1.1rem;
+  }
+
+  .change-display {
+    padding: 1.2rem;
+  }
+
+  .change-amount {
+    font-size: 1.75rem;
+  }
+
+  .payment-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .payment-actions button {
+    padding: 0.85rem;
+    font-size: 1rem;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .payment-container {
+    padding: 0.5rem;
+  }
+
+  .payment-content {
+    padding: 1.25rem;
+  }
+
+  .payment-content h1 {
+    font-size: 1.3rem;
+  }
+
+  .order-items {
+    max-height: 180px;
+  }
+
+  .order-total {
+    font-size: 1.2rem;
+  }
+
+  .input-group input {
+    font-size: 1rem;
+  }
+
+  .change-amount {
+    font-size: 1.5rem;
+  }
+
+  .payment-actions button {
+    font-size: 0.95rem;
+  }
+}
+
