@@ -59,6 +59,41 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    
+    /* Global responsive font sizes */
+    --font-size-xs: 0.65rem;      /* 10.4px on mobile */
+    --font-size-sm: 0.75rem;      /* 12px on mobile */
+    --font-size-base: 0.875rem;   /* 14px on mobile */
+    --font-size-lg: 1rem;         /* 16px on mobile */
+    --font-size-xl: 1.125rem;     /* 18px on mobile */
+    --font-size-2xl: 1.25rem;     /* 20px on mobile */
+    --font-size-3xl: 1.5rem;      /* 24px on mobile */
+  }
+  
+  /* Tablet and above - larger font sizes */
+  @media (min-width: 640px) {
+    :root {
+      --font-size-xs: 0.75rem;    /* 12px on tablet */
+      --font-size-sm: 0.875rem;   /* 14px on tablet */
+      --font-size-base: 1rem;     /* 16px on tablet */
+      --font-size-lg: 1.125rem;   /* 18px on tablet */
+      --font-size-xl: 1.25rem;    /* 20px on tablet */
+      --font-size-2xl: 1.5rem;    /* 24px on tablet */
+      --font-size-3xl: 1.875rem;  /* 30px on tablet */
+    }
+  }
+  
+  /* Desktop and above - even larger font sizes */
+  @media (min-width: 1024px) {
+    :root {
+      --font-size-xs: 0.75rem;    /* 12px on desktop */
+      --font-size-sm: 0.875rem;   /* 14px on desktop */
+      --font-size-base: 1rem;     /* 16px on desktop */
+      --font-size-lg: 1.125rem;   /* 18px on desktop */
+      --font-size-xl: 1.25rem;    /* 20px on desktop */
+      --font-size-2xl: 1.5rem;    /* 24px on desktop */
+      --font-size-3xl: 1.875rem;  /* 30px on desktop */
+    }
   }
 
   body {
@@ -66,6 +101,7 @@
     padding: 0;
     min-width: 320px;
     min-height: 100vh;
+    font-size: var(--font-size-base);
   }
 
   /* Ensure inputs, buttons, and form elements have proper spacing */
@@ -87,5 +123,14 @@
     height: 1rem;
     cursor: pointer;
   }
+  
+  /* Global responsive text utility classes */
+  .text-responsive-xs { font-size: var(--font-size-xs); }
+  .text-responsive-sm { font-size: var(--font-size-sm); }
+  .text-responsive-base { font-size: var(--font-size-base); }
+  .text-responsive-lg { font-size: var(--font-size-lg); }
+  .text-responsive-xl { font-size: var(--font-size-xl); }
+  .text-responsive-2xl { font-size: var(--font-size-2xl); }
+  .text-responsive-3xl { font-size: var(--font-size-3xl); }
 }
 

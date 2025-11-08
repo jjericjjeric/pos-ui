@@ -10,7 +10,13 @@ const ProductTile = ({ product, onAddToCart }) => {
       }`}
       onClick={() => !isOutOfStock && onAddToCart()}
     >
-      <div className="text-5xl md:text-4xl sm:text-3xl mb-2 sm:mb-1.5">{product.image}</div>
+      {/* Category Badge */}
+      {product.category && (
+        <div className="absolute top-2 left-2 bg-[#667eea] text-white text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase">
+          {product.category}
+        </div>
+      )}
+      <div className="text-5xl md:text-4xl sm:text-3xl mb-2 sm:mb-1.5 mt-4">{product.image}</div>
       <div className="w-full">
         <h3 className="my-2 sm:my-1.5 text-base md:text-sm sm:text-xs font-semibold text-gray-800 break-words">{product.name}</h3>
         <p className="my-1 text-lg md:text-base sm:text-sm font-bold text-[#667eea]">₱{product.price.toFixed(2)}</p>

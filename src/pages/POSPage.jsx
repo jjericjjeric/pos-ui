@@ -1,13 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import ProductTile from '../components/ProductTile';
 import Cart from '../components/Cart';
+import Modal from '../components/Modal';
 
 const POSPage = () => {
   const { products, loading, error, logoutUser, user } = useInventory();
   const [cart, setCart] = useState([]);
+  const [showCartModal, setShowCartModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const navigate = useNavigate();
+  const menuRef = useRef(null);
+
+  // Get unique categories from products
+  const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
+  
+  // Filter products by category
+  const filteredProducts = selectedCategory === 'All' 
+    ? products 
+    : products.filter(p => (p.category || 'Uncategorized') === selectedCategory);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
 
   const addToCart = (product) => {
     if (product.stock === 0) {
@@ -69,10 +99,11 @@ const POSPage = () => {
   };
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="h-screen w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
-      <div className="bg-white/95 px-4 sm:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-10 flex justify-between items-center gap-2 sm:gap-4 flex-wrap">
+      <div className="bg-white/95 px-4 sm:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 relative flex justify-between items-center gap-2 sm:gap-4 flex-wrap">
         <div className="flex flex-col">
           <h1 className="m-0 text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Free POS PH</h1>
           <p className="mt-1 mb-0 text-gray-600 text-xs sm:text-sm">Point of Sale System</p>
@@ -83,6 +114,43 @@ const POSPage = () => {
               Signed in as <strong>{user.username}</strong>{user.role ? ` (${user.role})` : ''}
             </span>
           )}
+          {/* Menu Button */}
+          <div className="relative" ref={menuRef}>
+            <button
+              className="px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-sm sm:text-base"
+              onClick={() => setShowMenu(!showMenu)}
+            >
+              ☰ Menu
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-44 sm:w-56 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 z-9999">
+                <div className="py-2">
+                  <div className="px-3 sm:px-4 py-2 text-responsive-xs font-semibold text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Inventory</div>
+                  <button
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-responsive-sm"
+                    onClick={() => {
+                      setShowMenu(false);
+                      navigate('/add-product');
+                    }}
+                  >
+                    ➕ Add Product
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Mobile Cart Button */}
+          <button
+            className="lg:hidden px-3 py-1.5 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(102,126,234,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.4)] active:translate-y-0 relative text-sm sm:text-base flex items-center gap-1.5"
+            onClick={() => setShowCartModal(true)}
+          >
+            <span>Cart</span>
+            {cartItemCount > 0 && (
+              <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center inline-block">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
           <button
             className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-sm sm:text-base bg-red-500 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_4px_12px_rgba(255,82,82,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(255,82,82,0.45)] active:translate-y-0"
             onClick={() => {
@@ -96,42 +164,61 @@ const POSPage = () => {
       </div>
       
       <div className="flex flex-1 overflow-hidden gap-2 sm:gap-4 p-2 sm:p-4 flex-col lg:flex-row">
-        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-[45vh] sm:min-h-[50vh] md:min-h-[50vh] bg-white rounded-xl p-3 sm:p-4 md:p-6 overflow-y-auto shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
-          <div className="flex flex-col sm:flex-col md:flex-row justify-between items-start md:items-center mb-3 sm:mb-4 md:mb-6 border-b-2 border-[#667eea] pb-2 gap-3">
-            <h2 className="m-0 text-gray-800 text-lg sm:text-xl md:text-2xl">Products</h2>
-            <button 
-              className="w-full sm:w-full md:w-auto px-2.5 sm:px-4 py-2 sm:py-2 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none rounded-lg text-sm font-semibold cursor-pointer transition-all shadow-[0_2px_8px_rgba(102,126,234,0.3)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.4)] active:translate-y-0"
-              onClick={() => navigate('/add-product')}
-            >
-              + Add Product
-            </button>
+        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-[45vh] sm:min-h-[50vh] md:min-h-[50vh] bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex flex-col">
+          {/* Sticky Products Header */}
+          <div className="sticky top-0 bg-white z-10 p-3 sm:p-4 md:p-6 border-b border-gray-200">
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center border-b-2 border-[#667eea] pb-2">
+                <h2 className="m-0 text-gray-800 text-lg sm:text-xl md:text-2xl">Products</h2>
+              </div>
+              {/* Category Filter */}
+              <div className="flex gap-2 flex-wrap">
+                {categories.map(category => (
+                  <button
+                    key={category}
+                    className={`px-3 py-1.5 border-2 rounded-lg text-sm font-semibold cursor-pointer transition-all ${
+                      selectedCategory === category
+                        ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-[#667eea] shadow-[0_2px_8px_rgba(102,126,234,0.3)]'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-[#667eea] hover:text-[#667eea]'
+                    }`}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-          {loading && (
-            <div className="text-center p-8 text-gray-600 text-lg">Loading products...</div>
-          )}
-          {error && (
-            <div className="text-center p-6 bg-red-50 text-red-700 rounded-lg my-4 border border-red-200">
-              Error loading products: {error}. Please make sure the API server is running.
-            </div>
-          )}
-          {!loading && !error && (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-3 md:gap-4 pt-2">
-              {products.length === 0 ? (
-                <div className="text-center p-12 text-gray-400 text-lg col-span-full">No products available</div>
-              ) : (
-                products.map(product => (
-                  <ProductTile
-                    key={product.id}
-                    product={product}
-                    onAddToCart={() => addToCart(product)}
-                  />
-                ))
-              )}
-            </div>
-          )}
+          {/* Scrollable Products Grid */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+            {loading && (
+              <div className="text-center p-8 text-gray-600 text-lg">Loading products...</div>
+            )}
+            {error && (
+              <div className="text-center p-6 bg-red-50 text-red-700 rounded-lg my-4 border border-red-200">
+                Error loading products: {error}. Please make sure the API server is running.
+              </div>
+            )}
+            {!loading && !error && (
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-3 md:gap-4 pt-2">
+                {filteredProducts.length === 0 ? (
+                  <div className="text-center p-12 text-gray-400 text-lg col-span-full">No products available</div>
+                ) : (
+                  filteredProducts.map(product => (
+                    <ProductTile
+                      key={product.id}
+                      product={product}
+                      onAddToCart={() => addToCart(product)}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex-[0_0_auto] lg:flex-[0_0_30%] max-h-[45vh] sm:max-h-[40vh] md:max-h-[40vh] bg-white rounded-xl p-3 sm:p-4 md:p-6 flex flex-col shadow-[0_4px_20px_rgba(0,0,0,0.1)] min-w-0">
+        {/* Desktop Cart - hidden on mobile/tablet */}
+        <div className="hidden lg:flex flex-[0_0_30%] bg-white rounded-xl p-3 sm:p-4 md:p-6 flex-col shadow-[0_4px_20px_rgba(0,0,0,0.1)] min-w-0">
           <Cart
             cart={cart}
             onRemove={removeFromCart}
@@ -141,6 +228,24 @@ const POSPage = () => {
           />
         </div>
       </div>
+
+      {/* Mobile Cart Modal */}
+      <Modal 
+        isOpen={showCartModal} 
+        onClose={() => setShowCartModal(false)}
+        title="Your Cart"
+      >
+        <Cart
+          cart={cart}
+          onRemove={removeFromCart}
+          onUpdateQuantity={updateQuantity}
+          totalPrice={totalPrice}
+          onCheckout={() => {
+            setShowCartModal(false);
+            handleCheckout();
+          }}
+        />
+      </Modal>
     </div>
   );
 };

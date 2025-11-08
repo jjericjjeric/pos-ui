@@ -10,6 +10,7 @@ const AddProductPage = () => {
     name: '',
     price: '',
     stock: '',
+    category: 'Uncategorized',
     image: '🛍️'
   });
   
@@ -64,6 +65,7 @@ const AddProductPage = () => {
         name: formData.name.trim(),
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
+        category: formData.category || 'Uncategorized',
         image: formData.image || '🛍️'
       };
 
@@ -131,6 +133,26 @@ const AddProductPage = () => {
               className={`px-3 py-3 border-2 ${errors.stock ? 'border-red-500' : 'border-gray-200'} rounded-lg text-base transition-colors focus:outline-none focus:border-[#667eea]`}
             />
             {errors.stock && <span className="text-red-500 text-sm mt-1">{errors.stock}</span>}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="category" className="font-semibold text-gray-600 text-sm">Category</label>
+            <select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-[#667eea] bg-white"
+            >
+              <option value="Uncategorized">Uncategorized</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Food">Food</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Dairy">Dairy</option>
+              <option value="Produce">Produce</option>
+              <option value="Bakery">Bakery</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
 
           <div className="flex flex-col gap-2">
