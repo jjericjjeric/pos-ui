@@ -129,12 +129,24 @@ export const InventoryProvider = ({ children }) => {
 
   const updateInventoryAfterPurchase = async (cartItems) => {
     try {
-      // Update stock for each item in the cart
-      const updatePromises = cartItems.map(item =>
-        api.updateProductStock(item.id, item.quantity)
-      );
+      // Use batch update to reduce API calls
+      const items = cartItems.map(item => ({
+        productId: item.id,
+        quantitySold: item.quantity
+      }));
       
-      await Promise.all(updatePromises);
+      const result = await api.batchUpdateProductStock(items);
+      
+      // Check if there were any errors in the batch update
+      if (result.errors && result.errors.length > 0) {
+        console.warn('Some items failed to update:', result.errors);
+        // Still refresh to get latest state
+        await refreshProducts();
+        
+        // Throw error with details about failed items
+        const failedItems = result.errors.map(e => e.productId).join(', ');
+        throw new Error(`Failed to update stock for products: ${failedItems}`);
+      }
       
       // Refresh products to get latest state
       await refreshProducts();

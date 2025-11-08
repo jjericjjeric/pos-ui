@@ -209,6 +209,38 @@ export const updateProductStock = async (productId, quantitySold) => {
 };
 
 /**
+ * Batch update stock for multiple products (single API call)
+ * @param {Array<{productId: number, quantitySold: number}>} items - Array of items to update
+ * @returns {Promise<{updatedProducts: Array, errors: Array<string>}>}
+ */
+export const batchUpdateProductStock = async (items) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/stock/batch`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ items }),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      // For 207 Multi-Status or 400, we still want to parse the response to get partial results
+      if (response.status === 207 || response.status === 400) {
+        const data = await response.json();
+        return data;
+      }
+      throw new Error(`Failed to batch update product stock: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error batch updating product stock:', error);
+    throw error;
+  }
+};
+
+/**
  * Update a product
  */
 export const updateProduct = async (productId, productData) => {
