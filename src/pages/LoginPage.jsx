@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
-import './LoginPage.css';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -30,13 +29,13 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>Free POS PH</h1>
-        <p className="subtitle">Sign in to continue</p>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+    <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-8 sm:p-4">
+      <div className="bg-white rounded-2xl p-8 sm:p-6 w-full max-w-[420px] shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
+        <h1 className="text-3xl sm:text-2xl text-center text-gray-800 m-0 mb-1">Free POS PH</h1>
+        <p className="text-center text-gray-600 m-0 mb-6 sm:text-sm">Sign in to continue</p>
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          <div className="mb-4">
+            <label htmlFor="username" className="block mb-2 font-semibold text-gray-800">Username</label>
             <input
               id="username"
               type="text"
@@ -44,10 +43,11 @@ const LoginPage = () => {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
               autoComplete="username"
+              className="w-full px-3 py-3 sm:py-2.5 text-base sm:text-[15px] border-2 border-gray-200 rounded-lg transition-colors focus:outline-none focus:border-[#667eea]"
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div className="mb-4">
+            <label htmlFor="password" className="block mb-2 font-semibold text-gray-800">Password</label>
             <input
               id="password"
               type="password"
@@ -55,11 +55,12 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
               autoComplete="current-password"
+              className="w-full px-3 py-3 sm:py-2.5 text-base sm:text-[15px] border-2 border-gray-200 rounded-lg transition-colors focus:outline-none focus:border-[#667eea]"
             />
           </div>
 
-          <div className="form-row">
-            <label className="remember">
+          <div className="my-2 mb-4">
+            <label className="inline-flex items-center gap-2 text-gray-700 select-none sm:text-sm">
               <input
                 type="checkbox"
                 checked={rememberMe}
@@ -70,12 +71,14 @@ const LoginPage = () => {
           </div>
 
           {(localError || error) && (
-            <div className="error-banner">{localError || error}</div>
+            <div className="bg-red-50 text-red-800 border border-red-200 px-3 py-3 rounded-lg mb-4">
+              {localError || error}
+            </div>
           )}
 
           <button
             type="submit"
-            className="login-button"
+            className="w-full px-4 py-3.5 sm:py-3 text-lg sm:text-base font-bold text-white bg-gradient-to-br from-green-500 to-green-400 border-none rounded-xl cursor-pointer transition-all shadow-[0_8px_25px_rgba(0,200,83,0.35)] hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_12px_30px_rgba(0,200,83,0.45)] disabled:opacity-60 disabled:cursor-not-allowed"
             disabled={!username || !password || loading}
           >
             {loading ? 'Signing in...' : 'Login'}
@@ -87,3 +90,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
