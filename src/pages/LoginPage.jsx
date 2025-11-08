@@ -29,7 +29,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4 sm:p-8">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4 sm:p-8">
       <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-[420px] shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
         <h1 className="text-2xl sm:text-3xl text-center text-gray-800 m-0 mb-1">Free POS PH</h1>
         <p className="text-center text-gray-600 m-0 mb-6 text-sm sm:text-base">Sign in to continue</p>

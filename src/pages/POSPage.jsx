@@ -71,7 +71,7 @@ const POSPage = () => {
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
+    <div className="h-screen w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
       <div className="bg-white/95 px-4 sm:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-10 flex justify-between items-center gap-2 sm:gap-4 flex-wrap">
         <div className="flex flex-col">
           <h1 className="m-0 text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Free POS PH</h1>

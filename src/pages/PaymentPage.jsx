@@ -78,8 +78,8 @@ const PaymentPage = () => {
 
   return (
     <>
-    <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-8 md:p-6 sm:p-4">
-      <div className="bg-white rounded-2xl p-8 md:p-7 sm:p-6 max-w-[600px] w-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] max-h-[90vh] sm:max-h-[95vh] overflow-y-auto">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4 sm:p-6 md:p-8">
+      <div className="bg-white rounded-2xl p-6 sm:p-7 md:p-8 max-w-[600px] w-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         <h1 className="m-0 mb-6 md:mb-4 sm:mb-4 text-gray-800 text-3xl md:text-2xl sm:text-xl text-center border-b-[3px] border-[#667eea] pb-3">Payment</h1>
         
         <div className="mb-8 md:mb-6 sm:mb-6">
