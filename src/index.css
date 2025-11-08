@@ -1,26 +1,87 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light;
-  color: #213547;
-  background-color: #ffffff;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@theme {
+  --color-primary: #667eea;
+  --color-primary-dark: #764ba2;
+  --color-accent: #ff9800;
+  --color-accent-dark: #ff5722;
+  
+  --animate-modal-in: modalIn 160ms ease-out;
+  --animate-modal-out: modalOut 180ms ease-in forwards;
+  --animate-pop-in: popIn 420ms cubic-bezier(0.26, 1.12, 0.62, 1);
+  --animate-fade-in-check: fadeInCheck 460ms ease-in-out;
 }
 
-body {
-  margin: 0;
-  display: block;
-  min-width: 320px;
-  min-height: 100vh;
+@keyframes modalIn {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes modalOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(8px); opacity: 0; }
+}
+
+@keyframes fadeOverlayOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeInCheck {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+  60% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light;
+    color: #213547;
+    background-color: #ffffff;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  /* Ensure inputs, buttons, and form elements have proper spacing */
+  input, button, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    line-height: inherit;
+    margin: 0;
+  }
+
+  /* Ensure labels have proper spacing */
+  label {
+    display: inline-block;
+  }
+
+  /* Fix checkbox spacing */
+  input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  }
 }
 

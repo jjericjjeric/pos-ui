@@ -4,7 +4,6 @@ import POSPage from './pages/POSPage';
 import PaymentPage from './pages/PaymentPage';
 import AddProductPage from './pages/AddProductPage';
 import LoginPage from './pages/LoginPage';
-import './App.css';
 import { useInventory } from './context/useInventory';
 
 // Simple auth guard component
