@@ -23,9 +23,11 @@ const ProductsManagementPage = () => {
   const [toasts, setToasts] = useState([]);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   
   const toastIdCounter = useRef(0);
   const searchInputRef = useRef(null);
+  const menuRef = useRef(null);
   
   // Categories
   const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
@@ -206,6 +208,23 @@ const ProductsManagementPage = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [selectedProducts, products]);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
@@ -229,7 +248,7 @@ const ProductsManagementPage = () => {
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
           📋 Products Management
         </h1>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {user && (
             <span className="text-xs sm:text-sm text-gray-700 bg-blue-50 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md border border-blue-200">
               {user.username} {user.role ? `(${user.role})` : ''}
@@ -241,15 +260,31 @@ const ProductsManagementPage = () => {
           >
             ← Back to POS
           </button>
-          <button
-            className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-base bg-red-500 text-white rounded-lg font-semibold hover:-translate-y-0.5 transition-all"
-            onClick={() => {
-              logoutUser();
-              navigate('/');
-            }}
-          >
-            Logout
-          </button>
+          {/* Menu Button */}
+          <div className="relative" ref={menuRef}>
+            <button
+              className="px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-sm sm:text-base"
+              onClick={() => setShowMenu(!showMenu)}
+            >
+              ☰
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 z-9999">
+                <div className="py-2">
+                  <button
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-responsive-sm font-semibold"
+                    onClick={() => {
+                      setShowMenu(false);
+                      logoutUser();
+                      navigate('/');
+                    }}
+                  >
+                    🚪 Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

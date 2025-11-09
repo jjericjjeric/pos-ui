@@ -183,24 +183,24 @@ const POSPage = () => {
 
   return (
     <div className="h-screen w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
-      <div className="bg-white/95 px-4 sm:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 relative flex justify-between items-center gap-2 sm:gap-4 flex-wrap">
-        <div className="flex flex-col">
-          <h1 className="m-0 text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Free POS PH</h1>
-          <p className="mt-1 mb-0 text-gray-600 text-xs sm:text-sm">Point of Sale System</p>
+      <div className="bg-white/95 px-2 sm:px-4 md:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 relative flex justify-between items-center gap-2">
+        <div className="flex flex-col min-w-0 flex-shrink">
+          <h1 className="m-0 text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 truncate">Free POS PH</h1>
+          <p className="mt-0.5 sm:mt-1 mb-0 text-gray-600 text-[10px] sm:text-xs md:text-sm truncate">Point of Sale System</p>
         </div>
-        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 flex-shrink-0">
           {user && (
-            <span className="text-xs sm:text-sm text-gray-700 bg-blue-50 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md border border-blue-200">
+            <span className="hidden sm:inline text-xs md:text-sm text-gray-700 bg-blue-50 px-2 md:px-2.5 py-1 md:py-1.5 rounded-md border border-blue-200 whitespace-nowrap">
               Signed in as <strong>{user.username}</strong>{user.role ? ` (${user.role})` : ''}
             </span>
           )}
           {/* Menu Button */}
           <div className="relative" ref={menuRef}>
             <button
-              className="px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-sm sm:text-base"
+              className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-xs sm:text-sm md:text-base min-w-[44px] min-h-[44px] flex items-center justify-center"
               onClick={() => setShowMenu(!showMenu)}
             >
-              ☰ Menu
+              ☰ <span className="hidden xs:inline ml-1">Menu</span>
             </button>
             {showMenu && (
               <div className="absolute right-0 mt-2 w-44 sm:w-56 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 z-9999">
@@ -224,30 +224,33 @@ const POSPage = () => {
                   >
                     📋 Manage All Products
                   </button>
+                  <div className="border-t border-gray-200 my-2"></div>
+                  <button
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-responsive-sm font-semibold"
+                    onClick={() => {
+                      setShowMenu(false);
+                      logoutUser();
+                      navigate('/');
+                    }}
+                  >
+                    🚪 Logout
+                  </button>
                 </div>
               </div>
             )}
           </div>
-          {/* Mobile Cart Button */}
+          {/* Cart Icon Button */}
           <button
-            className="lg:hidden px-3 py-1.5 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(102,126,234,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.4)] active:translate-y-0 relative text-sm sm:text-base flex items-center gap-1.5"
+            className="lg:hidden relative p-2 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-all hover:border-primary hover:shadow-md active:scale-95 min-w-11 min-h-11 flex items-center justify-center"
             onClick={() => setShowCartModal(true)}
+            aria-label="View Cart"
           >
-            <span>Cart</span>
+            <span className="text-xl sm:text-2xl">🛒</span>
             {cartItemCount > 0 && (
-              <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center inline-block">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full min-w-[18px] sm:min-w-[20px] text-center font-bold shadow-md">
                 {cartItemCount}
               </span>
             )}
-          </button>
-          <button
-            className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-sm sm:text-base bg-red-500 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_4px_12px_rgba(255,82,82,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(255,82,82,0.45)] active:translate-y-0"
-            onClick={() => {
-              logoutUser();
-              navigate('/');
-            }}
-          >
-            Logout
           </button>
         </div>
       </div>

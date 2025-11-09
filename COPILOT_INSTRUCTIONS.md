@@ -11,7 +11,37 @@ This is a **Point of Sale (POS) System** built with:
 
 ## Core Principles
 
-### 1. **Mobile-First Design (HIGHEST PRIORITY)**
+### 1. **Design Philosophy: Google Material Design (HIGHEST PRIORITY)**
+- **Overall aesthetic**: Simple, elegant, clean
+- **Visual approach**: Minimalist with purposeful use of space
+- **Design inspiration**: Google's Material Design principles
+  - Clean whitespace and breathing room
+  - Subtle shadows and depth
+  - Smooth, meaningful animations
+  - Clear visual hierarchy
+  - Purposeful color usage (not overdone)
+
+**Key Design Elements:**
+- ✅ Generous padding and margins
+- ✅ Soft shadows for depth (avoid harsh borders)
+- ✅ Rounded corners (8px-16px)
+- ✅ Gradient accents (subtle, not overwhelming)
+- ✅ Clear typography hierarchy
+- ✅ Minimal color palette with strategic pops
+- ✅ Smooth transitions (200-400ms)
+- ✅ Floating action buttons where appropriate
+- ✅ Card-based layouts
+- ✅ Clean iconography
+
+**Visual Simplicity Checklist:**
+- [ ] Remove unnecessary elements
+- [ ] Use whitespace intentionally
+- [ ] Keep color palette minimal (2-3 main colors)
+- [ ] Ensure consistent spacing throughout
+- [ ] Add subtle depth with shadows, not borders
+- [ ] Use icons to reduce visual clutter
+
+### 2. **Mobile-First Design**
 - **ALWAYS** design for mobile screens first (320px - 640px)
 - Use responsive breakpoints in this order:
   - Base styles: Mobile (default)
@@ -36,10 +66,11 @@ This is a **Point of Sale (POS) System** built with:
 - [ ] Stack layouts vertically on mobile
 - [ ] Use hamburger menus when appropriate
 - [ ] Test with viewport width 375px (iPhone)
+- [ ] Maintain Google-like simplicity on all screen sizes
 
 ---
 
-### 2. **Recommendation Framework**
+### 3. **Recommendation Framework**
 
 When implementing features or solving problems:
 
@@ -89,7 +120,7 @@ When implementing features or solving problems:
 
 ---
 
-### 3. **Verification Protocol**
+### 4. **Verification Protocol**
 
 **BEFORE completing any task, run this checklist:**
 
@@ -118,9 +149,23 @@ For EVERY UI change, verify:
 - [ ] Desktop (1024px+): Optimal layout
 - [ ] Touch targets: At least 44x44px
 - [ ] No horizontal scroll on mobile
+- [ ] Google-like simplicity maintained
+- [ ] Clean whitespace and breathing room
 ```
 
-#### C. Accessibility Check
+#### C. Design Consistency Check
+```markdown
+For EVERY visual change, verify:
+- [ ] Follows Google Material Design principles
+- [ ] Simple and elegant (no visual clutter)
+- [ ] Consistent with existing UI patterns
+- [ ] Proper use of shadows (not borders)
+- [ ] Rounded corners where appropriate
+- [ ] Minimal, purposeful color usage
+- [ ] Smooth animations and transitions
+```
+
+#### D. Accessibility Check
 ```markdown
 - [ ] Proper semantic HTML
 - [ ] ARIA labels on interactive elements
@@ -129,7 +174,7 @@ For EVERY UI change, verify:
 - [ ] Focus indicators visible
 ```
 
-#### D. Task Completion Verification
+#### E. Task Completion Verification
 ```markdown
 After implementation, confirm:
 - [ ] All user requirements addressed
@@ -201,6 +246,19 @@ className="bg-primary text-white"
 
 // ✅ Consistent spacing scale
 className="gap-2 sm:gap-3 md:gap-4"
+
+// ✅ Google Material Design elements
+className="rounded-lg shadow-md" // Soft shadows
+className="rounded-xl shadow-lg" // Elevated cards
+className="transition-all duration-300" // Smooth animations
+className="bg-white/90 backdrop-blur-sm" // Subtle transparency
+
+// ✅ Clean, generous spacing
+className="p-6 sm:p-8" // Breathing room
+className="space-y-4 sm:space-y-6" // Vertical rhythm
+
+// ✅ Subtle gradients (use sparingly)
+className="bg-gradient-to-br from-primary to-primary-dark"
 ```
 
 ### State Management
@@ -303,6 +361,10 @@ className="gap-2 sm:gap-3 md:gap-4"
 - ✅ Intuitive user flows
 - ✅ Helpful error messages
 - ✅ Immediate visual feedback
+- ✅ Google-like simplicity and elegance
+- ✅ Generous whitespace
+- ✅ Subtle shadows for depth
+- ✅ Minimal, purposeful design choices
 
 ### Performance
 - ✅ Optimize re-renders
@@ -458,12 +520,16 @@ Before marking any task complete, mentally test:
 
 ### New Component Checklist
 - [ ] Mobile-first responsive design
+- [ ] Google Material Design aesthetic
 - [ ] PropTypes or TypeScript types
 - [ ] Error boundary handling
 - [ ] Loading states
 - [ ] Accessibility attributes
 - [ ] Reusable and composable
 - [ ] Documented props
+- [ ] Clean, generous spacing
+- [ ] Subtle shadows (not harsh borders)
+- [ ] Smooth transitions
 
 ### New Page Checklist
 - [ ] Route added to App.jsx
@@ -515,24 +581,23 @@ Before marking any task complete, mentally test:
 - [ ] Clear feedback
 - [ ] Fast performance
 - [ ] Accessible
-
-### Documentation
-- [ ] Comments where needed
-- [ ] README updated if applicable
-- [ ] Breaking changes noted
+- [ ] Simple and elegant (Google-like)
+- [ ] Clean visual hierarchy
+- [ ] Generous whitespace
 ```
 
 ---
 
 ## Remember:
 
-> **"Mobile-First, Verify Always, Recommend Options"**
+> **"Google-Like Design, Mobile-First, Verify Always, Recommend Options"**
 
-1. **MOBILE FIRST** - Every single time
-2. **VERIFY THOROUGHLY** - Double-check all changes
-3. **OFFER ALTERNATIVES** - Present options with trade-offs
-4. **COMPLETE TASKS** - Address every requirement
-5. **COMMUNICATE CLEARLY** - Explain reasoning
+1. **GOOGLE MATERIAL DESIGN** - Simple, elegant, clean aesthetics
+2. **MOBILE FIRST** - Every single time
+3. **VERIFY THOROUGHLY** - Double-check all changes
+4. **OFFER ALTERNATIVES** - Present options with trade-offs
+5. **COMPLETE TASKS** - Address every requirement
+6. **COMMUNICATE CLEARLY** - Explain reasoning
 
 ---
 

@@ -80,32 +80,41 @@ const PaymentPage = () => {
     <>
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4 sm:p-6 md:p-8">
       <div className="bg-white rounded-2xl p-6 sm:p-7 md:p-8 max-w-[600px] w-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        <h1 className="m-0 mb-6 md:mb-4 sm:mb-4 text-gray-800 text-3xl md:text-2xl sm:text-xl text-center border-b-[3px] border-[#667eea] pb-3">Payment</h1>
+        <h1 className="m-0 mb-4 sm:mb-5 md:mb-6 text-gray-800 text-2xl sm:text-3xl text-center border-b-2 border-[#667eea] pb-2 sm:pb-3">Payment</h1>
         
-        <div className="mb-8 md:mb-6 sm:mb-6">
-          <h2 className="m-0 mb-4 md:mb-3 sm:mb-3 text-gray-800 text-xl md:text-lg sm:text-base">Order Summary</h2>
-          <div ref={orderItemsRef} className="max-h-[300px] md:max-h-[200px] sm:max-h-[180px] overflow-y-auto mb-4 border border-gray-200 rounded-lg p-2">
-            {cart.map(item => (
-              <div key={item.id} className="flex justify-between items-center p-3 sm:p-2.5 border-b border-gray-100 last:border-b-0">
-                <div className="flex flex-col gap-1">
-                  <span className="font-semibold text-gray-800 md:text-sm sm:text-sm">{item.name}</span>
-                  <span className="text-sm md:text-xs sm:text-xs text-gray-600">x{item.quantity}</span>
+        <div className="mb-6 sm:mb-7 md:mb-8">
+          <h2 className="m-0 mb-2 sm:mb-3 text-gray-800 text-lg sm:text-xl border-b-2 border-[#667eea] pb-1.5 sm:pb-2">Order Summary</h2>
+          <div ref={orderItemsRef} className="max-h-[300px] md:max-h-[250px] sm:max-h-[220px] overflow-y-auto mb-3 sm:mb-4 pr-2 -mr-2">
+            {cart.length === 0 ? (
+              <p className="text-center text-gray-400 p-4 sm:p-6 md:p-8 italic text-sm sm:text-base">No items in cart</p>
+            ) : (
+              cart.map(item => (
+                <div key={item.id} className="bg-gray-50 rounded-lg p-2 sm:p-2.5 md:p-3 mb-1.5 sm:mb-2 border-l-4 border-[#667eea]">
+                  <div className="flex justify-between items-start mb-1 sm:mb-1.5 gap-1">
+                    <span className="font-semibold text-gray-800 text-sm sm:text-base leading-tight flex-1">{item.name}</span>
+                    <span className="text-[#667eea] font-semibold text-xs sm:text-sm whitespace-nowrap">₱{item.price.toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-1.5">
+                    <span className="min-w-[60px] sm:min-w-[70px] text-sm text-gray-600">Qty: {item.quantity}</span>
+                  </div>
+                  
+                  <div className="text-right font-bold text-gray-800 text-xs sm:text-sm">
+                    Total: ₱{(item.price * item.quantity).toFixed(2)}
+                  </div>
                 </div>
-                <span className="font-bold text-[#667eea] text-lg md:text-base sm:text-base">
-                  ₱{(item.price * item.quantity).toFixed(2)}
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
           
-          <div className="text-right text-2xl md:text-xl sm:text-lg text-gray-800 p-4 md:p-3 sm:p-3 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white rounded-lg font-bold">
+          <div className="text-center text-lg sm:text-xl mb-3 sm:mb-4 p-2 sm:p-2.5 md:p-3 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white rounded-lg font-bold">
             Total: ₱{totalPrice.toFixed(2)}
           </div>
         </div>
 
-        <div className="mb-8 md:mb-6 sm:mb-6">
-          <div className="mb-6 md:mb-5 sm:mb-5">
-            <label htmlFor="amountPaid" className="block mb-2 font-semibold text-gray-800 text-lg md:text-base sm:text-base">Amount Paid:</label>
+        <div className="mb-6 sm:mb-7 md:mb-8">
+          <div className="mb-4 sm:mb-5">
+            <label htmlFor="amountPaid" className="block mb-2 font-semibold text-gray-800 text-base sm:text-lg">Amount Paid:</label>
             <input
               id="amountPaid"
               type="number"
@@ -114,18 +123,31 @@ const PaymentPage = () => {
               value={amountPaid}
               onChange={handleAmountChange}
               placeholder="0.00"
-              className={`w-full px-3 py-3 md:py-2.5 sm:py-2.5 text-xl md:text-lg sm:text-base border-2 ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg transition-colors focus:outline-none focus:border-[#667eea]`}
+              className={`w-full px-3 py-3 text-lg sm:text-xl border-2 ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg transition-colors focus:outline-none focus:border-[#667eea]`}
+              inputMode="decimal"
             />
             {error && <span className="block text-red-500 text-sm mt-2">{error}</span>}
           </div>
+          
+          {amountPaid && change >= 0 && (
+            <div className="p-3 bg-green-50 border-l-4 border-green-500 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-gray-700 text-sm sm:text-base">Change:</span>
+                <span className="font-bold text-green-600 text-lg sm:text-xl">₱{change.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="flex gap-4 md:gap-3 sm:gap-3 sm:flex-col">
-          <button className="flex-1 px-4 py-4 md:py-3.5 sm:py-3.5 text-lg md:text-base sm:text-base font-semibold border-none rounded-lg cursor-pointer transition-all bg-gray-200 text-gray-800 hover:bg-gray-300 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(0,0,0,0.2)]" onClick={handleCancel}>
+        <div className="flex gap-3 sm:gap-4 flex-col sm:flex-row">
+          <button 
+            className="w-full sm:flex-1 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-semibold border-none rounded-xl cursor-pointer transition-all bg-gray-200 text-gray-800 hover:bg-gray-300 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(0,0,0,0.2)] active:translate-y-0" 
+            onClick={handleCancel}
+          >
             Cancel
           </button>
           <button
-            className="flex-1 px-4 py-4 md:py-3.5 sm:py-3.5 text-lg md:text-base sm:text-base font-semibold border-none rounded-lg cursor-pointer transition-all bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white shadow-[0_4px_15px_rgba(102,126,234,0.4)] hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_6px_20px_rgba(102,126,234,0.6)] disabled:opacity-50 disabled:cursor-not-allowed active:enabled:translate-y-0"
+            className="w-full sm:flex-1 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-extrabold border-none rounded-xl cursor-pointer transition-all bg-gradient-to-br from-orange-500 to-red-600 text-white shadow-[0_8px_28px_rgba(255,87,34,0.45)] tracking-wide hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_12px_32px_rgba(255,87,34,0.55)] disabled:opacity-45 disabled:cursor-not-allowed disabled:shadow-none active:enabled:translate-y-0 active:enabled:shadow-[0_6px_18px_rgba(255,87,34,0.4)]"
             onClick={handleCompletePurchase}
             disabled={!amountPaid || change < 0}
           >
@@ -137,32 +159,58 @@ const PaymentPage = () => {
 
     <Modal
       isOpen={showModal}
-      title="Purchase Complete"
+      title=""
       onClose={() => {
         setShowModal(false);
         navigate('/pos');
       }}
-      actions={(
-        <>
-          <button
-            className="px-4 py-2.5 sm:py-2 sm:px-3.5 border-none rounded-lg cursor-pointer font-semibold bg-gray-200 text-gray-800 sm:text-sm"
-            onClick={() => {
-              setShowModal(false);
-              navigate('/pos');
-            }}
-          >
-            New Sale
-          </button>
-        </>
-      )}
+      actions={null}
     >
-      <div className="flex justify-center mb-4">
-        <div className="w-18 h-18 md:w-16 md:h-16 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-green-500 to-green-400 relative shadow-[0_8px_24px_rgba(0,200,83,0.35)] animate-pop-in">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[2.4rem] md:text-[2.2rem] sm:text-[2rem] text-white animate-fade-in-check">✓</div>
+      <div className="flex flex-col items-center justify-center py-4 sm:py-6 md:py-8">
+        {/* Success Icon */}
+        <div className="mb-6 sm:mb-8">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-green-500 to-green-600 relative shadow-[0_12px_40px_rgba(34,197,94,0.3)] animate-pop-in">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[3rem] sm:text-[3.5rem] text-white font-bold animate-fade-in-check">✓</div>
+          </div>
         </div>
+
+        {/* Success Message */}
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Payment Complete!</h2>
+        <p className="text-sm sm:text-base text-gray-500 mb-8 sm:mb-10">Transaction successful</p>
+
+        {/* Change Amount - Center of Attention */}
+        <div className="w-full max-w-sm mb-8 sm:mb-10">
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(34,197,94,0.15)] border-2 border-green-200">
+            <div className="text-center">
+              <p className="text-sm sm:text-base font-medium text-gray-600 mb-2 uppercase tracking-wide">Your Change</p>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  ₱{finalChange.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* New Sale Button - Beautified */}
+        <button
+          className="w-full max-w-sm px-6 py-4 sm:py-5 bg-gradient-to-r from-primary to-primary-dark text-white text-base sm:text-lg font-semibold rounded-xl shadow-[0_8px_24px_rgba(102,126,234,0.35)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(102,126,234,0.45)] active:translate-y-0 active:shadow-[0_6px_20px_rgba(102,126,234,0.3)] border-none cursor-pointer"
+          onClick={() => {
+            setShowModal(false);
+            navigate('/pos');
+          }}
+        >
+          <span className="flex items-center justify-center gap-2">
+            <span className="text-xl sm:text-2xl">🛒</span>
+            <span>New Sale</span>
+          </span>
+        </button>
+
+        {/* Auto-close notice */}
+        <p className="text-xs sm:text-sm text-gray-400 mt-6 text-center">
+          This will automatically close in 30 seconds
+        </p>
       </div>
-      <p className="text-center sm:text-sm">Transaction successful.</p>
-      <p className="sm:text-sm"><strong>Change:</strong> ₱{finalChange.toFixed(2)}</p>
     </Modal>
     </>
   );
