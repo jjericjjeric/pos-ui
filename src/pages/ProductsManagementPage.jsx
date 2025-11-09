@@ -254,22 +254,26 @@ const ProductsManagementPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
       {/* Compact Header */}
-      <div className="bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2">
-        <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800 truncate">📋 Products Management</h1>
+      <div className="bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex items-center gap-2">
+        {/* Back Button - Leftmost */}
+        <button
+          onClick={() => navigate('/pos')}
+          className="p-2 hover:bg-gray-100 rounded-full transition-all active:bg-gray-200 min-w-11 min-h-11 flex items-center justify-center flex-shrink-0"
+          aria-label="Go back"
+        >
+          <span className="text-xl sm:text-2xl text-gray-700">←</span>
+        </button>
+        
+        {/* Title */}
+        <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800 truncate flex-1">📋 Products Management</h1>
+        
+        {/* Right side actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {user && (
             <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate">
               <strong>{user.username}</strong>
             </span>
           )}
-          {/* Back to POS Button */}
-          <button
-            className="px-2 sm:px-2.5 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 text-xs sm:text-sm min-w-11 min-h-11 flex items-center justify-center gap-1"
-            onClick={() => navigate('/pos')}
-          >
-            <span>←</span>
-            <span className="hidden sm:inline">Back</span>
-          </button>
           {/* Menu Button */}
           <div className="relative" ref={menuRef}>
             <button

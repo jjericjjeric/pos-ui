@@ -131,14 +131,14 @@ const AddProductPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-2 sm:p-3 md:p-4 overflow-auto">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="flex-1 p-2 sm:p-3 overflow-auto">
+        <div className="max-w-2xl mx-auto h-full flex flex-col">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden flex-1 flex flex-col">
             {/* Form */}
-            <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+            <form onSubmit={handleSubmit} className="p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 flex-1 flex flex-col overflow-y-auto">
               {/* Product Name */}
-              <div className="space-y-2">
-                <label htmlFor="name" className="block text-sm font-semibold text-gray-700">
+              <div className="space-y-1 sm:space-y-1.5">
+                <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-gray-700">
                   Product Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -148,14 +148,14 @@ const AddProductPage = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="e.g., Apple Juice 1L"
-                  className={`w-full px-4 py-3 bg-gray-50 border-2 rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-50 border-2 rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
                     errors.name 
                       ? 'border-red-300 focus:border-red-500' 
                       : 'border-transparent focus:border-primary focus:ring-2 focus:ring-primary/20'
                   }`}
                 />
                 {errors.name && (
-                  <div className="flex items-center gap-2 text-red-600 text-sm mt-2">
+                  <div className="flex items-center gap-1.5 text-red-600 text-xs sm:text-sm mt-1">
                     <span>⚠️</span>
                     <span>{errors.name}</span>
                   </div>
@@ -163,14 +163,14 @@ const AddProductPage = () => {
               </div>
 
               {/* Price and Stock Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {/* Price */}
-                <div className="space-y-2">
-                  <label htmlFor="price" className="block text-sm font-semibold text-gray-700">
+                <div className="space-y-1 sm:space-y-1.5">
+                  <label htmlFor="price" className="block text-xs sm:text-sm font-semibold text-gray-700">
                     Price (₱) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">₱</span>
+                    <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-500 text-base sm:text-lg">₱</span>
                     <input
                       id="price"
                       type="number"
@@ -180,7 +180,7 @@ const AddProductPage = () => {
                       value={formData.price}
                       onChange={handleChange}
                       placeholder="0.00"
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-50 border-2 rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
+                      className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-gray-50 border-2 rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
                         errors.price 
                           ? 'border-red-300 focus:border-red-500' 
                           : 'border-transparent focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -188,7 +188,7 @@ const AddProductPage = () => {
                     />
                   </div>
                   {errors.price && (
-                    <div className="flex items-center gap-2 text-red-600 text-sm mt-2">
+                    <div className="flex items-center gap-1.5 text-red-600 text-xs sm:text-sm mt-1">
                       <span>⚠️</span>
                       <span>{errors.price}</span>
                     </div>
@@ -196,12 +196,12 @@ const AddProductPage = () => {
                 </div>
 
                 {/* Stock */}
-                <div className="space-y-2">
-                  <label htmlFor="stock" className="block text-sm font-semibold text-gray-700">
+                <div className="space-y-1 sm:space-y-1.5">
+                  <label htmlFor="stock" className="block text-xs sm:text-sm font-semibold text-gray-700">
                     Stock Quantity <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">📦</span>
+                    <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-500 text-base sm:text-lg">📦</span>
                     <input
                       id="stock"
                       type="number"
@@ -210,7 +210,7 @@ const AddProductPage = () => {
                       value={formData.stock}
                       onChange={handleChange}
                       placeholder="0"
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-50 border-2 rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
+                      className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-gray-50 border-2 rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
                         errors.stock 
                           ? 'border-red-300 focus:border-red-500' 
                           : 'border-transparent focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -218,7 +218,7 @@ const AddProductPage = () => {
                     />
                   </div>
                   {errors.stock && (
-                    <div className="flex items-center gap-2 text-red-600 text-sm mt-2">
+                    <div className="flex items-center gap-1.5 text-red-600 text-xs sm:text-sm mt-1">
                       <span>⚠️</span>
                       <span>{errors.stock}</span>
                     </div>
@@ -227,12 +227,12 @@ const AddProductPage = () => {
               </div>
 
               {/* Category */}
-              <div className="space-y-2">
-                <label htmlFor="category" className="block text-sm font-semibold text-gray-700">
+              <div className="space-y-1 sm:space-y-1.5">
+                <label htmlFor="category" className="block text-xs sm:text-sm font-semibold text-gray-700">
                   Category
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg z-10">🏷️</span>
+                  <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-500 text-base sm:text-lg z-10">🏷️</span>
                   <input
                     id="category"
                     type="text"
@@ -249,27 +249,27 @@ const AddProductPage = () => {
                       setTimeout(() => setShowCategorySuggestions(false), 200);
                     }}
                     placeholder="e.g., Beverages, Food, Snacks..."
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-gray-50 border-2 border-transparent rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                   
                   {/* Autocomplete Suggestions */}
                   {showCategorySuggestions && categorySuggestions.length > 0 && (
-                    <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                    <div className="absolute z-50 w-full mt-1 sm:mt-2 bg-white border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-xl max-h-48 sm:max-h-60 overflow-y-auto">
                       {categorySuggestions.map((category, index) => (
                         <button
                           key={index}
                           type="button"
                           onClick={() => handleCategorySelect(category)}
-                          className="w-full text-left px-4 py-3 hover:bg-primary/10 transition-colors border-b border-gray-100 last:border-b-0 flex items-center gap-3"
+                          className="w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-primary/10 transition-colors border-b border-gray-100 last:border-b-0 flex items-center gap-2 sm:gap-3"
                         >
-                          <span className="text-lg">🏷️</span>
-                          <span className="text-sm font-medium text-gray-700">{category}</span>
+                          <span className="text-base sm:text-lg">🏷️</span>
+                          <span className="text-xs sm:text-sm font-medium text-gray-700">{category}</span>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
                   {existingCategories.length > 0 
                     ? 'Start typing to see existing categories or enter a new one' 
                     : 'Enter a category name for this product'}
@@ -277,11 +277,11 @@ const AddProductPage = () => {
               </div>
 
               {/* Image Emoji */}
-              <div className="space-y-2">
-                <label htmlFor="image" className="block text-sm font-semibold text-gray-700">
+              <div className="space-y-1 sm:space-y-1.5">
+                <label htmlFor="image" className="block text-xs sm:text-sm font-semibold text-gray-700">
                   Product Icon
                 </label>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="flex-1">
                     <input
                       id="image"
@@ -291,30 +291,30 @@ const AddProductPage = () => {
                       onChange={handleChange}
                       placeholder="🛍️"
                       maxLength="2"
-                      className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-50 border-2 border-transparent rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
-                  <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-4xl shadow-inner">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center text-3xl sm:text-4xl shadow-inner flex-shrink-0">
                     {formData.image || '🛍️'}
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">Enter an emoji to represent your product</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Enter an emoji to represent your product</p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-2 sm:gap-3 pt-2 sm:pt-3 mt-auto">
                 <button
                   type="button"
                   onClick={handleCancel}
                   disabled={isSubmitting}
-                  className="flex-1 px-6 py-3.5 bg-gray-100 text-gray-700 rounded-xl text-base font-semibold transition-all hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-transparent hover:border-gray-300"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-transparent hover:border-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-6 py-3.5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl text-base font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -333,8 +333,8 @@ const AddProductPage = () => {
           </div>
 
           {/* Helper Text */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-white/80">
+          <div className="mt-2 sm:mt-3 text-center flex-shrink-0">
+            <p className="text-xs sm:text-sm text-white/80">
               Fields marked with <span className="text-red-300">*</span> are required
             </p>
           </div>
