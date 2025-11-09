@@ -194,6 +194,19 @@ const POSPage = () => {
               Signed in as <strong>{user.username}</strong>{user.role ? ` (${user.role})` : ''}
             </span>
           )}
+          {/* Cart Icon Button */}
+          <button
+            className="lg:hidden relative p-2 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-all hover:border-primary hover:shadow-md active:scale-95 min-w-11 min-h-11 flex items-center justify-center"
+            onClick={() => setShowCartModal(true)}
+            aria-label="View Cart"
+          >
+            <span className="text-xl sm:text-2xl">🛒</span>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full min-w-[18px] sm:min-w-[20px] text-center font-bold shadow-md">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
           {/* Menu Button */}
           <div className="relative" ref={menuRef}>
             <button
@@ -239,19 +252,6 @@ const POSPage = () => {
               </div>
             )}
           </div>
-          {/* Cart Icon Button */}
-          <button
-            className="lg:hidden relative p-2 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-all hover:border-primary hover:shadow-md active:scale-95 min-w-11 min-h-11 flex items-center justify-center"
-            onClick={() => setShowCartModal(true)}
-            aria-label="View Cart"
-          >
-            <span className="text-xl sm:text-2xl">🛒</span>
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full min-w-[18px] sm:min-w-[20px] text-center font-bold shadow-md">
-                {cartItemCount}
-              </span>
-            )}
-          </button>
         </div>
       </div>
       

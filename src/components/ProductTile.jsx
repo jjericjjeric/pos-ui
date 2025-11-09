@@ -8,10 +8,11 @@ import { useState, useRef, useEffect } from 'react';
 const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, userRole }) => {
   const isOutOfStock = product.stock === 0;
   const [showMenu, setShowMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState('right');
   const menuRef = useRef(null);
 
-  // Check if user has permission to edit/delete (not a cashier)
-  const canManage = userRole && userRole !== 'cashier';
+  // Always show menu if callbacks are provided (for flexibility)
+  const canManage = (onEdit || onDelete || onViewDetails);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -32,6 +33,25 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
 
   const handleMenuClick = (e) => {
     e.stopPropagation();
+    
+    // Determine menu position based on click position
+    if (menuRef.current) {
+      const rect = menuRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const distanceFromRight = viewportWidth - rect.right;
+      const distanceFromLeft = rect.left;
+      
+      // If close to right edge (less than 200px), position menu to the left
+      // If close to left edge (less than 200px), position menu to the right
+      if (distanceFromRight < 200) {
+        setMenuPosition('left');
+      } else if (distanceFromLeft < 200) {
+        setMenuPosition('right');
+      } else {
+        setMenuPosition('right'); // Default to right
+      }
+    }
+    
     setShowMenu(!showMenu);
   };
 
@@ -55,7 +75,7 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
 
   return (
     <div 
-      className={`bg-gradient-to-br from-gray-50 to-gray-300 rounded-xl p-4 md:p-3.5 sm:p-3 cursor-pointer transition-all duration-300 border-2 border-transparent flex flex-col items-center text-center relative overflow-hidden ${
+      className={`bg-gradient-to-br from-gray-50 to-gray-300 rounded-xl p-4 md:p-3.5 sm:p-3 cursor-pointer transition-all duration-300 border-2 border-transparent flex flex-col items-center text-center relative ${
         isOutOfStock 
           ? 'opacity-60 cursor-not-allowed bg-gradient-to-br from-gray-200 to-gray-400' 
           : 'hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] hover:border-primary'
@@ -64,14 +84,14 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
     >
       {/* Category Badge */}
       {product.category && (
-        <div className="absolute top-2 left-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase">
+        <div className="absolute top-2 left-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase z-[5]">
           {product.category}
         </div>
       )}
 
       {/* Action Menu Button - Only show if user can manage (mobile-first: larger touch target) */}
       {canManage && (
-        <div className="absolute top-2 right-2 z-10" ref={menuRef}>
+        <div className="absolute top-2 right-2 z-20" ref={menuRef}>
           <button
             onClick={handleMenuClick}
             className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center bg-white/90 hover:bg-white active:bg-gray-100 rounded-full shadow-md transition-all hover:shadow-lg text-gray-700 hover:text-gray-900"
@@ -82,9 +102,16 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
             <span className="text-xl sm:text-lg font-bold leading-none">⋮</span>
           </button>
           
-          {/* Dropdown Menu - Mobile optimized */}
+          {/* Dropdown Menu - Mobile optimized with dynamic positioning */}
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 sm:w-44 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-20">
+            <div 
+              data-dropdown
+              className={`absolute mt-2 w-48 sm:w-44 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-[100] ${
+                menuPosition === 'left' 
+                  ? 'right-0 origin-top-right' 
+                  : 'left-0 origin-top-left'
+              }`}
+            >
               <button
                 onClick={handleEdit}
                 className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-blue-50 active:bg-blue-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2"

@@ -24,10 +24,14 @@ const ProductsManagementPage = () => {
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
   
   const toastIdCounter = useRef(0);
   const searchInputRef = useRef(null);
   const menuRef = useRef(null);
+  const categoryMenuRef = useRef(null);
+  const sortMenuRef = useRef(null);
   
   // Categories
   const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
@@ -214,16 +218,22 @@ const ProductsManagementPage = () => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setShowMenu(false);
       }
+      if (categoryMenuRef.current && !categoryMenuRef.current.contains(event.target)) {
+        setShowCategoryMenu(false);
+      }
+      if (sortMenuRef.current && !sortMenuRef.current.contains(event.target)) {
+        setShowSortMenu(false);
+      }
     };
 
-    if (showMenu) {
+    if (showMenu || showCategoryMenu || showSortMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMenu]);
+  }, [showMenu, showCategoryMenu, showSortMenu]);
 
   if (loading) {
     return (
@@ -244,35 +254,38 @@ const ProductsManagementPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-md p-3 sm:p-4 flex justify-between items-center sticky top-0 z-50">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-          📋 Products Management
-        </h1>
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+      <div className="bg-white/95 px-2 sm:px-4 md:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 sticky top-0 flex justify-between items-center gap-2">
+        <div className="flex flex-col min-w-0 flex-shrink">
+          <h1 className="m-0 text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 truncate">📋 Products Management</h1>
+          <p className="mt-0.5 sm:mt-1 mb-0 text-gray-600 text-[10px] sm:text-xs md:text-sm truncate">Manage your inventory</p>
+        </div>
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
           {user && (
-            <span className="text-xs sm:text-sm text-gray-700 bg-blue-50 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md border border-blue-200">
+            <span className="hidden sm:inline text-xs md:text-sm text-gray-700 bg-blue-50 px-2 md:px-2.5 py-1 md:py-1.5 rounded-md border border-blue-200 whitespace-nowrap">
               {user.username} {user.role ? `(${user.role})` : ''}
             </span>
           )}
+          {/* Back to POS Button */}
           <button
-            className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-base bg-gray-600 text-white rounded-lg font-semibold hover:-translate-y-0.5 transition-all"
+            className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-xs sm:text-sm md:text-base min-w-11 min-h-11 flex items-center justify-center gap-1"
             onClick={() => navigate('/pos')}
           >
-            ← Back to POS
+            <span>←</span>
+            <span className="hidden sm:inline">Back</span>
           </button>
           {/* Menu Button */}
           <div className="relative" ref={menuRef}>
             <button
-              className="px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-sm sm:text-base"
+              className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-xs sm:text-sm md:text-base min-w-11 min-h-11 flex items-center justify-center"
               onClick={() => setShowMenu(!showMenu)}
             >
-              ☰
+              ☰ <span className="hidden xs:inline ml-1">Menu</span>
             </button>
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 z-9999">
+              <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 z-[9999]">
                 <div className="py-2">
                   <button
-                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-responsive-sm font-semibold"
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold flex items-center gap-2"
                     onClick={() => {
                       setShowMenu(false);
                       logoutUser();
@@ -311,33 +324,89 @@ const ProductsManagementPage = () => {
 
             {/* Filters and Actions Row */}
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
-              {/* Category Filter */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none text-sm sm:text-base min-h-[44px]"
-              >
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+              {/* Category Filter - Material Design Button */}
+              <div className="relative" ref={categoryMenuRef}>
+                <button
+                  onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+                  className="px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-sm sm:text-base min-h-11 flex items-center justify-between gap-2 w-full sm:w-auto min-w-[180px]"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>🏷️</span>
+                    <span className="font-medium">{selectedCategory}</span>
+                  </span>
+                  <span className="text-gray-500">▼</span>
+                </button>
+                
+                {showCategoryMenu && (
+                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:w-56 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50 max-h-64 overflow-y-auto">
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setShowCategoryMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-none bg-transparent cursor-pointer text-sm sm:text-base flex items-center gap-2 ${
+                          selectedCategory === cat ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700'
+                        }`}
+                      >
+                        {selectedCategory === cat && <span className="text-primary">✓</span>}
+                        <span>{cat}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-              {/* Sort By */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none text-sm sm:text-base min-h-[44px]"
-              >
-                <option value="name">Sort by Name</option>
-                <option value="price">Sort by Price</option>
-                <option value="stock">Sort by Stock</option>
-                <option value="category">Sort by Category</option>
-              </select>
+              {/* Sort By - Material Design Button */}
+              <div className="relative" ref={sortMenuRef}>
+                <button
+                  onClick={() => setShowSortMenu(!showSortMenu)}
+                  className="px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-sm sm:text-base min-h-11 flex items-center justify-between gap-2 w-full sm:w-auto min-w-[180px]"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>↕️</span>
+                    <span className="font-medium">
+                      {sortBy === 'name' && 'Name'}
+                      {sortBy === 'price' && 'Price'}
+                      {sortBy === 'stock' && 'Stock'}
+                      {sortBy === 'category' && 'Category'}
+                    </span>
+                  </span>
+                  <span className="text-gray-500">▼</span>
+                </button>
+                
+                {showSortMenu && (
+                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:w-56 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50">
+                    {[
+                      { value: 'name', label: 'Name', icon: '📝' },
+                      { value: 'price', label: 'Price', icon: '💰' },
+                      { value: 'stock', label: 'Stock', icon: '📦' },
+                      { value: 'category', label: 'Category', icon: '🏷️' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          setSortBy(option.value);
+                          setShowSortMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-none bg-transparent cursor-pointer text-sm sm:text-base flex items-center gap-2 ${
+                          sortBy === option.value ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700'
+                        }`}
+                      >
+                        <span>{option.icon}</span>
+                        <span className="flex-1">{option.label}</span>
+                        {sortBy === option.value && <span className="text-primary">✓</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Sort Order */}
               <button
                 onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-sm sm:text-base min-h-[44px] flex items-center justify-center gap-2"
+                className="px-3 sm:px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-sm sm:text-base min-h-11 flex items-center justify-center gap-2 font-medium"
               >
                 {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
               </button>
@@ -484,23 +553,38 @@ const ProductsManagementPage = () => {
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className={`bg-white border-2 rounded-lg p-3 sm:p-4 shadow-md hover:shadow-lg transition-shadow ${
-                    selectedProducts.includes(product.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  className={`bg-white rounded-xl p-4 sm:p-5 shadow-md hover:shadow-lg transition-all relative overflow-hidden ${
+                    selectedProducts.includes(product.id) 
+                      ? 'ring-2 ring-primary shadow-[0_4px_20px_rgba(102,126,234,0.3)]' 
+                      : 'border border-gray-200 hover:border-primary'
                   }`}
                 >
-                  {/* Checkbox */}
+                  {/* Material Design Checkbox */}
                   <div className="flex justify-between items-start mb-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.includes(product.id)}
-                      onChange={() => handleSelectProduct(product.id)}
-                      className="w-5 h-5 cursor-pointer min-w-[44px] min-h-[44px]"
-                    />
+                    <button
+                      onClick={() => handleSelectProduct(product.id)}
+                      className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all hover:bg-gray-100 active:bg-gray-200 ${
+                        selectedProducts.includes(product.id) ? 'bg-primary/10' : ''
+                      }`}
+                      aria-label="Select product"
+                    >
+                      <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
+                        selectedProducts.includes(product.id) 
+                          ? 'bg-primary border-primary' 
+                          : 'border-gray-400 bg-white'
+                      }`}>
+                        {selectedProducts.includes(product.id) && (
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
                     <div className="text-5xl sm:text-6xl">{product.image}</div>
                   </div>
 
                   {/* Product Info */}
-                  <div className="space-y-2 mb-3">
+                  <div className="space-y-2 mb-4">
                     <h3 className="font-bold text-base sm:text-lg text-gray-800 line-clamp-2">
                       {product.name}
                     </h3>
@@ -508,7 +592,7 @@ const ProductsManagementPage = () => {
                       <span className="text-lg sm:text-xl font-bold text-primary">
                         ₱{product.price.toFixed(2)}
                       </span>
-                      <span className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${
+                      <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
                         product.stock === 0 ? 'bg-red-100 text-red-700' :
                         product.stock < 10 ? 'bg-yellow-100 text-yellow-700' :
                         'bg-green-100 text-green-700'
@@ -516,33 +600,36 @@ const ProductsManagementPage = () => {
                         Stock: {product.stock}
                       </span>
                     </div>
-                    <div className="text-xs sm:text-sm text-gray-600">
+                    <div className="text-xs sm:text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full inline-block">
                       {product.category || 'Uncategorized'}
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="grid grid-cols-3 gap-2">
+                  {/* Material Design Action Buttons */}
+                  <div className="flex gap-2">
                     <button
                       onClick={() => handleViewDetails(product)}
-                      className="px-2 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors min-h-[44px]"
-                      title="View"
+                      className="flex-1 px-3 py-2.5 bg-blue-50 text-blue-600 rounded-lg font-semibold hover:bg-blue-100 hover:shadow-md active:bg-blue-200 transition-all min-h-11 flex items-center justify-center gap-2 border border-blue-200"
+                      title="View Details"
                     >
-                      👁️
+                      <span className="text-lg">👁️</span>
+                      <span className="text-sm hidden sm:inline">View</span>
                     </button>
                     <button
                       onClick={() => handleEditProduct(product)}
-                      className="px-2 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors min-h-[44px]"
-                      title="Edit"
+                      className="flex-1 px-3 py-2.5 bg-green-50 text-green-600 rounded-lg font-semibold hover:bg-green-100 hover:shadow-md active:bg-green-200 transition-all min-h-11 flex items-center justify-center gap-2 border border-green-200"
+                      title="Edit Product"
                     >
-                      ✏️
+                      <span className="text-lg">✏️</span>
+                      <span className="text-sm hidden sm:inline">Edit</span>
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(product)}
-                      className="px-2 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors min-h-[44px]"
-                      title="Delete"
+                      className="flex-1 px-3 py-2.5 bg-red-50 text-red-600 rounded-lg font-semibold hover:bg-red-100 hover:shadow-md active:bg-red-200 transition-all min-h-11 flex items-center justify-center gap-2 border border-red-200"
+                      title="Delete Product"
                     >
-                      🗑️
+                      <span className="text-lg">🗑️</span>
+                      <span className="text-sm hidden sm:inline">Delete</span>
                     </button>
                   </div>
                 </div>
