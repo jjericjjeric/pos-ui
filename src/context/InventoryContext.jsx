@@ -188,6 +188,33 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
+  const updateProduct = async (productId, productData) => {
+    try {
+      // Optimistic update - update UI immediately
+      setProducts(prevProducts =>
+        prevProducts.map(product =>
+          product.id === productId ? { ...product, ...productData } : product
+        )
+      );
+
+      const updatedProduct = await api.updateProduct(productId, productData);
+      
+      // Update with actual server response
+      setProducts(prevProducts =>
+        prevProducts.map(product =>
+          product.id === productId ? updatedProduct : product
+        )
+      );
+      
+      return updatedProduct;
+    } catch (error) {
+      console.error('Error updating product:', error);
+      // Refresh products to get latest state on error
+      await refreshProducts();
+      throw error;
+    }
+  };
+
   return (
     <InventoryContext.Provider
       value={{
@@ -203,6 +230,7 @@ export const InventoryProvider = ({ children }) => {
         updateInventoryAfterPurchase,
         addProduct,
         deleteProduct,
+        updateProduct,
       }}
     >
       {children}

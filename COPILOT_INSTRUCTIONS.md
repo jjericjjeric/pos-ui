@@ -1,0 +1,547 @@
+# GitHub Copilot Instructions Guide
+
+## Project Context
+This is a **Point of Sale (POS) System** built with:
+- **Frontend**: React + Vite, TailwindCSS
+- **Backend**: Go (Golang) API
+- **Architecture**: RESTful API with JWT authentication
+- **Deployment**: Netlify (both frontend and backend)
+
+---
+
+## Core Principles
+
+### 1. **Mobile-First Design (HIGHEST PRIORITY)**
+- **ALWAYS** design for mobile screens first (320px - 640px)
+- Use responsive breakpoints in this order:
+  - Base styles: Mobile (default)
+  - `sm:` - Tablets (640px+)
+  - `md:` - Small laptops (768px+)
+  - `lg:` - Desktops (1024px+)
+  - `xl:` - Large screens (1280px+)
+
+**Example Pattern:**
+```jsx
+// ✅ CORRECT - Mobile first
+<div className="text-sm sm:text-base md:text-lg lg:text-xl">
+
+// ❌ WRONG - Desktop first
+<div className="text-xl lg:text-lg md:text-base sm:text-sm">
+```
+
+**Mobile-First Checklist:**
+- [ ] Touch-friendly tap targets (minimum 44x44px)
+- [ ] Readable text without zooming (minimum 16px base)
+- [ ] Simplified navigation for small screens
+- [ ] Stack layouts vertically on mobile
+- [ ] Use hamburger menus when appropriate
+- [ ] Test with viewport width 375px (iPhone)
+
+---
+
+### 2. **Recommendation Framework**
+
+When implementing features or solving problems:
+
+**ALWAYS provide 3 alternatives with detailed analysis:**
+
+```markdown
+## Approach Options
+
+### Option 1: [Name]
+**Description:** Brief explanation
+
+**Pros:**
+- ✅ Advantage 1
+- ✅ Advantage 2
+- ✅ Advantage 3
+
+**Cons:**
+- ❌ Disadvantage 1
+- ❌ Disadvantage 2
+
+**Best for:** Use case scenario
+**Complexity:** Low/Medium/High
+
+---
+
+### Option 2: [Name]
+[Same structure...]
+
+---
+
+### Option 3: [Name]
+[Same structure...]
+
+---
+
+## Recommended: Option X
+**Reasoning:** Why this is the best choice for this specific case
+```
+
+**When to offer alternatives:**
+- New feature implementation
+- Performance optimization
+- Architecture decisions
+- State management choices
+- Styling approaches
+- API integration patterns
+
+---
+
+### 3. **Verification Protocol**
+
+**BEFORE completing any task, run this checklist:**
+
+#### A. Code Changes Verification
+```bash
+# 1. Check for compilation errors
+- Run: get_errors tool on all modified files
+- Verify: No breaking errors (linting warnings OK)
+
+# 2. Validate file integrity
+- Confirm: All imports are correct
+- Confirm: All props are passed correctly
+- Confirm: All hooks dependencies are listed
+
+# 3. Cross-reference changes
+- Check: Related files for needed updates
+- Check: Context providers for new methods
+- Check: Routes for new pages
+```
+
+#### B. Mobile Responsiveness Check
+```markdown
+For EVERY UI change, verify:
+- [ ] Mobile (375px): Layout works, text readable
+- [ ] Tablet (768px): Proper scaling
+- [ ] Desktop (1024px+): Optimal layout
+- [ ] Touch targets: At least 44x44px
+- [ ] No horizontal scroll on mobile
+```
+
+#### C. Accessibility Check
+```markdown
+- [ ] Proper semantic HTML
+- [ ] ARIA labels on interactive elements
+- [ ] Keyboard navigation support
+- [ ] Color contrast meets WCAG AA
+- [ ] Focus indicators visible
+```
+
+#### D. Task Completion Verification
+```markdown
+After implementation, confirm:
+- [ ] All user requirements addressed
+- [ ] All edge cases handled
+- [ ] Error states implemented
+- [ ] Loading states added
+- [ ] Success feedback provided
+- [ ] Documentation updated if needed
+```
+
+---
+
+## 4. **Response Structure**
+
+### Standard Response Format:
+
+```markdown
+## Understanding
+[Restate the user's request to confirm understanding]
+
+## Analysis
+[If applicable, analyze current state and challenges]
+
+## Recommendations
+[Present 3 alternatives with pros/cons when appropriate]
+
+## Implementation
+[Code changes with clear explanations]
+
+## Verification
+[Checklist of what was verified]
+
+## Summary
+[Brief summary of changes and next steps]
+```
+
+---
+
+## 5. **Technology Stack Guidelines**
+
+### React Best Practices
+```jsx
+// ✅ Use functional components with hooks
+const Component = () => {
+  const [state, setState] = useState();
+  // ...
+}
+
+// ✅ Destructure props
+const Component = ({ data, onAction }) => {}
+
+// ✅ Use optional chaining
+user?.role
+
+// ✅ Proper dependency arrays
+useEffect(() => {
+  // effect
+}, [dependency]);
+```
+
+### TailwindCSS Patterns
+```jsx
+// ✅ Mobile-first responsive classes
+className="px-4 sm:px-6 md:px-8 lg:px-10"
+
+// ✅ Use project color variables
+className="bg-primary text-white"
+// Instead of: bg-[#667eea]
+
+// ✅ Consistent spacing scale
+className="gap-2 sm:gap-3 md:gap-4"
+```
+
+### State Management
+```jsx
+// ✅ Use Context for global state
+// ✅ Use local state for component-specific data
+// ✅ Avoid prop drilling (max 2 levels)
+// ✅ Optimistic UI updates for better UX
+```
+
+---
+
+## 6. **Common Tasks Workflows**
+
+### Adding a New Feature
+
+1. **Understand Requirements**
+   - Clarify scope and constraints
+   - Identify affected components
+
+2. **Provide Alternatives**
+   - Present 3 implementation approaches
+   - Include trade-offs
+
+3. **Plan Implementation**
+   - List files to create/modify
+   - Define component hierarchy
+   - Plan state management
+
+4. **Implement Mobile-First**
+   - Start with mobile layout
+   - Add responsive breakpoints
+   - Test on different screen sizes
+
+5. **Verify Everything**
+   - Run error checks
+   - Test user flows
+   - Confirm all requirements met
+
+### Fixing Bugs
+
+1. **Diagnose**
+   - Read error messages carefully
+   - Check related files
+   - Identify root cause
+
+2. **Propose Solutions**
+   - Explain the issue
+   - Offer fix alternatives
+   - Recommend best approach
+
+3. **Implement Fix**
+   - Make minimal changes
+   - Add error handling
+   - Consider edge cases
+
+4. **Verify Fix**
+   - Confirm error resolved
+   - Check for regressions
+   - Test related functionality
+
+### Refactoring Code
+
+1. **Analyze Current State**
+   - Identify code smells
+   - Note performance issues
+   - List maintainability concerns
+
+2. **Recommend Approaches**
+   - Present refactoring options
+   - Compare complexity vs. benefit
+   - Suggest migration path
+
+3. **Implement Incrementally**
+   - Make one change at a time
+   - Keep functionality intact
+   - Update tests/docs
+
+4. **Verify No Regressions**
+   - Test all affected features
+   - Check performance metrics
+   - Validate error handling
+
+---
+
+## 7. **Quality Standards**
+
+### Code Quality
+- ✅ DRY (Don't Repeat Yourself)
+- ✅ Single Responsibility Principle
+- ✅ Clear, descriptive naming
+- ✅ Consistent formatting
+- ✅ Proper error handling
+- ✅ Loading states for async operations
+
+### UI/UX Quality
+- ✅ Consistent spacing and sizing
+- ✅ Smooth animations (200-400ms)
+- ✅ Clear visual hierarchy
+- ✅ Intuitive user flows
+- ✅ Helpful error messages
+- ✅ Immediate visual feedback
+
+### Performance
+- ✅ Optimize re-renders
+- ✅ Lazy load when beneficial
+- ✅ Debounce search inputs
+- ✅ Minimize bundle size
+- ✅ Efficient API calls
+
+---
+
+## 8. **Project-Specific Patterns**
+
+### Authentication
+```jsx
+// Always use from context
+const { user, isAuthenticated } = useInventory();
+
+// Check permissions
+const canManage = user?.role !== 'cashier';
+```
+
+### API Calls
+```jsx
+// Always use try-catch
+try {
+  const result = await api.someMethod();
+  // Optimistic update
+  // Show success toast
+} catch (error) {
+  // Revert optimistic update
+  // Show error toast
+  throw error;
+}
+```
+
+### Toast Notifications
+```jsx
+// Use for user feedback
+addToast('Action completed', 'success');
+addToast('Error occurred', 'error');
+addToast('Information', 'info', 5000); // Custom duration
+```
+
+### Modal Patterns
+```jsx
+// Use state to control visibility
+const [showModal, setShowModal] = useState(false);
+const [editingItem, setEditingItem] = useState(null);
+
+// Open modal with data
+setEditingItem(item);
+
+// Close and reset
+setEditingItem(null);
+```
+
+---
+
+## 9. **File Organization**
+
+```
+src/
+├── components/         # Reusable UI components
+│   ├── Modal.jsx
+│   ├── Toast.jsx
+│   └── ...
+├── pages/             # Route components
+│   ├── POSPage.jsx
+│   ├── LoginPage.jsx
+│   └── ...
+├── context/           # State management
+│   ├── InventoryContext.jsx
+│   └── useInventory.js
+├── services/          # API integration
+│   └── api.js
+└── index.css          # Global styles
+```
+
+**Component Naming:**
+- PascalCase for components: `ProductTile.jsx`
+- camelCase for utilities: `useInventory.js`
+- kebab-case for styles: `index.css`
+
+---
+
+## 10. **Error Handling Strategy**
+
+### API Errors
+```jsx
+// ✅ User-friendly messages
+catch (error) {
+  const message = error.message || 'Something went wrong';
+  addToast(message, 'error');
+}
+
+// ✅ Handle authentication errors
+if (response.status === 401) {
+  logout();
+  navigate('/');
+}
+```
+
+### Form Validation
+```jsx
+// ✅ Real-time validation
+const [errors, setErrors] = useState({});
+
+const handleChange = (e) => {
+  // Clear error on change
+  if (errors[name]) {
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  }
+};
+```
+
+---
+
+## 11. **Testing Mindset**
+
+Before marking any task complete, mentally test:
+
+1. **Happy Path**: Does it work as intended?
+2. **Error States**: What if API fails?
+3. **Edge Cases**: Empty data? Null values?
+4. **Mobile UX**: Touch-friendly? Readable?
+5. **Accessibility**: Keyboard nav? Screen readers?
+6. **Performance**: Fast enough? Smooth?
+
+---
+
+## 12. **Communication Guidelines**
+
+### When Responding:
+- ✅ Be concise but complete
+- ✅ Use clear, simple language
+- ✅ Provide code examples
+- ✅ Explain "why" not just "what"
+- ✅ Highlight trade-offs
+- ❌ Don't assume knowledge
+- ❌ Don't skip verification steps
+
+### Code Comments:
+```jsx
+// ✅ Explain complex logic
+// ✅ Note gotchas or workarounds
+// ✅ Document props for components
+// ❌ Don't state the obvious
+```
+
+---
+
+## 13. **Quick Reference Checklists**
+
+### New Component Checklist
+- [ ] Mobile-first responsive design
+- [ ] PropTypes or TypeScript types
+- [ ] Error boundary handling
+- [ ] Loading states
+- [ ] Accessibility attributes
+- [ ] Reusable and composable
+- [ ] Documented props
+
+### New Page Checklist
+- [ ] Route added to App.jsx
+- [ ] Authentication guard if needed
+- [ ] Mobile navigation
+- [ ] Loading state
+- [ ] Error state
+- [ ] Empty state
+- [ ] Proper header/footer
+
+### API Integration Checklist
+- [ ] Error handling
+- [ ] Loading indicator
+- [ ] Success feedback
+- [ ] Optimistic updates
+- [ ] Network error handling
+- [ ] Authentication token
+- [ ] Proper HTTP methods
+
+---
+
+## 14. **Final Verification Script**
+
+**Before saying "Done", run this mental checklist:**
+
+```markdown
+## Pre-Completion Verification
+
+### Code Quality
+- [ ] No console errors
+- [ ] No linting errors (warnings OK)
+- [ ] All imports resolved
+- [ ] All dependencies listed
+
+### Functionality
+- [ ] All requirements met
+- [ ] Edge cases handled
+- [ ] Error states work
+- [ ] Loading states work
+
+### Mobile-First
+- [ ] Mobile layout perfect
+- [ ] Tablet layout good
+- [ ] Desktop layout optimal
+- [ ] Touch targets sufficient
+
+### User Experience
+- [ ] Intuitive flow
+- [ ] Clear feedback
+- [ ] Fast performance
+- [ ] Accessible
+
+### Documentation
+- [ ] Comments where needed
+- [ ] README updated if applicable
+- [ ] Breaking changes noted
+```
+
+---
+
+## Remember:
+
+> **"Mobile-First, Verify Always, Recommend Options"**
+
+1. **MOBILE FIRST** - Every single time
+2. **VERIFY THOROUGHLY** - Double-check all changes
+3. **OFFER ALTERNATIVES** - Present options with trade-offs
+4. **COMPLETE TASKS** - Address every requirement
+5. **COMMUNICATE CLEARLY** - Explain reasoning
+
+---
+
+## Updates to This Guide
+
+This guide should be updated when:
+- New patterns emerge in the codebase
+- Project requirements change
+- Better practices are discovered
+- Team conventions evolve
+
+Last Updated: November 9, 2025

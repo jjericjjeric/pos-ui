@@ -4,15 +4,24 @@ import { useInventory } from '../context/useInventory';
 import ProductTile from '../components/ProductTile';
 import Cart from '../components/Cart';
 import Modal from '../components/Modal';
+import EditProductModal from '../components/EditProductModal';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
-  const { products, loading, error, logoutUser, user } = useInventory();
+  const { products, loading, error, logoutUser, user, updateProduct, deleteProduct, addProduct } = useInventory();
   const [cart, setCart] = useState([]);
   const [showCartModal, setShowCartModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [deletingProduct, setDeletingProduct] = useState(null);
+  const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const [deletedProductBackup, setDeletedProductBackup] = useState(null);
   const navigate = useNavigate();
   const menuRef = useRef(null);
+  const toastIdCounter = useRef(0);
 
   // Get unique categories from products
   const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
@@ -101,6 +110,77 @@ const POSPage = () => {
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Toast management
+  const addToast = (message, type = 'success', duration = 3000, onUndo = null, undoLabel = 'Undo') => {
+    const id = toastIdCounter.current++;
+    setToasts(prev => [...prev, { id, message, type, duration, onUndo, undoLabel }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  // Product management handlers
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+  };
+
+  const handleSaveProduct = async (productId, updatedData) => {
+    try {
+      await updateProduct(productId, updatedData);
+      addToast('Product updated successfully', 'success');
+    } catch (error) {
+      addToast(error.message || 'Failed to update product', 'error');
+      throw error;
+    }
+  };
+
+  const handleDeleteProduct = (product) => {
+    setDeletingProduct(product);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingProduct) return;
+    
+    try {
+      // Backup product for undo
+      setDeletedProductBackup(deletingProduct);
+      
+      await deleteProduct(deletingProduct.id);
+      
+      // Show success toast with undo option (5 seconds)
+      addToast(
+        `"${deletingProduct.name}" deleted`,
+        'success',
+        5000,
+        handleUndoDelete,
+        'Undo'
+      );
+      
+      setDeletingProduct(null);
+    } catch (error) {
+      addToast(error.message || 'Failed to delete product', 'error');
+    }
+  };
+
+  const handleUndoDelete = async () => {
+    if (!deletedProductBackup) return;
+    
+    try {
+      // Re-add the deleted product (without id since it will be assigned by the server)
+      const { id, ...productData } = deletedProductBackup;
+      await addProduct(productData);
+      addToast(`"${deletedProductBackup.name}" restored`, 'success');
+      setDeletedProductBackup(null);
+    } catch (error) {
+      addToast('Failed to restore product', 'error');
+    }
+  };
+
+  const handleViewDetails = (product) => {
+    setViewDetailsProduct(product);
+  };
+
   return (
     <div className="h-screen w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
       <div className="bg-white/95 px-4 sm:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 relative flex justify-between items-center gap-2 sm:gap-4 flex-wrap">
@@ -134,6 +214,15 @@ const POSPage = () => {
                     }}
                   >
                     ➕ Add Product
+                  </button>
+                  <button
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-responsive-sm"
+                    onClick={() => {
+                      setShowMenu(false);
+                      navigate('/products-management');
+                    }}
+                  >
+                    📋 Manage All Products
                   </button>
                 </div>
               </div>
@@ -209,6 +298,10 @@ const POSPage = () => {
                       key={product.id}
                       product={product}
                       onAddToCart={() => addToCart(product)}
+                      onEdit={handleEditProduct}
+                      onDelete={handleDeleteProduct}
+                      onViewDetails={handleViewDetails}
+                      userRole={user?.role}
                     />
                   ))
                 )}
@@ -246,6 +339,67 @@ const POSPage = () => {
           }}
         />
       </Modal>
+
+      {/* Edit Product Modal */}
+      <EditProductModal
+        isOpen={!!editingProduct}
+        onClose={() => setEditingProduct(null)}
+        product={editingProduct}
+        onSave={handleSaveProduct}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!deletingProduct}
+        onClose={() => setDeletingProduct(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Product"
+        message="Are you sure you want to delete this product? You'll have 5 seconds to undo."
+        productName={deletingProduct?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
+      {/* View Details Modal */}
+      <Modal
+        isOpen={!!viewDetailsProduct}
+        onClose={() => setViewDetailsProduct(null)}
+        title="Product Details"
+      >
+        {viewDetailsProduct && (
+          <div className="flex-1 flex flex-col gap-4">
+            <div className="text-center text-6xl sm:text-5xl mb-4">
+              {viewDetailsProduct.image}
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between border-b pb-2 text-base sm:text-sm">
+                <span className="font-semibold text-gray-600">Name:</span>
+                <span className="text-gray-800 break-words text-right ml-2">{viewDetailsProduct.name}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2 text-base sm:text-sm">
+                <span className="font-semibold text-gray-600">Price:</span>
+                <span className="text-gray-800">₱{viewDetailsProduct.price.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2 text-base sm:text-sm">
+                <span className="font-semibold text-gray-600">Stock:</span>
+                <span className="text-gray-800">{viewDetailsProduct.stock}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2 text-base sm:text-sm">
+                <span className="font-semibold text-gray-600">Category:</span>
+                <span className="text-gray-800">{viewDetailsProduct.category || 'Uncategorized'}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2 text-base sm:text-sm">
+                <span className="font-semibold text-gray-600">Product ID:</span>
+                <span className="text-gray-800">{viewDetailsProduct.id}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
 };
