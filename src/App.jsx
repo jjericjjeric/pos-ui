@@ -19,20 +19,22 @@ const RequireAuth = ({ children }) => {
 
 function App() {
   return (
-    <InventoryProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/pos" element={<RequireAuth><POSPage /></RequireAuth>} />
-          <Route path="/payment" element={<RequireAuth><PaymentPage /></RequireAuth>} />
-          <Route path="/add-product" element={<RequireAuth><AddProductPage /></RequireAuth>} />
-          <Route path="/products-management" element={<RequireAuth><ProductsManagementPage /></RequireAuth>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </InventoryProvider>
+    <div className="overflow-x-hidden w-full">
+      <InventoryProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/pos" element={<RequireAuth><POSPage /></RequireAuth>} />
+            <Route path="/payment" element={<RequireAuth><PaymentPage /></RequireAuth>} />
+            <Route path="/add-product" element={<RequireAuth><AddProductPage /></RequireAuth>} />
+            <Route path="/products-management" element={<RequireAuth><ProductsManagementPage /></RequireAuth>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </InventoryProvider>
+    </div>
   );
 }
 

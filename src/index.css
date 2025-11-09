@@ -137,6 +137,11 @@
     min-width: 320px;
     min-height: 100vh;
     font-size: var(--font-size-base);
+    overflow-x: hidden;
+  }
+  
+  html {
+    overflow-x: hidden;
   }
 
   /* Ensure inputs, buttons, and form elements have proper spacing */

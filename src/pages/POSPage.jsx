@@ -6,13 +6,15 @@ import Cart from '../components/Cart';
 import Modal from '../components/Modal';
 import EditProductModal from '../components/EditProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MenuDropdown from '../components/MenuDropdown';
 import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
   const { products, loading, error, logoutUser, user, updateProduct, deleteProduct, addProduct } = useInventory();
   const [cart, setCart] = useState([]);
   const [showCartModal, setShowCartModal] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showDesktopMenu, setShowDesktopMenu] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
@@ -21,7 +23,8 @@ const POSPage = () => {
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
   const [cartBadgeBounce, setCartBadgeBounce] = useState(false);
   const navigate = useNavigate();
-  const menuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+  const desktopMenuRef = useRef(null);
   const toastIdCounter = useRef(0);
 
   // Get unique categories from products
@@ -35,19 +38,22 @@ const POSPage = () => {
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(false);
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setShowMobileMenu(false);
+      }
+      if (desktopMenuRef.current && !desktopMenuRef.current.contains(event.target)) {
+        setShowDesktopMenu(false);
       }
     };
 
-    if (showMenu) {
+    if (showMobileMenu || showDesktopMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMenu]);
+  }, [showMobileMenu, showDesktopMenu]);
 
   const addToCart = (product) => {
     if (product.stock === 0) {
@@ -202,14 +208,14 @@ const POSPage = () => {
       {/* Compact Header - Only on mobile for Cart & Menu */}
       <div className="lg:hidden bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2">
         {user && (
-          <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate">
+          <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate max-w-[100px]">
             <strong>{user.username}</strong>
           </span>
         )}
         <div className="flex items-center gap-2 ml-auto">
           {/* Cart Icon Button */}
           <button
-            className="relative p-2 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-all hover:border-primary hover:shadow-md active:scale-95 min-w-11 min-h-11 flex items-center justify-center"
+            className="relative p-2 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-all hover:border-primary hover:shadow-md active:scale-95 w-11 h-11 flex items-center justify-center"
             onClick={() => setShowCartModal(true)}
             aria-label="View Cart"
           >
@@ -223,55 +229,27 @@ const POSPage = () => {
             )}
           </button>
           {/* Menu Button */}
-          <div className="relative" ref={menuRef}>
+          <div className="relative z-[100]" ref={mobileMenuRef}>
             <button
               className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 text-xs sm:text-sm min-w-11 min-h-11 flex items-center justify-center"
-              onClick={() => setShowMenu(!showMenu)}
+              onClick={() => {
+                console.log('Mobile menu button clicked, current state:', showMobileMenu);
+                setShowMobileMenu(!showMobileMenu);
+              }}
             >
               ☰ <span className="hidden xs:inline ml-1">Menu</span>
             </button>
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-44 sm:w-52 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
-                <div className="py-2">
-                  <div className="px-3 sm:px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">Inventory</div>
-                  <button
-                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
-                    onClick={() => {
-                      setShowMenu(false);
-                      navigate('/add-product');
-                    }}
-                  >
-                    ➕ Add Product
-                  </button>
-                  <button
-                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
-                    onClick={() => {
-                      setShowMenu(false);
-                      navigate('/products-management');
-                    }}
-                  >
-                    📋 Manage All Products
-                  </button>
-                  <div className="border-t border-gray-200 my-1"></div>
-                  <button
-                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
-                    onClick={() => {
-                      setShowMenu(false);
-                      logoutUser();
-                      navigate('/');
-                    }}
-                  >
-                    🚪 Logout
-                  </button>
-                </div>
-              </div>
-            )}
+            <MenuDropdown 
+              isOpen={showMobileMenu}
+              onClose={() => setShowMobileMenu(false)}
+              logoutUser={logoutUser}
+            />
           </div>
         </div>
       </div>
       
-      <div className="flex flex-1 overflow-hidden gap-2 p-2 lg:p-3 flex-col lg:flex-row">
-        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-[45vh] bg-white rounded-xl overflow-hidden shadow-lg flex flex-col">
+      <div className="flex flex-1 overflow-hidden gap-2 p-2 lg:p-3 flex-col lg:flex-row max-w-full">
+        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-[45vh] bg-white rounded-xl overflow-hidden shadow-lg flex flex-col max-w-full">
           {/* Compact Category Filter - Sticky */}
           <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200">
             <div className="flex gap-1.5 sm:gap-2 flex-wrap">
@@ -325,50 +303,22 @@ const POSPage = () => {
         {/* Desktop Cart - hidden on mobile/tablet */}
         <div className="hidden lg:flex flex-[0_0_30%] bg-white rounded-xl p-3 flex-col shadow-lg min-w-0 relative">
           {/* Menu Button for Desktop - Top Right Corner */}
-          <div className="absolute top-2 right-2 z-10" ref={menuRef}>
+          <div className="absolute top-2 right-2 z-10" ref={desktopMenuRef}>
             <button
               className="p-2 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 min-w-10 min-h-10 flex items-center justify-center"
-              onClick={() => setShowMenu(!showMenu)}
+              onClick={() => {
+                console.log('Desktop menu button clicked, current state:', showDesktopMenu);
+                setShowDesktopMenu(!showDesktopMenu);
+              }}
               title="Menu"
             >
               ☰
             </button>
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
-                <div className="py-2">
-                  <div className="px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">Inventory</div>
-                  <button
-                    className="w-full text-left px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
-                    onClick={() => {
-                      setShowMenu(false);
-                      navigate('/add-product');
-                    }}
-                  >
-                    ➕ Add Product
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
-                    onClick={() => {
-                      setShowMenu(false);
-                      navigate('/products-management');
-                    }}
-                  >
-                    📋 Manage All Products
-                  </button>
-                  <div className="border-t border-gray-200 my-1"></div>
-                  <button
-                    className="w-full text-left px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
-                    onClick={() => {
-                      setShowMenu(false);
-                      logoutUser();
-                      navigate('/');
-                    }}
-                  >
-                    🚪 Logout
-                  </button>
-                </div>
-              </div>
-            )}
+            <MenuDropdown 
+              isOpen={showDesktopMenu}
+              onClose={() => setShowDesktopMenu(false)}
+              logoutUser={logoutUser}
+            />
           </div>
           
           <Cart

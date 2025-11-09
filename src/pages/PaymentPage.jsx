@@ -83,13 +83,13 @@ const PaymentPage = () => {
 
   return (
     <>
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4 sm:p-6 md:p-8">
-      <div className="bg-white rounded-2xl p-6 sm:p-7 md:p-8 max-w-[600px] w-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        <h1 className="m-0 mb-4 sm:mb-5 md:mb-6 text-gray-800 text-2xl sm:text-3xl text-center border-b-2 border-[#667eea] pb-2 sm:pb-3">Payment</h1>
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-2 sm:p-3 md:p-4">
+      <div className="bg-white rounded-xl p-4 sm:p-5 md:p-6 max-w-[600px] w-full shadow-xl max-h-[95vh] overflow-y-auto">
+        <h1 className="m-0 mb-3 sm:mb-4 text-gray-800 text-xl sm:text-2xl text-center border-b-2 border-[#667eea] pb-2">Payment</h1>
         
-        <div className="mb-6 sm:mb-7 md:mb-8">
-          <h2 className="m-0 mb-2 sm:mb-3 text-gray-800 text-lg sm:text-xl border-b-2 border-[#667eea] pb-1.5 sm:pb-2">Order Summary</h2>
-          <div ref={orderItemsRef} className="max-h-[300px] md:max-h-[250px] sm:max-h-[220px] overflow-y-auto mb-3 sm:mb-4 pr-2 -mr-2">
+        <div className="mb-4 sm:mb-5">
+          <h2 className="m-0 mb-2 text-gray-800 text-base sm:text-lg border-b-2 border-[#667eea] pb-1.5">Order Summary</h2>
+          <div ref={orderItemsRef} className="max-h-[250px] sm:max-h-[220px] overflow-y-auto mb-3 pr-2 -mr-2">
             {cart.length === 0 ? (
               <p className="text-center text-gray-400 p-4 sm:p-6 md:p-8 italic text-sm sm:text-base">No items in cart</p>
             ) : (
@@ -117,9 +117,9 @@ const PaymentPage = () => {
           </div>
         </div>
 
-        <div className="mb-6 sm:mb-7 md:mb-8">
-          <div className="mb-4 sm:mb-5">
-            <label htmlFor="amountPaid" className="block mb-2 font-semibold text-gray-800 text-base sm:text-lg">Amount Paid:</label>
+        <div className="mb-4 sm:mb-5">
+          <div className="mb-3 sm:mb-4">
+            <label htmlFor="amountPaid" className="block mb-2 font-semibold text-gray-800 text-sm sm:text-base">Amount Paid:</label>
             <input
               id="amountPaid"
               type="number"

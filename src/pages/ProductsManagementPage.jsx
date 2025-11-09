@@ -253,21 +253,18 @@ const ProductsManagementPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
-      {/* Header */}
-      <div className="bg-white/95 px-2 sm:px-4 md:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 sticky top-0 flex justify-between items-center gap-2">
-        <div className="flex flex-col min-w-0 flex-shrink">
-          <h1 className="m-0 text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 truncate">📋 Products Management</h1>
-          <p className="mt-0.5 sm:mt-1 mb-0 text-gray-600 text-[10px] sm:text-xs md:text-sm truncate">Manage your inventory</p>
-        </div>
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
+      {/* Compact Header */}
+      <div className="bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2">
+        <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800 truncate">📋 Products Management</h1>
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {user && (
-            <span className="hidden sm:inline text-xs md:text-sm text-gray-700 bg-blue-50 px-2 md:px-2.5 py-1 md:py-1.5 rounded-md border border-blue-200 whitespace-nowrap">
-              {user.username} {user.role ? `(${user.role})` : ''}
+            <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate">
+              <strong>{user.username}</strong>
             </span>
           )}
           {/* Back to POS Button */}
           <button
-            className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-xs sm:text-sm md:text-base min-w-11 min-h-11 flex items-center justify-center gap-1"
+            className="px-2 sm:px-2.5 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 text-xs sm:text-sm min-w-11 min-h-11 flex items-center justify-center gap-1"
             onClick={() => navigate('/pos')}
           >
             <span>←</span>
@@ -276,13 +273,13 @@ const ProductsManagementPage = () => {
           {/* Menu Button */}
           <div className="relative" ref={menuRef}>
             <button
-              className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-xs sm:text-sm md:text-base min-w-11 min-h-11 flex items-center justify-center"
+              className="px-2 sm:px-2.5 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 text-xs sm:text-sm min-w-11 min-h-11 flex items-center justify-center"
               onClick={() => setShowMenu(!showMenu)}
             >
               ☰ <span className="hidden xs:inline ml-1">Menu</span>
             </button>
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 z-[9999]">
+              <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
                 <div className="py-2">
                   <button
                     className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold flex items-center gap-2"
@@ -302,10 +299,10 @@ const ProductsManagementPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto">
-        <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6">
+      <div className="flex-1 p-2 sm:p-3 overflow-auto">
+        <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-2 sm:p-3 md:p-4">
           {/* Search and Filters */}
-          <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4">
             {/* Search Bar - First Priority */}
             <div className="relative">
               <input

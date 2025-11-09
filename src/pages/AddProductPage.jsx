@@ -86,27 +86,24 @@ const AddProductPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
-      {/* Header */}
-      <div className="bg-white/95 px-2 sm:px-4 md:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 sticky top-0">
-        <div className="flex items-center gap-3">
+      {/* Compact Header */}
+      <div className="bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50">
+        <div className="flex items-center gap-2">
           <button
             onClick={handleCancel}
             className="p-2 hover:bg-gray-100 rounded-full transition-all active:bg-gray-200 min-w-11 min-h-11 flex items-center justify-center"
             aria-label="Go back"
           >
-            <span className="text-2xl text-gray-700">←</span>
+            <span className="text-xl sm:text-2xl text-gray-700">←</span>
           </button>
-          <div className="flex-1">
-            <h1 className="m-0 text-lg sm:text-xl md:text-2xl font-bold text-gray-800">Add New Product</h1>
-            <p className="mt-0.5 mb-0 text-xs sm:text-sm text-gray-600">Fill in the details below</p>
-          </div>
+          <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800">Add New Product</h1>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto">
+      <div className="flex-1 p-2 sm:p-3 md:p-4 overflow-auto">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
               {/* Product Name */}
