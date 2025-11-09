@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { useImageCompression } from '../hooks/useImageCompression';
+import { useImageCache } from '../hooks/useImageCache';
 
 /**
  * EditProductModal Component - Mobile-First Design
@@ -17,6 +18,8 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
     removeImage: clearImage,
     setImage
   } = useImageCompression();
+
+  const { invalidateImage } = useImageCache();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -122,6 +125,12 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
       };
       
       await onSave(product.id, updatedData);
+      
+      // Invalidate the cached image for this product
+      // This will trigger a re-fetch with cache-busting in ProgressiveImage
+      invalidateImage(product.id);
+      
+      // Close modal - the ProgressiveImage components will auto-refresh
       onClose();
     } catch (error) {
       console.error('Error updating product:', error);

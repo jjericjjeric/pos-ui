@@ -9,6 +9,7 @@ import Modal from '../components/Modal';
 import EditProductModal from '../components/EditProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MenuDropdown from '../components/MenuDropdown';
+import ProgressiveImage from '../components/ProgressiveImage';
 import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
@@ -400,11 +401,13 @@ const POSPage = () => {
         {viewDetailsProduct && (
           <div className="flex-1 flex flex-col gap-4">
             <div className="text-center mb-4">
-              {viewDetailsProduct.image?.startsWith('data:image') || viewDetailsProduct.image?.startsWith('http') ? (
-                <img
-                  src={viewDetailsProduct.image}
+              {viewDetailsProduct.id ? (
+                <ProgressiveImage
+                  productId={viewDetailsProduct.id}
                   alt={viewDetailsProduct.name}
                   className="w-48 h-48 mx-auto object-cover rounded-xl border-2 border-gray-200"
+                  fallbackEmoji={viewDetailsProduct.image || '🛍️'}
+                  eager={true}
                 />
               ) : (
                 <div className="text-6xl sm:text-5xl">

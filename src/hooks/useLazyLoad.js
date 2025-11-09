@@ -89,42 +89,72 @@ export const useLazyLoad = (items = [], options = {}) => {
   const observerRef = useRef(null);
   const loadingRef = useRef(null);
   const currentIndexRef = useRef(0);
+  const itemsRef = useRef(items);
+  const loadMoreRef = useRef(loadMore);
+  const hasMoreRef = useRef(true);
+  const isLoadingMoreRef = useRef(false);
+  const prevItemsLengthRef = useRef(items.length);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    itemsRef.current = items;
+    loadMoreRef.current = loadMore;
+  }, [items, loadMore]);
+
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+  }, [hasMore]);
+
+  useEffect(() => {
+    isLoadingMoreRef.current = isLoadingMore;
+  }, [isLoadingMore]);
 
   // Reset when items change (e.g., filter, search, or initial load)
+  // Only reset if the array length or content actually changed
   useEffect(() => {
+    // Skip if it's the same array reference or same length and we already have items displayed
+    if (prevItemsLengthRef.current === items.length && displayedItems.length > 0) {
+      return;
+    }
+    
+    prevItemsLengthRef.current = items.length;
+    
     const itemsToLoad = Math.min(initialLoad, items.length);
     setDisplayedItems(items.slice(0, itemsToLoad));
     currentIndexRef.current = itemsToLoad;
     setHasMore(itemsToLoad < items.length);
     setIsLoadingMore(false);
-  }, [items, initialLoad]);
+  }, [items.length, initialLoad]); // Changed from [items, initialLoad] to [items.length, initialLoad]
 
-  // Load more items
+  // Load more items - use refs to avoid stale closures
   const loadMoreItems = useCallback(() => {
-    if (isLoadingMore || !hasMore) return;
+    // Check refs for latest values
+    if (isLoadingMoreRef.current || !hasMoreRef.current) return;
 
     setIsLoadingMore(true);
 
     // Simulate async loading with small delay for smooth UX
     setTimeout(() => {
       const currentIndex = currentIndexRef.current;
-      const nextIndex = Math.min(currentIndex + loadMore, items.length);
-      const newItems = items.slice(currentIndex, nextIndex);
+      const currentItems = itemsRef.current;
+      const currentLoadMore = loadMoreRef.current;
+      const nextIndex = Math.min(currentIndex + currentLoadMore, currentItems.length);
+      const newItems = currentItems.slice(currentIndex, nextIndex);
 
       setDisplayedItems(prev => [...prev, ...newItems]);
       currentIndexRef.current = nextIndex;
-      setHasMore(nextIndex < items.length);
+      setHasMore(nextIndex < currentItems.length);
       setIsLoadingMore(false);
     }, 100);
-  }, [items, loadMore, isLoadingMore, hasMore]);
+  }, []); // Empty deps - all values from refs, function never recreates
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
     const currentLoadingRef = loadingRef.current;
     
-    if (!currentLoadingRef || !hasMore) return;
+    if (!currentLoadingRef) return;
 
-    const options = {
+    const observerOptions = {
       root: null,
       rootMargin: `${threshold}px`,
       threshold: 0.1
@@ -132,10 +162,10 @@ export const useLazyLoad = (items = [], options = {}) => {
 
     observerRef.current = new IntersectionObserver((entries) => {
       const target = entries[0];
-      if (target.isIntersecting && hasMore && !isLoadingMore) {
+      if (target.isIntersecting) {
         loadMoreItems();
       }
-    }, options);
+    }, observerOptions);
 
     observerRef.current.observe(currentLoadingRef);
 
@@ -144,7 +174,7 @@ export const useLazyLoad = (items = [], options = {}) => {
         observerRef.current.unobserve(currentLoadingRef);
       }
     };
-  }, [hasMore, isLoadingMore, loadMoreItems, threshold]);
+  }, [loadMoreItems, threshold]);
 
   // Manual load more (for button click)
   const handleLoadMore = () => {

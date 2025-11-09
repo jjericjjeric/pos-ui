@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ProgressiveImage from './ProgressiveImage';
 
 /**
  * ProductTile Component - Mobile-First Design
@@ -150,11 +151,12 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
       )}
 
       <div className="text-5xl md:text-4xl sm:text-3xl mb-3 sm:mb-2 mt-4">
-        {product.image?.startsWith('data:image') || product.image?.startsWith('http') ? (
-          <img
-            src={product.image}
+        {product.id ? (
+          <ProgressiveImage
+            productId={product.id}
             alt={product.name}
             className="w-full h-24 sm:h-20 object-cover rounded-lg"
+            fallbackEmoji={product.image || '🛍️'}
           />
         ) : (
           <span>{product.image || '🛍️'}</span>

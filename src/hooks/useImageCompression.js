@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
 /**
  * Custom hook for handling image upload and compression
@@ -109,39 +109,39 @@ export const useImageCompression = (options = {}) => {
   /**
    * Open camera for photo capture (mobile)
    */
-  const handleCameraCapture = () => {
+  const handleCameraCapture = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.setAttribute('capture', 'environment');
       fileInputRef.current.click();
     }
-  };
+  }, []);
 
   /**
    * Open file picker for image selection
    */
-  const handleFileSelect = () => {
+  const handleFileSelect = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.removeAttribute('capture');
       fileInputRef.current.click();
     }
-  };
+  }, []);
 
   /**
    * Remove current image preview
    */
-  const removeImage = () => {
+  const removeImage = useCallback(() => {
     setImagePreview(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  };
+  }, []);
 
   /**
    * Set image preview manually (useful for editing existing products)
    */
-  const setImage = (imageUrl) => {
+  const setImage = useCallback((imageUrl) => {
     setImagePreview(imageUrl);
-  };
+  }, []);
 
   return {
     imagePreview,
