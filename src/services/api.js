@@ -92,6 +92,40 @@ const getAuthHeaders = () => {
 };
 
 /**
+ * Normalize product data to handle both old (image as string) and new (image as object) formats
+ */
+const normalizeProduct = (product) => {
+  if (!product) return product;
+  
+  // If image is an object with image_data, extract it
+  if (product.image && typeof product.image === 'object' && product.image.image_data) {
+    return {
+      ...product,
+      image: product.image.image_data
+    };
+  }
+  
+  // If image is null or undefined, set to empty string
+  if (!product.image) {
+    return {
+      ...product,
+      image: ''
+    };
+  }
+  
+  // Otherwise return as-is (image is already a string)
+  return product;
+};
+
+/**
+ * Normalize an array of products
+ */
+const normalizeProducts = (products) => {
+  if (!Array.isArray(products)) return products;
+  return products.map(normalizeProduct);
+};
+
+/**
  * Login and get JWT token
  */
 export const login = async (username, password, remember = true) => {
@@ -228,7 +262,8 @@ export const fetchProducts = async () => {
       }
       throw new Error(`Failed to fetch products: ${response.statusText}`);
     }
-    return await response.json();
+    const products = await response.json();
+    return normalizeProducts(products);
   } catch (error) {
     console.error('Error fetching products:', error);
     throw error;
@@ -253,7 +288,8 @@ export const createProduct = async (product) => {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `Failed to create product: ${response.statusText}`);
     }
-    return await response.json();
+    const newProduct = await response.json();
+    return normalizeProduct(newProduct);
   } catch (error) {
     console.error('Error creating product:', error);
     throw error;
@@ -277,7 +313,8 @@ export const updateProductStock = async (productId, quantitySold) => {
       }
       throw new Error(`Failed to update product stock: ${response.statusText}`);
     }
-    return await response.json();
+    const updatedProduct = await response.json();
+    return normalizeProduct(updatedProduct);
   } catch (error) {
     console.error('Error updating product stock:', error);
     throw error;
@@ -305,11 +342,18 @@ export const batchUpdateProductStock = async (items) => {
       // For 207 Multi-Status or 400, we still want to parse the response to get partial results
       if (response.status === 207 || response.status === 400) {
         const data = await response.json();
-        return data;
+        return {
+          ...data,
+          updatedProducts: normalizeProducts(data.updatedProducts || [])
+        };
       }
       throw new Error(`Failed to batch update product stock: ${response.statusText}`);
     }
-    return await response.json();
+    const result = await response.json();
+    return {
+      ...result,
+      updatedProducts: normalizeProducts(result.updatedProducts || [])
+    };
   } catch (error) {
     console.error('Error batch updating product stock:', error);
     throw error;
@@ -333,7 +377,8 @@ export const updateProduct = async (productId, productData) => {
       }
       throw new Error(`Failed to update product: ${response.statusText}`);
     }
-    return await response.json();
+    const updatedProduct = await response.json();
+    return normalizeProduct(updatedProduct);
   } catch (error) {
     console.error('Error updating product:', error);
     throw error;
