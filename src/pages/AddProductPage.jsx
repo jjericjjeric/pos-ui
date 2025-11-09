@@ -71,7 +71,6 @@ const AddProductPage = () => {
   // Load existing product data when in edit mode
   useEffect(() => {
     if (isEditMode && existingProduct) {
-      console.log('Loading product data:', existingProduct); // Debug log
       // Populate form with existing product data using setFormValues
       setFormValues({
         name: existingProduct.name || '',
