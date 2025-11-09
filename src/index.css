@@ -136,12 +136,15 @@
     padding: 0;
     min-width: 320px;
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
     font-size: var(--font-size-base);
     overflow-x: hidden;
   }
   
   html {
     overflow-x: hidden;
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior-y: contain;
   }
 
   /* Ensure inputs, buttons, and form elements have proper spacing */

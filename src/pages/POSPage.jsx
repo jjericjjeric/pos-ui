@@ -204,9 +204,9 @@ const POSPage = () => {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
+    <div className="h-dvh w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
       {/* Compact Header - Only on mobile for Cart & Menu */}
-      <div className="lg:hidden bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2">
+      <div className="lg:hidden bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2 flex-shrink-0">
         {user && (
           <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate max-w-[100px]">
             <strong>{user.username}</strong>
@@ -248,10 +248,10 @@ const POSPage = () => {
         </div>
       </div>
       
-      <div className="flex flex-1 overflow-hidden gap-2 p-2 lg:p-3 flex-col lg:flex-row max-w-full">
-        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-[45vh] bg-white rounded-xl overflow-hidden shadow-lg flex flex-col max-w-full">
+      <div className="flex flex-1 overflow-hidden gap-2 p-2 lg:p-3 flex-col lg:flex-row max-w-full min-h-0">
+        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-0 bg-white rounded-xl overflow-hidden shadow-lg flex flex-col max-w-full">
           {/* Compact Category Filter - Sticky */}
-          <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200">
+          <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200 flex-shrink-0">
             <div className="flex gap-1.5 sm:gap-2 flex-wrap">
               {categories.map(category => (
                 <button
