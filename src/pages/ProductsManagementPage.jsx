@@ -306,7 +306,7 @@ const ProductsManagementPage = () => {
         <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6">
           {/* Search and Filters */}
           <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
-            {/* Search Bar */}
+            {/* Search Bar - First Priority */}
             <div className="relative">
               <input
                 ref={searchInputRef}
@@ -322,23 +322,23 @@ const ProductsManagementPage = () => {
               </span>
             </div>
 
-            {/* Filters and Actions Row */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
-              {/* Category Filter - Material Design Button */}
-              <div className="relative" ref={categoryMenuRef}>
+            {/* Filter, Sort, and Order in Single Row - 40%, 40%, 20% */}
+            <div className="flex gap-2 sm:gap-3 w-full">
+              {/* Category Filter - 40% */}
+              <div className="relative w-[40%]" ref={categoryMenuRef}>
                 <button
                   onClick={() => setShowCategoryMenu(!showCategoryMenu)}
-                  className="px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-sm sm:text-base min-h-11 flex items-center justify-between gap-2 w-full sm:w-auto min-w-[180px]"
+                  className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
                 >
-                  <span className="flex items-center gap-2">
-                    <span>🏷️</span>
-                    <span className="font-medium">{selectedCategory}</span>
+                  <span className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+                    <span className="flex-shrink-0 text-sm sm:text-base">🏷️</span>
+                    <span className="font-medium truncate text-xs sm:text-sm md:text-base">{selectedCategory}</span>
                   </span>
-                  <span className="text-gray-500">▼</span>
+                  <span className="text-gray-500 flex-shrink-0 text-xs sm:text-sm">▼</span>
                 </button>
                 
                 {showCategoryMenu && (
-                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:w-56 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50 max-h-64 overflow-y-auto">
+                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:min-w-[200px] bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50 max-h-64 overflow-y-auto">
                     {categories.map(cat => (
                       <button
                         key={cat}
@@ -350,34 +350,34 @@ const ProductsManagementPage = () => {
                           selectedCategory === cat ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700'
                         }`}
                       >
-                        {selectedCategory === cat && <span className="text-primary">✓</span>}
-                        <span>{cat}</span>
+                        {selectedCategory === cat && <span className="text-primary flex-shrink-0">✓</span>}
+                        <span className="truncate">{cat}</span>
                       </button>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Sort By - Material Design Button */}
-              <div className="relative" ref={sortMenuRef}>
+              {/* Sort By - 40% */}
+              <div className="relative w-[40%]" ref={sortMenuRef}>
                 <button
                   onClick={() => setShowSortMenu(!showSortMenu)}
-                  className="px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-sm sm:text-base min-h-11 flex items-center justify-between gap-2 w-full sm:w-auto min-w-[180px]"
+                  className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
                 >
-                  <span className="flex items-center gap-2">
-                    <span>↕️</span>
-                    <span className="font-medium">
+                  <span className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+                    <span className="flex-shrink-0 text-sm sm:text-base">↕️</span>
+                    <span className="font-medium truncate text-xs sm:text-sm md:text-base">
                       {sortBy === 'name' && 'Name'}
                       {sortBy === 'price' && 'Price'}
                       {sortBy === 'stock' && 'Stock'}
                       {sortBy === 'category' && 'Category'}
                     </span>
                   </span>
-                  <span className="text-gray-500">▼</span>
+                  <span className="text-gray-500 flex-shrink-0 text-xs sm:text-sm">▼</span>
                 </button>
                 
                 {showSortMenu && (
-                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:w-56 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50">
+                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:min-w-[200px] bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50">
                     {[
                       { value: 'name', label: 'Name', icon: '📝' },
                       { value: 'price', label: 'Price', icon: '💰' },
@@ -394,23 +394,32 @@ const ProductsManagementPage = () => {
                           sortBy === option.value ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700'
                         }`}
                       >
-                        <span>{option.icon}</span>
-                        <span className="flex-1">{option.label}</span>
-                        {sortBy === option.value && <span className="text-primary">✓</span>}
+                        <span className="flex-shrink-0">{option.icon}</span>
+                        <span className="flex-1 truncate">{option.label}</span>
+                        {sortBy === option.value && <span className="text-primary flex-shrink-0">✓</span>}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Sort Order */}
+              {/* Sort Order - 20% */}
               <button
                 onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                className="px-3 sm:px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-sm sm:text-base min-h-11 flex items-center justify-center gap-2 font-medium"
+                className="w-[20%] px-1 sm:px-2 md:px-3 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-xs sm:text-sm md:text-base min-h-11 flex flex-col sm:flex-row items-center justify-center font-bold gap-0 sm:gap-1"
+                title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               >
-                {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
+                <span className="text-base sm:text-lg md:text-xl font-black leading-none" style={{ fontWeight: 900 }}>
+                  {sortOrder === 'asc' ? '↑' : '↓'}
+                </span>
+                <span className="hidden lg:inline text-[10px] sm:text-xs font-semibold leading-tight">
+                  {sortOrder === 'asc' ? 'Asc' : 'Desc'}
+                </span>
               </button>
+            </div>
 
+            {/* Additional Actions Row */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
               {/* View Mode Toggle */}
               <button
                 onClick={() => setViewMode(prev => prev === 'table' ? 'grid' : 'table')}
