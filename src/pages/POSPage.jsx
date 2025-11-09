@@ -16,6 +16,7 @@ const POSPage = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDesktopMenu, setShowDesktopMenu] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
@@ -30,10 +31,14 @@ const POSPage = () => {
   // Get unique categories from products
   const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
   
-  // Filter products by category
-  const filteredProducts = selectedCategory === 'All' 
-    ? products 
-    : products.filter(p => (p.category || 'Uncategorized') === selectedCategory);
+  // Filter products by category and search query
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = selectedCategory === 'All' || (p.category || 'Uncategorized') === selectedCategory;
+    const matchesSearch = searchQuery === '' || 
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -250,8 +255,30 @@ const POSPage = () => {
       
       <div className="flex flex-1 overflow-hidden gap-2 p-2 lg:p-3 flex-col lg:flex-row max-w-full min-h-0">
         <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-0 bg-white rounded-xl overflow-hidden shadow-lg flex flex-col max-w-full">
-          {/* Compact Category Filter - Sticky */}
-          <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200 flex-shrink-0">
+          {/* Search and Category Filter - Sticky */}
+          <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200 flex-shrink-0 space-y-2">
+            {/* Search Bar */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base sm:text-lg">🔍</span>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 sm:pl-10 pr-3 py-1.5 sm:py-2 bg-gray-50 border-2 border-transparent rounded-lg text-xs sm:text-sm transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            
+            {/* Category Pills */}
             <div className="flex gap-1.5 sm:gap-2 flex-wrap">
               {categories.map(category => (
                 <button
