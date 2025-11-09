@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import { useCart } from '../context/useCart';
+import { useLazyLoad } from '../hooks/useLazyLoad';
 import ProductTile from '../components/ProductTile';
 import Cart from '../components/Cart';
 import Modal from '../components/Modal';
@@ -38,6 +39,20 @@ const POSPage = () => {
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesSearch;
+  });
+
+  // Lazy loading for products
+  const {
+    displayedItems: displayedProducts,
+    hasMore,
+    isLoadingMore,
+    loadingRef,
+    displayedCount,
+    totalCount
+  } = useLazyLoad(filteredProducts, {
+    viewType: 'pos',
+    loadMore: 15,
+    threshold: 300
   });
 
   // Close menu when clicking outside
@@ -258,23 +273,50 @@ const POSPage = () => {
               </div>
             )}
             {!loading && !error && (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-2.5">
-                {filteredProducts.length === 0 ? (
-                  <div className="text-center p-8 text-gray-400 text-base col-span-full">No products available</div>
-                ) : (
-                  filteredProducts.map(product => (
-                    <ProductTile
-                      key={product.id}
-                      product={product}
-                      onAddToCart={() => handleAddToCart(product)}
-                      onEdit={handleEditProduct}
-                      onDelete={handleDeleteProduct}
-                      onViewDetails={handleViewDetails}
-                      userRole={user?.role}
-                    />
-                  ))
+              <>
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-2.5">
+                  {displayedProducts.length === 0 ? (
+                    <div className="text-center p-8 text-gray-400 text-base col-span-full">No products available</div>
+                  ) : (
+                    displayedProducts.map(product => (
+                      <ProductTile
+                        key={product.id}
+                        product={product}
+                        onAddToCart={() => handleAddToCart(product)}
+                        onEdit={handleEditProduct}
+                        onDelete={handleDeleteProduct}
+                        onViewDetails={handleViewDetails}
+                        userRole={user?.role}
+                      />
+                    ))
+                  )}
+                </div>
+                
+                {/* Loading indicator and intersection observer target */}
+                {hasMore && (
+                  <div 
+                    ref={loadingRef}
+                    className="text-center py-4 text-gray-500 text-sm"
+                  >
+                    {isLoadingMore ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <span>Loading more products...</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">
+                        Showing {displayedCount} of {totalCount} products
+                      </span>
+                    )}
+                  </div>
                 )}
-              </div>
+                
+                {!hasMore && displayedProducts.length > 0 && (
+                  <div className="text-center py-4 text-gray-400 text-sm">
+                    All products loaded ({totalCount} total)
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

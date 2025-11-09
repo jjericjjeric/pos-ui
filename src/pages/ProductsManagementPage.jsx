@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
+import { useLazyLoad } from '../hooks/useLazyLoad';
 import Modal from '../components/Modal';
 import EditProductModal from '../components/EditProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -75,6 +76,20 @@ const ProductsManagementPage = () => {
     
     return sortOrder === 'asc' ? comparison : -comparison;
   });
+
+  // Lazy loading for products
+  const {
+    displayedItems: displayedProducts,
+    hasMore,
+    isLoadingMore,
+    loadingRef,
+    displayedCount,
+    totalCount
+  } = useLazyLoad(filteredProducts, {
+    viewType: viewMode, // 'table' or 'grid'
+    loadMore: viewMode === 'table' ? 25 : 15,
+    threshold: 400
+  });
   
   // Toast management
   const addToast = (message, type = 'success', duration = 3000, onUndo = null, undoLabel = 'Undo') => {
@@ -146,10 +161,10 @@ const ProductsManagementPage = () => {
 
   // Bulk operations
   const handleSelectAll = () => {
-    if (selectedProducts.length === filteredProducts.length) {
+    if (selectedProducts.length === displayedProducts.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(filteredProducts.map(p => p.id));
+      setSelectedProducts(displayedProducts.map(p => p.id));
     }
   };
 
@@ -477,9 +492,10 @@ const ProductsManagementPage = () => {
                     <th className="p-3 text-left">
                       <input
                         type="checkbox"
-                        checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
+                        checked={selectedProducts.length === displayedProducts.length && displayedProducts.length > 0}
                         onChange={handleSelectAll}
                         className="w-5 h-5 cursor-pointer"
+                        title="Select all displayed products"
                       />
                     </th>
                     <th className="p-3 text-left font-semibold text-gray-700">Image</th>
@@ -491,7 +507,7 @@ const ProductsManagementPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProducts.map((product) => (
+                  {displayedProducts.map((product) => (
                     <tr
                       key={product.id}
                       className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${
@@ -558,6 +574,31 @@ const ProductsManagementPage = () => {
                   ))}
                 </tbody>
               </table>
+
+              {/* Loading indicator for table view */}
+              {hasMore && (
+                <div 
+                  ref={loadingRef}
+                  className="text-center py-4 border-t border-gray-200"
+                >
+                  {isLoadingMore ? (
+                    <div className="flex items-center justify-center gap-2 text-gray-600">
+                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      <span>Loading more products...</span>
+                    </div>
+                  ) : (
+                    <span className="text-gray-400 text-sm">
+                      Showing {displayedCount} of {totalCount} products
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {!hasMore && displayedProducts.length > 0 && (
+                <div className="text-center py-4 text-gray-400 text-sm border-t border-gray-200">
+                  All products loaded ({totalCount} total)
+                </div>
+              )}
               
               {filteredProducts.length === 0 && (
                 <div className="text-center py-12 text-gray-500 text-lg">
@@ -569,16 +610,17 @@ const ProductsManagementPage = () => {
 
           {/* Card/Grid View (Mobile & Tablet) */}
           {viewMode === 'grid' || window.innerWidth < 768 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className={`bg-white rounded-xl p-4 sm:p-5 shadow-md hover:shadow-lg transition-all relative overflow-hidden ${
-                    selectedProducts.includes(product.id) 
-                      ? 'ring-2 ring-primary shadow-[0_4px_20px_rgba(102,126,234,0.3)]' 
-                      : 'border border-gray-200 hover:border-primary'
-                  }`}
-                >
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {displayedProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className={`bg-white rounded-xl p-4 sm:p-5 shadow-md hover:shadow-lg transition-all relative overflow-hidden ${
+                      selectedProducts.includes(product.id) 
+                        ? 'ring-2 ring-primary shadow-[0_4px_20px_rgba(102,126,234,0.3)]' 
+                        : 'border border-gray-200 hover:border-primary'
+                    }`}
+                  >
                   {/* Material Design Checkbox */}
                   <div className="flex justify-between items-start mb-3">
                     <button
@@ -664,14 +706,40 @@ const ProductsManagementPage = () => {
                   </div>
                 </div>
               ))}
-            </div>
-          ) : null}
+              </div>
 
-          {filteredProducts.length === 0 && viewMode === 'grid' && (
-            <div className="text-center py-12 text-gray-500 text-base sm:text-lg">
-              No products found
-            </div>
-          )}
+              {/* Loading indicator for grid view */}
+              {hasMore && (
+                <div 
+                  ref={loadingRef}
+                  className="text-center py-6"
+                >
+                  {isLoadingMore ? (
+                    <div className="flex items-center justify-center gap-2 text-gray-600">
+                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      <span>Loading more products...</span>
+                    </div>
+                  ) : (
+                    <span className="text-gray-400 text-sm">
+                      Showing {displayedCount} of {totalCount} products
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {!hasMore && displayedProducts.length > 0 && (
+                <div className="text-center py-4 text-gray-400 text-sm">
+                  All products loaded ({totalCount} total)
+                </div>
+              )}
+
+              {displayedProducts.length === 0 && (
+                <div className="text-center py-12 text-gray-500 text-base sm:text-lg">
+                  No products found
+                </div>
+              )}
+            </>
+          ) : null}
 
           {/* Keyboard Shortcuts Help */}
           <div className="mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
