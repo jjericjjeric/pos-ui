@@ -185,7 +185,7 @@ const POSPage = () => {
     <div className="h-screen w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
       <div className="bg-white/95 px-2 sm:px-4 md:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 relative flex justify-between items-center gap-2">
         <div className="flex flex-col min-w-0 flex-shrink">
-          <h1 className="m-0 text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 truncate">Free POS PH</h1>
+          <h1 className="m-0 text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 truncate">Pinoy POS</h1>
           <p className="mt-0.5 sm:mt-1 mb-0 text-gray-600 text-[10px] sm:text-xs md:text-sm truncate">Point of Sale System</p>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 flex-shrink-0">

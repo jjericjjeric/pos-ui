@@ -29,61 +29,117 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4 sm:p-8">
-      <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-[420px] shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
-        <h1 className="text-2xl sm:text-3xl text-center text-gray-800 m-0 mb-1">Free POS PH</h1>
-        <p className="text-center text-gray-600 m-0 mb-6 text-sm sm:text-base">Sign in to continue</p>
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="mb-4">
-            <label htmlFor="username" className="block mb-2 font-semibold text-gray-800">Username</label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter username"
-              autoComplete="username"
-              className="w-full px-3 py-2.5 sm:py-3 text-[15px] sm:text-base border-2 border-gray-200 rounded-lg transition-colors focus:outline-none focus:border-[#667eea]"
-            />
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark p-4 sm:p-6">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-primary to-primary-dark p-6 sm:p-8 text-white text-center">
+          <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+            <span className="text-5xl">🛒</span>
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block mb-2 font-semibold text-gray-800">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              autoComplete="current-password"
-              className="w-full px-3 py-2.5 sm:py-3 text-[15px] sm:text-base border-2 border-gray-200 rounded-lg transition-colors focus:outline-none focus:border-[#667eea]"
-            />
+          <h1 className="text-2xl sm:text-3xl font-bold m-0 mb-2">Pinoy POS</h1>
+          <p className="text-white/90 m-0 text-sm sm:text-base">Point of Sale System</p>
+        </div>
+
+        {/* Form Section */}
+        <div className="p-6 sm:p-8">
+          <div className="mb-6 text-center">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 m-0 mb-1">Welcome Back</h2>
+            <p className="text-gray-600 text-sm">Sign in to continue</p>
           </div>
 
-          <div className="my-2 mb-4">
-            <label className="inline-flex items-center gap-2 text-gray-700 select-none text-sm sm:text-base">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              Remember me
-            </label>
-          </div>
-
-          {(localError || error) && (
-            <div className="bg-red-50 text-red-800 border border-red-200 px-3 py-3 rounded-lg mb-4">
-              {localError || error}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username Field */}
+            <div className="space-y-2">
+              <label htmlFor="username" className="block text-sm font-semibold text-gray-700">
+                Username
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">👤</span>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username"
+                  autoComplete="username"
+                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
             </div>
-          )}
 
-          <button
-            type="submit"
-            className="w-full px-4 py-3 sm:py-3.5 text-base sm:text-lg font-bold text-white bg-gradient-to-br from-green-500 to-green-400 border-none rounded-xl cursor-pointer transition-all shadow-[0_8px_25px_rgba(0,200,83,0.35)] hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_12px_30px_rgba(0,200,83,0.45)] disabled:opacity-60 disabled:cursor-not-allowed"
-            disabled={!username || !password || loading}
-          >
-            {loading ? 'Signing in...' : 'Login'}
-          </button>
-        </form>
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔒</span>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+            </div>
+
+            {/* Remember Me */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-primary transition-all"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5 shadow-md"></div>
+                </div>
+                <span className="text-sm text-gray-700 select-none group-hover:text-gray-900">Remember me</span>
+              </label>
+            </div>
+
+            {/* Error Message */}
+            {(localError || error) && (
+              <div className="bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-lg flex items-start gap-3">
+                <span className="text-red-500 text-xl mt-0.5">⚠️</span>
+                <div className="flex-1">
+                  <p className="text-red-800 text-sm font-medium m-0">{localError || error}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Login Button */}
+            <button
+              type="submit"
+              disabled={!username || !password || loading}
+              className="w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-dark rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2 mt-6"
+            >
+              {loading ? (
+                <>
+                  <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <>
+                  <span>→</span>
+                  <span>Sign In</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+            <p className="text-xs text-gray-500">
+              Secure login powered by Pinoy POS
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

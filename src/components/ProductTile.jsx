@@ -75,16 +75,16 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
 
   return (
     <div 
-      className={`bg-gradient-to-br from-gray-50 to-gray-300 rounded-xl p-4 md:p-3.5 sm:p-3 cursor-pointer transition-all duration-300 border-2 border-transparent flex flex-col items-center text-center relative ${
+      className={`bg-white rounded-xl p-4 md:p-3.5 sm:p-3 cursor-pointer transition-all duration-300 flex flex-col items-center text-center relative shadow-md ${
         isOutOfStock 
-          ? 'opacity-60 cursor-not-allowed bg-gradient-to-br from-gray-200 to-gray-400' 
-          : 'hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] hover:border-primary'
+          ? 'opacity-60 cursor-not-allowed bg-gray-100' 
+          : 'hover:-translate-y-1 hover:shadow-xl hover:ring-2 hover:ring-primary/30'
       }`}
       onClick={() => !isOutOfStock && onAddToCart()}
     >
       {/* Category Badge */}
       {product.category && (
-        <div className="absolute top-2 left-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase z-[5]">
+        <div className="absolute top-2 left-2 bg-gradient-to-r from-primary to-primary-dark text-white text-[10px] px-2.5 py-1 rounded-full font-semibold uppercase z-[5] shadow-sm">
           {product.category}
         </div>
       )}
@@ -94,7 +94,7 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
         <div className="absolute top-2 right-2 z-20" ref={menuRef}>
           <button
             onClick={handleMenuClick}
-            className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center bg-white/90 hover:bg-white active:bg-gray-100 rounded-full shadow-md transition-all hover:shadow-lg text-gray-700 hover:text-gray-900"
+            className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-full shadow-sm transition-all hover:shadow-md text-gray-600 hover:text-gray-800"
             aria-label="Product actions menu"
             aria-expanded={showMenu}
             aria-haspopup="true"
@@ -106,7 +106,7 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
           {showMenu && (
             <div 
               data-dropdown
-              className={`absolute mt-2 w-48 sm:w-44 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-[100] ${
+              className={`absolute mt-2 w-48 sm:w-44 bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-[100] ${
                 menuPosition === 'left' 
                   ? 'right-0 origin-top-right' 
                   : 'left-0 origin-top-left'
@@ -114,21 +114,23 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
             >
               <button
                 onClick={handleEdit}
-                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-blue-50 active:bg-blue-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2"
+                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-blue-50 active:bg-blue-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2 font-medium"
                 aria-label="Edit product"
               >
                 <span className="text-lg sm:text-base">✏️</span> Edit Product
               </button>
+              <div className="border-t border-gray-100"></div>
               <button
                 onClick={handleDelete}
-                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-red-50 active:bg-red-100 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2"
+                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-red-50 active:bg-red-100 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2 font-medium"
                 aria-label="Delete product"
               >
                 <span className="text-lg sm:text-base">🗑️</span> Delete Product
               </button>
+              <div className="border-t border-gray-100"></div>
               <button
                 onClick={handleViewDetails}
-                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2"
+                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2 font-medium"
                 aria-label="View product details"
               >
                 <span className="text-lg sm:text-base">👁️</span> View Details
@@ -138,15 +140,23 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
         </div>
       )}
 
-      <div className="text-5xl md:text-4xl sm:text-3xl mb-2 sm:mb-1.5 mt-4">{product.image}</div>
-      <div className="w-full">
-        <h3 className="my-2 sm:my-1.5 text-base md:text-sm sm:text-xs font-semibold text-gray-800 break-words">{product.name}</h3>
-        <p className="my-1 text-lg md:text-base sm:text-sm font-bold text-primary">₱{product.price.toFixed(2)}</p>
-        <p className="mt-1 mb-0 text-sm md:text-xs sm:text-xs text-gray-600">Stock: {product.stock}</p>
+      <div className="text-5xl md:text-4xl sm:text-3xl mb-3 sm:mb-2 mt-4">{product.image}</div>
+      <div className="w-full space-y-1">
+        <h3 className="text-base md:text-sm sm:text-xs font-bold text-gray-800 line-clamp-2">{product.name}</h3>
+        <p className="text-xl md:text-lg sm:text-base font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">₱{product.price.toFixed(2)}</p>
+        <div className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
+          product.stock === 0 ? 'bg-red-100 text-red-700' :
+          product.stock < 10 ? 'bg-yellow-100 text-yellow-700' :
+          'bg-green-100 text-green-700'
+        }`}>
+          Stock: {product.stock}
+        </div>
       </div>
       {isOutOfStock && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white px-4 sm:px-3 py-2 sm:py-1.5 rounded-lg font-semibold text-sm sm:text-xs z-10">
-          Out of Stock
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
+          <div className="bg-white px-4 py-2 rounded-lg shadow-lg">
+            <p className="font-bold text-gray-800 text-sm">Out of Stock</p>
+          </div>
         </div>
       )}
     </div>
