@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
+import { useCart } from '../context/useCart';
 import ProductTile from '../components/ProductTile';
 import Cart from '../components/Cart';
 import Modal from '../components/Modal';
@@ -11,7 +12,7 @@ import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
   const { products, loading, error, logoutUser, user, updateProduct, deleteProduct, addProduct } = useInventory();
-  const [cart, setCart] = useState([]);
+  const { cart, cartBadgeBounce, addToCart, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
   const [showCartModal, setShowCartModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDesktopMenu, setShowDesktopMenu] = useState(false);
@@ -22,7 +23,6 @@ const POSPage = () => {
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
-  const [cartBadgeBounce, setCartBadgeBounce] = useState(false);
   const navigate = useNavigate();
   const mobileMenuRef = useRef(null);
   const desktopMenuRef = useRef(null);
@@ -60,70 +60,22 @@ const POSPage = () => {
     };
   }, [showMobileMenu, showDesktopMenu]);
 
-  const addToCart = (product) => {
-    if (product.stock === 0) {
-      alert('Product out of stock!');
-      return;
+  const handleAddToCart = (product) => {
+    const result = addToCart(product, addToast);
+    if (!result.success && result.message) {
+      alert(result.message);
     }
-
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === product.id);
-      
-      if (existingItem) {
-        // Check if adding one more would exceed stock
-        if (existingItem.quantity >= product.stock) {
-          alert('Not enough stock available!');
-          return prevCart;
-        }
-        
-        // Trigger cart badge bounce
-        setCartBadgeBounce(true);
-        setTimeout(() => setCartBadgeBounce(false), 500);
-        
-        // Show toast notification
-        addToast(`${product.name} quantity increased`, 'success', 2000);
-        
-        return prevCart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        // Trigger cart badge bounce
-        setCartBadgeBounce(true);
-        setTimeout(() => setCartBadgeBounce(false), 500);
-        
-        // Show toast notification
-        addToast(`${product.name} added to cart`, 'success', 2000);
-        
-        return [...prevCart, { ...product, quantity: 1 }];
-      }
-    });
   };
 
-  const removeFromCart = (productId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId));
+  const handleRemoveFromCart = (productId) => {
+    removeFromCart(productId);
   };
 
-  const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId);
-      return;
+  const handleUpdateQuantity = (productId, newQuantity) => {
+    const result = updateQuantity(productId, newQuantity, products);
+    if (!result.success && result.message) {
+      alert(result.message);
     }
-
-    const product = products.find(p => p.id === productId);
-    if (newQuantity > product.stock) {
-      alert('Not enough stock available!');
-      return;
-    }
-
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === productId
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
-    );
   };
 
   const handleCheckout = () => {
@@ -131,11 +83,11 @@ const POSPage = () => {
       alert('Cart is empty!');
       return;
     }
-    navigate('/payment', { state: { cart } });
+    navigate('/payment');
   };
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = getTotalPrice();
+  const cartItemCount = getTotalItems();
 
   // Toast management
   const addToast = (message, type = 'success', duration = 3000, onUndo = null, undoLabel = 'Undo') => {
@@ -314,7 +266,7 @@ const POSPage = () => {
                     <ProductTile
                       key={product.id}
                       product={product}
-                      onAddToCart={() => addToCart(product)}
+                      onAddToCart={() => handleAddToCart(product)}
                       onEdit={handleEditProduct}
                       onDelete={handleDeleteProduct}
                       onViewDetails={handleViewDetails}
@@ -350,8 +302,8 @@ const POSPage = () => {
           
           <Cart
             cart={cart}
-            onRemove={removeFromCart}
-            onUpdateQuantity={updateQuantity}
+            onRemove={handleRemoveFromCart}
+            onUpdateQuantity={handleUpdateQuantity}
             totalPrice={totalPrice}
             onCheckout={handleCheckout}
           />
@@ -366,8 +318,8 @@ const POSPage = () => {
       >
         <Cart
           cart={cart}
-          onRemove={removeFromCart}
-          onUpdateQuantity={updateQuantity}
+          onRemove={handleRemoveFromCart}
+          onUpdateQuantity={handleUpdateQuantity}
           totalPrice={totalPrice}
           onCheckout={() => {
             setShowCartModal(false);

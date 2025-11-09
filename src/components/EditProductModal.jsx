@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from './Modal';
+import { useImageCompression } from '../hooks/useImageCompression';
 
 /**
  * EditProductModal Component - Mobile-First Design
@@ -7,6 +8,16 @@ import Modal from './Modal';
  * Optimized for touch input and mobile keyboards
  */
 const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
+  const {
+    imagePreview,
+    fileInputRef,
+    handleImageChange: handleImageCompress,
+    handleCameraCapture,
+    handleFileSelect,
+    removeImage: clearImage,
+    setImage
+  } = useImageCompression();
+
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -16,8 +27,6 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef = useState(null);
 
   // Reset form when product changes or modal opens
   useEffect(() => {
@@ -29,10 +38,10 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
         category: product.category || '',
         image: product.image || '',
       });
-      setImagePreview(product.image || null);
+      setImage(product.image || null);
       setErrors({});
     }
-  }, [product, isOpen]);
+  }, [product, isOpen, setImage]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -70,56 +79,28 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
-        return;
-      }
-
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
+    handleImageCompress(
+      file,
+      (compressedImage) => {
         setFormData(prev => ({
           ...prev,
-          image: reader.result
+          image: compressedImage
         }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCameraCapture = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.setAttribute('capture', 'environment');
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileSelect = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.removeAttribute('capture');
-      fileInputRef.current.click();
-    }
+      },
+      (errorMessage) => {
+        alert(errorMessage);
+      }
+    );
   };
 
   const removeImage = () => {
-    setImagePreview(null);
+    clearImage();
     setFormData(prev => ({
       ...prev,
       image: ''
     }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -250,7 +231,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            onChange={handleImageChange}
+            onChange={handleImageUpload}
             className="hidden"
           />
           
@@ -299,7 +280,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
               </button>
             </div>
           )}
-          <p className="text-xs text-gray-500">Max 5MB • JPG, PNG, GIF</p>
+          <p className="text-xs text-gray-500">Images auto-compressed to 400px • Max 5MB upload</p>
         </div>
 
         {/* Submit Error */}

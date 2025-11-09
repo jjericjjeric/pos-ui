@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import Modal from '../components/Modal';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
+import { useCart } from '../context/useCart';
 
 const PaymentPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { updateInventoryAfterPurchase } = useInventory();
-  const cart = location.state?.cart || [];
+  const { cart, getTotalPrice, clearCart } = useCart();
   const orderItemsRef = useRef(null);
 
   const [amountPaid, setAmountPaid] = useState('');
@@ -17,14 +17,10 @@ const PaymentPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const autoCloseTimer = useRef(null);
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = getTotalPrice();
   const change = amountPaid ? parseFloat(amountPaid) - totalPrice : 0;
 
-  useEffect(() => {
-    if (cart.length === 0) {
-      navigate('/pos');
-    }
-  }, [cart, navigate]);
+  // Removed auto-redirect on empty cart to allow cart persistence
 
   // Auto scroll order summary to bottom on mount and when cart updates
   useEffect(() => {
@@ -58,6 +54,9 @@ const PaymentPage = () => {
     try {
       // Update inventory via API
       await updateInventoryAfterPurchase(cart);
+
+      // Clear cart after successful purchase
+      clearCart();
 
       // Set modal state with change and show
       setFinalChange(paid - totalPrice);

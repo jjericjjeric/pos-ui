@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
+import { useImageCompression } from '../hooks/useImageCompression';
 
 const AddProductPage = () => {
   const navigate = useNavigate();
   const { addProduct, products } = useInventory();
+  const {
+    imagePreview,
+    fileInputRef,
+    handleImageChange: handleImageCompress,
+    handleCameraCapture,
+    handleFileSelect,
+    removeImage: clearImage
+  } = useImageCompression();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -19,8 +28,6 @@ const AddProductPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
   const [categorySuggestions, setCategorySuggestions] = useState([]);
-  const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef = useState(null);
 
   // Get unique existing categories from products
   const existingCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
@@ -65,56 +72,28 @@ const AddProductPage = () => {
     setCategorySuggestions([]);
   };
 
-  const handleImageChange = (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
-        return;
-      }
-
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
+    handleImageCompress(
+      file,
+      (compressedImage) => {
         setFormData(prev => ({
           ...prev,
-          image: reader.result
+          image: compressedImage
         }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCameraCapture = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.setAttribute('capture', 'environment');
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileSelect = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.removeAttribute('capture');
-      fileInputRef.current.click();
-    }
+      },
+      (errorMessage) => {
+        alert(errorMessage);
+      }
+    );
   };
 
   const removeImage = () => {
-    setImagePreview(null);
+    clearImage();
     setFormData(prev => ({
       ...prev,
       image: ''
     }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const validate = () => {
@@ -341,7 +320,7 @@ const AddProductPage = () => {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  onChange={handleImageChange}
+                  onChange={handleImageUpload}
                   className="hidden"
                 />
                 
@@ -390,7 +369,7 @@ const AddProductPage = () => {
                     </button>
                   </div>
                 )}
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Max 5MB • JPG, PNG, GIF</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Images auto-compressed to 400px • Max 5MB upload</p>
               </div>
 
               {/* Action Buttons */}
