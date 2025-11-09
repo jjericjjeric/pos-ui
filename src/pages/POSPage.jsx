@@ -199,20 +199,17 @@ const POSPage = () => {
 
   return (
     <div className="h-screen w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
-      <div className="bg-white/95 px-2 sm:px-4 md:px-6 py-2 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.1)] z-50 relative flex justify-between items-center gap-2">
-        <div className="flex flex-col min-w-0 flex-shrink">
-          <h1 className="m-0 text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 truncate">Pinoy POS</h1>
-          <p className="mt-0.5 sm:mt-1 mb-0 text-gray-600 text-[10px] sm:text-xs md:text-sm truncate">Point of Sale System</p>
-        </div>
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 flex-shrink-0">
-          {user && (
-            <span className="hidden sm:inline text-xs md:text-sm text-gray-700 bg-blue-50 px-2 md:px-2.5 py-1 md:py-1.5 rounded-md border border-blue-200 whitespace-nowrap">
-              Signed in as <strong>{user.username}</strong>{user.role ? ` (${user.role})` : ''}
-            </span>
-          )}
+      {/* Compact Header - Only on mobile for Cart & Menu */}
+      <div className="lg:hidden bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2">
+        {user && (
+          <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate">
+            <strong>{user.username}</strong>
+          </span>
+        )}
+        <div className="flex items-center gap-2 ml-auto">
           {/* Cart Icon Button */}
           <button
-            className="lg:hidden relative p-2 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-all hover:border-primary hover:shadow-md active:scale-95 min-w-11 min-h-11 flex items-center justify-center"
+            className="relative p-2 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-all hover:border-primary hover:shadow-md active:scale-95 min-w-11 min-h-11 flex items-center justify-center"
             onClick={() => setShowCartModal(true)}
             aria-label="View Cart"
           >
@@ -228,17 +225,17 @@ const POSPage = () => {
           {/* Menu Button */}
           <div className="relative" ref={menuRef}>
             <button
-              className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0 text-xs sm:text-sm md:text-base min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="px-2.5 sm:px-3 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 text-xs sm:text-sm min-w-11 min-h-11 flex items-center justify-center"
               onClick={() => setShowMenu(!showMenu)}
             >
               ☰ <span className="hidden xs:inline ml-1">Menu</span>
             </button>
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-44 sm:w-56 bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 z-9999">
+              <div className="absolute right-0 mt-2 w-44 sm:w-52 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
                 <div className="py-2">
-                  <div className="px-3 sm:px-4 py-2 text-responsive-xs font-semibold text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Inventory</div>
+                  <div className="px-3 sm:px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">Inventory</div>
                   <button
-                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-responsive-sm"
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
                     onClick={() => {
                       setShowMenu(false);
                       navigate('/add-product');
@@ -247,7 +244,7 @@ const POSPage = () => {
                     ➕ Add Product
                   </button>
                   <button
-                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-responsive-sm"
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
                     onClick={() => {
                       setShowMenu(false);
                       navigate('/products-management');
@@ -255,9 +252,9 @@ const POSPage = () => {
                   >
                     📋 Manage All Products
                   </button>
-                  <div className="border-t border-gray-200 my-2"></div>
+                  <div className="border-t border-gray-200 my-1"></div>
                   <button
-                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-responsive-sm font-semibold"
+                    className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
                     onClick={() => {
                       setShowMenu(false);
                       logoutUser();
@@ -273,46 +270,40 @@ const POSPage = () => {
         </div>
       </div>
       
-      <div className="flex flex-1 overflow-hidden gap-2 sm:gap-4 p-2 sm:p-4 flex-col lg:flex-row">
-        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-[45vh] sm:min-h-[50vh] md:min-h-[50vh] bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex flex-col">
-          {/* Sticky Products Header */}
-          <div className="sticky top-0 bg-white z-10 p-3 sm:p-4 md:p-6 border-b border-gray-200">
-            <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-center border-b-2 border-[#667eea] pb-2">
-                <h2 className="m-0 text-gray-800 text-lg sm:text-xl md:text-2xl">Products</h2>
-              </div>
-              {/* Category Filter */}
-              <div className="flex gap-2 flex-wrap">
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    className={`px-3 py-1.5 border-2 rounded-lg text-sm font-semibold cursor-pointer transition-all ${
-                      selectedCategory === category
-                        ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-[#667eea] shadow-[0_2px_8px_rgba(102,126,234,0.3)]'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-[#667eea] hover:text-[#667eea]'
-                    }`}
-                    onClick={() => setSelectedCategory(category)}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
+      <div className="flex flex-1 overflow-hidden gap-2 p-2 lg:p-3 flex-col lg:flex-row">
+        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-[45vh] bg-white rounded-xl overflow-hidden shadow-lg flex flex-col">
+          {/* Compact Category Filter - Sticky */}
+          <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200">
+            <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+              {categories.map(category => (
+                <button
+                  key={category}
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold cursor-pointer transition-all ${
+                    selectedCategory === category
+                      ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
+                  }`}
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                </button>
+              ))}
             </div>
           </div>
           {/* Scrollable Products Grid */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+          <div className="flex-1 overflow-y-auto px-2 sm:px-3 py-2 sm:py-3">
             {loading && (
-              <div className="text-center p-8 text-gray-600 text-lg">Loading products...</div>
+              <div className="text-center p-6 text-gray-600 text-base sm:text-lg">Loading products...</div>
             )}
             {error && (
-              <div className="text-center p-6 bg-red-50 text-red-700 rounded-lg my-4 border border-red-200">
+              <div className="text-center p-4 bg-red-50 text-red-700 rounded-lg my-2 border border-red-200 text-sm">
                 Error loading products: {error}. Please make sure the API server is running.
               </div>
             )}
             {!loading && !error && (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-3 md:gap-4 pt-2">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-2.5">
                 {filteredProducts.length === 0 ? (
-                  <div className="text-center p-12 text-gray-400 text-lg col-span-full">No products available</div>
+                  <div className="text-center p-8 text-gray-400 text-base col-span-full">No products available</div>
                 ) : (
                   filteredProducts.map(product => (
                     <ProductTile
@@ -332,7 +323,54 @@ const POSPage = () => {
         </div>
 
         {/* Desktop Cart - hidden on mobile/tablet */}
-        <div className="hidden lg:flex flex-[0_0_30%] bg-white rounded-xl p-3 sm:p-4 md:p-6 flex-col shadow-[0_4px_20px_rgba(0,0,0,0.1)] min-w-0">
+        <div className="hidden lg:flex flex-[0_0_30%] bg-white rounded-xl p-3 flex-col shadow-lg min-w-0 relative">
+          {/* Menu Button for Desktop - Top Right Corner */}
+          <div className="absolute top-2 right-2 z-10" ref={menuRef}>
+            <button
+              className="p-2 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 min-w-10 min-h-10 flex items-center justify-center"
+              onClick={() => setShowMenu(!showMenu)}
+              title="Menu"
+            >
+              ☰
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
+                <div className="py-2">
+                  <div className="px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">Inventory</div>
+                  <button
+                    className="w-full text-left px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
+                    onClick={() => {
+                      setShowMenu(false);
+                      navigate('/add-product');
+                    }}
+                  >
+                    ➕ Add Product
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
+                    onClick={() => {
+                      setShowMenu(false);
+                      navigate('/products-management');
+                    }}
+                  >
+                    📋 Manage All Products
+                  </button>
+                  <div className="border-t border-gray-200 my-1"></div>
+                  <button
+                    className="w-full text-left px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
+                    onClick={() => {
+                      setShowMenu(false);
+                      logoutUser();
+                      navigate('/');
+                    }}
+                  >
+                    🚪 Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
           <Cart
             cart={cart}
             onRemove={removeFromCart}
