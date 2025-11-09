@@ -1,30 +1,71 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { loginUser, error, loading } = useInventory();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [pin, setPin] = useState('');
   const [localError, setLocalError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
+
+  useEffect(() => {
+    // Check for registration success message
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      if (location.state?.mobile) {
+        setMobileNumber(location.state.mobile);
+      }
+      // Clear the state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
+  // Format mobile number as user types
+  const formatMobileNumber = (value) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 4) return numbers;
+    if (numbers.length <= 7) return `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
+    return `${numbers.slice(0, 4)}-${numbers.slice(4, 7)}-${numbers.slice(7, 11)}`;
+  };
+
+  const handleMobileChange = (e) => {
+    const formatted = formatMobileNumber(e.target.value);
+    if (formatted.replace(/\D/g, '').length <= 11) {
+      setMobileNumber(formatted);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError('');
 
-    if (!username || !password) {
-      setLocalError('Please enter username and password');
+    const cleanMobile = mobileNumber.replace(/\D/g, '');
+
+    if (!cleanMobile || cleanMobile.length !== 11) {
+      setLocalError('Please enter a valid 11-digit mobile number');
       return;
     }
 
-    const result = await loginUser(username, password, rememberMe);
+    if (!cleanMobile.startsWith('09')) {
+      setLocalError('Mobile number must start with 09');
+      return;
+    }
+
+    if (!pin || pin.length !== 4) {
+      setLocalError('Please enter your 4-digit PIN');
+      return;
+    }
+
+    const result = await loginUser(cleanMobile, pin, rememberMe);
     if (result.success) {
       navigate('/pos');
     } else {
-      setLocalError(result.error || 'Login failed');
+      setLocalError(result.error || 'Login failed. Please check your mobile number and PIN.');
     }
   };
 
@@ -48,40 +89,47 @@ const LoginPage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Username Field */}
+            {/* Mobile Number Field */}
             <div className="space-y-2">
-              <label htmlFor="username" className="block text-sm font-semibold text-gray-700">
-                Username
+              <label htmlFor="mobile" className="block text-sm font-semibold text-gray-700">
+                Mobile Number
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">👤</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">�</span>
                 <input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username"
-                  autoComplete="username"
+                  id="mobile"
+                  type="tel"
+                  value={mobileNumber}
+                  onChange={handleMobileChange}
+                  placeholder="09XX-XXX-XXXX"
+                  autoComplete="tel"
                   className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Enter the mobile number you registered with
+              </p>
             </div>
 
-            {/* Password Field */}
+            {/* PIN Field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700">
-                Password
+              <label htmlFor="pin" className="block text-sm font-semibold text-gray-700">
+                4-Digit PIN
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔒</span>
                 <input
-                  id="password"
+                  id="pin"
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  value={pin}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 4) setPin(value);
+                  }}
+                  placeholder="••••"
+                  maxLength="4"
                   autoComplete="current-password"
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-center text-2xl tracking-widest font-bold"
                 />
               </div>
             </div>
@@ -103,6 +151,16 @@ const LoginPage = () => {
               </label>
             </div>
 
+            {/* Success Message */}
+            {successMessage && (
+              <div className="bg-green-50 border-l-4 border-green-500 px-4 py-3 rounded-lg flex items-start gap-3 mb-5">
+                <span className="text-green-500 text-xl mt-0.5">✓</span>
+                <div className="flex-1">
+                  <p className="text-green-800 text-sm font-medium m-0">{successMessage}</p>
+                </div>
+              </div>
+            )}
+
             {/* Error Message */}
             {(localError || error) && (
               <div className="bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-lg flex items-start gap-3">
@@ -116,7 +174,7 @@ const LoginPage = () => {
             {/* Login Button */}
             <button
               type="submit"
-              disabled={!username || !password || loading}
+              disabled={!mobileNumber || mobileNumber.replace(/\D/g, '').length !== 11 || pin.length !== 4 || loading}
               className="w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-dark rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2 mt-6"
             >
               {loading ? (
@@ -134,7 +192,16 @@ const LoginPage = () => {
           </form>
 
           {/* Footer */}
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center space-y-3">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <button
+                onClick={() => navigate('/register')}
+                className="text-primary hover:text-primary-dark font-semibold transition-colors"
+              >
+                Register Now
+              </button>
+            </p>
             <p className="text-xs text-gray-500">
               Secure login powered by Pinoy POS
             </p>

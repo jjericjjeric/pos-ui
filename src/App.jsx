@@ -5,6 +5,7 @@ import PaymentPage from './pages/PaymentPage';
 import AddProductPage from './pages/AddProductPage';
 import ProductsManagementPage from './pages/ProductsManagementPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import { useInventory } from './context/useInventory';
 
 // Simple auth guard component
@@ -22,6 +23,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/pos" element={<RequireAuth><POSPage /></RequireAuth>} />
           <Route path="/payment" element={<RequireAuth><PaymentPage /></RequireAuth>} />
           <Route path="/add-product" element={<RequireAuth><AddProductPage /></RequireAuth>} />

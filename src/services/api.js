@@ -117,6 +117,82 @@ export const login = async (username, password, remember = true) => {
 };
 
 /**
+ * Send OTP to mobile number
+ */
+export const sendOTP = async (mobileNumber) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mobile_number: mobileNumber }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to send OTP');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verify OTP
+ */
+export const verifyOTP = async (mobileNumber, otp) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        mobile_number: mobileNumber,
+        otp: otp
+      }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'OTP verification failed');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    throw error;
+  }
+};
+
+/**
+ * Register a new user with mobile number and PIN
+ */
+export const register = async (mobileNumber, pin) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        username: mobileNumber,
+        password: pin,
+        role: 'USER'
+      }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Registration failed');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error registering:', error);
+    throw error;
+  }
+};
+
+/**
  * Logout (clear token)
  */
 export const logout = () => {
