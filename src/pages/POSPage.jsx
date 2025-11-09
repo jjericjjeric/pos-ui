@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import { useCart } from '../context/useCart';
 import { useLazyLoad } from '../hooks/useLazyLoad';
+import { useToast } from '../hooks/useToast';
+import { useClickOutside } from '../hooks/useClickOutside';
 import ProductTile from '../components/ProductTile';
 import Cart from '../components/Cart';
 import Modal from '../components/Modal';
@@ -10,11 +12,14 @@ import EditProductModal from '../components/EditProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MenuDropdown from '../components/MenuDropdown';
 import ProgressiveImage from '../components/ProgressiveImage';
+import SearchBar from '../components/SearchBar';
+import CategoryFilter from '../components/CategoryFilter';
 import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
   const { products, loading, error, logoutUser, user, updateProduct, deleteProduct, addProduct } = useInventory();
   const { cart, cartBadgeBounce, addToCart, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
+  const { toasts, addToast, removeToast } = useToast();
   const [showCartModal, setShowCartModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDesktopMenu, setShowDesktopMenu] = useState(false);
@@ -23,12 +28,10 @@ const POSPage = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
-  const [toasts, setToasts] = useState([]);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
   const navigate = useNavigate();
   const mobileMenuRef = useRef(null);
   const desktopMenuRef = useRef(null);
-  const toastIdCounter = useRef(0);
 
   // Get unique categories from products
   const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
@@ -57,24 +60,8 @@ const POSPage = () => {
   });
 
   // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
-        setShowMobileMenu(false);
-      }
-      if (desktopMenuRef.current && !desktopMenuRef.current.contains(event.target)) {
-        setShowDesktopMenu(false);
-      }
-    };
-
-    if (showMobileMenu || showDesktopMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showMobileMenu, showDesktopMenu]);
+  useClickOutside(mobileMenuRef, () => setShowMobileMenu(false), showMobileMenu);
+  useClickOutside(desktopMenuRef, () => setShowDesktopMenu(false), showDesktopMenu);
 
   const handleAddToCart = (product) => {
     const result = addToCart(product, addToast);
@@ -104,16 +91,6 @@ const POSPage = () => {
 
   const totalPrice = getTotalPrice();
   const cartItemCount = getTotalItems();
-
-  // Toast management
-  const addToast = (message, type = 'success', duration = 3000, onUndo = null, undoLabel = 'Undo') => {
-    const id = toastIdCounter.current++;
-    setToasts(prev => [...prev, { id, message, type, duration, onUndo, undoLabel }]);
-  };
-
-  const removeToast = (id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
 
   // Product management handlers
   const handleEditProduct = (product) => {
@@ -226,42 +203,19 @@ const POSPage = () => {
           {/* Search and Category Filter - Sticky */}
           <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200 flex-shrink-0 space-y-2">
             {/* Search Bar */}
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base sm:text-lg">🔍</span>
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 sm:pl-10 pr-3 py-1.5 sm:py-2 bg-gray-50 border-2 border-transparent rounded-lg text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
-                  aria-label="Clear search"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search products..."
+            />
             
             {/* Category Pills */}
-            <div className="flex gap-1.5 sm:gap-2 flex-wrap">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold cursor-pointer transition-all ${
-                    selectedCategory === category
-                      ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
-                  }`}
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              mode="pills"
+            />
           </div>
           {/* Scrollable Products Grid */}
           <div className="flex-1 overflow-y-auto px-2 sm:px-3 py-2 sm:py-3">

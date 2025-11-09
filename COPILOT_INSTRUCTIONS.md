@@ -233,7 +233,87 @@ user?.role
 useEffect(() => {
   // effect
 }, [dependency]);
+
+// ✅ Use custom hooks for reusable logic
+const { toasts, addToast, removeToast } = useToast();
+const { values, errors, handleChange, validate } = useFormValidation(initialValues, validationRules);
+useClickOutside(ref, () => setOpen(false), isOpen);
 ```
+
+### Custom Hooks Available
+**Location**: `/src/hooks/`
+
+1. **useToast** - Toast notification management
+   ```jsx
+   const { toasts, addToast, removeToast } = useToast();
+   addToast('Success!', 'success');
+   addToast('Error occurred', 'error', 3000);
+   addToast('Deleted', 'success', 5000, handleUndo, 'Undo');
+   ```
+
+2. **useClickOutside** - Detect clicks outside element
+   ```jsx
+   const menuRef = useRef(null);
+   useClickOutside(menuRef, () => setShowMenu(false), showMenu);
+   ```
+
+3. **useFormValidation** - Form state and validation
+   ```jsx
+   const { values, errors, handleChange, handleBlur, validate, setFieldValue } = 
+     useFormValidation(
+       { name: '', email: '' },
+       (values) => {
+         const errors = {};
+         if (!values.name) errors.name = 'Required';
+         return errors;
+       }
+     );
+   ```
+
+4. **useImageCache** - Image caching (already documented)
+5. **useImageCompression** - Image compression (already documented)
+6. **useLazyLoad** - Lazy loading (already documented)
+
+### Reusable Components Available
+**Location**: `/src/components/`
+
+1. **SearchBar** - Search input with clear button
+   ```jsx
+   <SearchBar
+     value={searchQuery}
+     onChange={setSearchQuery}
+     placeholder="Search..."
+     inputRef={searchInputRef}
+   />
+   ```
+
+2. **CategoryFilter** - Category pills or dropdown
+   ```jsx
+   <CategoryFilter
+     categories={['All', 'Food', 'Drinks']}
+     selectedCategory={selected}
+     onCategoryChange={setSelected}
+     mode="pills" // or "dropdown"
+   />
+   ```
+
+3. **FormField** - Input with label and error
+   ```jsx
+   <FormField
+     label="Product Name"
+     name="name"
+     value={values.name}
+     onChange={handleChange}
+     error={errors.name}
+     required
+     icon="📦"
+     inputProps={{ min: '0' }}
+   />
+   ```
+
+4. **Toast** / **ToastContainer** - Notifications (already documented)
+5. **Modal** - Reusable modal (already documented)
+6. **ProgressiveImage** - Lazy image loading (already documented)
 
 ### TailwindCSS Patterns
 ```jsx
@@ -410,7 +490,7 @@ addToast('Information', 'info', 5000); // Custom duration
 
 ### Modal Patterns
 ```jsx
-// Use state to control visibility
+// ✅ Use state to control visibility
 const [showModal, setShowModal] = useState(false);
 const [editingItem, setEditingItem] = useState(null);
 
@@ -419,6 +499,41 @@ setEditingItem(item);
 
 // Close and reset
 setEditingItem(null);
+```
+
+### Click-Outside Detection
+```jsx
+// ✅ Use useClickOutside hook
+const menuRef = useRef(null);
+useClickOutside(menuRef, () => setShowMenu(false), showMenu);
+
+// In JSX
+<div ref={menuRef}>
+  <button onClick={() => setShowMenu(true)}>Menu</button>
+  {showMenu && <div>Menu content</div>}
+</div>
+```
+
+### Form Validation Pattern
+```jsx
+// ✅ Use useFormValidation hook
+const { values, errors, handleChange, handleBlur, validate } = useFormValidation(
+  { name: '', price: '', stock: '' },
+  (values) => {
+    const errors = {};
+    if (!values.name.trim()) errors.name = 'Name required';
+    if (values.price < 0) errors.price = 'Invalid price';
+    return errors;
+  }
+);
+
+// In submit handler
+const handleSubmit = (e) => {
+  e.preventDefault();
+  if (validate()) {
+    // Submit form
+  }
+};
 ```
 
 ---
@@ -454,7 +569,9 @@ src/
 
 ### API Errors
 ```jsx
-// ✅ User-friendly messages
+// ✅ Use toast notifications
+const { addToast } = useToast();
+
 catch (error) {
   const message = error.message || 'Something went wrong';
   addToast(message, 'error');
@@ -469,15 +586,15 @@ if (response.status === 401) {
 
 ### Form Validation
 ```jsx
-// ✅ Real-time validation
-const [errors, setErrors] = useState({});
+// ✅ Use useFormValidation hook
+const { values, errors, handleChange, validate } = useFormValidation(
+  initialValues,
+  validationRules
+);
 
-const handleChange = (e) => {
-  // Clear error on change
-  if (errors[name]) {
-    setErrors(prev => ({ ...prev, [name]: '' }));
-  }
-};
+// Automatic error clearing on change
+// Manual validation on submit
+if (!validate()) return;
 ```
 
 ---

@@ -1,14 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import { useLazyLoad } from '../hooks/useLazyLoad';
+import { useToast } from '../hooks/useToast';
+import { useClickOutside } from '../hooks/useClickOutside';
 import Modal from '../components/Modal';
 import EditProductModal from '../components/EditProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import SearchBar from '../components/SearchBar';
 import { ToastContainer } from '../components/Toast';
 
 const ProductsManagementPage = () => {
   const { products, loading, error, user, updateProduct, deleteProduct, logoutUser } = useInventory();
+  const { toasts, addToast, removeToast } = useToast();
   const navigate = useNavigate();
   
   // State
@@ -21,14 +25,12 @@ const ProductsManagementPage = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
-  const [toasts, setToasts] = useState([]);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   
-  const toastIdCounter = useRef(0);
   const searchInputRef = useRef(null);
   const menuRef = useRef(null);
   const categoryMenuRef = useRef(null);
@@ -91,16 +93,6 @@ const ProductsManagementPage = () => {
     threshold: 400
   });
   
-  // Toast management
-  const addToast = (message, type = 'success', duration = 3000, onUndo = null, undoLabel = 'Undo') => {
-    const id = toastIdCounter.current++;
-    setToasts(prev => [...prev, { id, message, type, duration, onUndo, undoLabel }]);
-  };
-
-  const removeToast = (id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
-
   // Product actions
   const handleEditProduct = (product) => {
     setEditingProduct(product);
@@ -228,27 +220,9 @@ const ProductsManagementPage = () => {
   }, [selectedProducts, products]);
 
   // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(false);
-      }
-      if (categoryMenuRef.current && !categoryMenuRef.current.contains(event.target)) {
-        setShowCategoryMenu(false);
-      }
-      if (sortMenuRef.current && !sortMenuRef.current.contains(event.target)) {
-        setShowSortMenu(false);
-      }
-    };
-
-    if (showMenu || showCategoryMenu || showSortMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showMenu, showCategoryMenu, showSortMenu]);
+  useClickOutside(menuRef, () => setShowMenu(false), showMenu);
+  useClickOutside(categoryMenuRef, () => setShowCategoryMenu(false), showCategoryMenu);
+  useClickOutside(sortMenuRef, () => setShowSortMenu(false), showSortMenu);
 
   if (loading) {
     return (
@@ -323,20 +297,12 @@ const ProductsManagementPage = () => {
           {/* Search and Filters */}
           <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4">
             {/* Search Bar - First Priority */}
-            <div className="relative">
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="Search products by name or ID... (Ctrl+F)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none text-sm sm:text-base"
-                inputMode="search"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl sm:text-2xl">
-                🔍
-              </span>
-            </div>
+            <SearchBar
+              inputRef={searchInputRef}
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search products by name or ID... (Ctrl+F)"
+            />
 
             {/* Filter, Sort, and Order in Single Row - 40%, 40%, 20% */}
             <div className="flex gap-2 sm:gap-3 w-full">

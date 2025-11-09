@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import { useImageCompression } from '../hooks/useImageCompression';
+import { useFormValidation } from '../hooks/useFormValidation';
+import FormField from '../components/FormField';
 
 const AddProductPage = () => {
   const navigate = useNavigate();
@@ -15,15 +17,42 @@ const AddProductPage = () => {
     removeImage: clearImage
   } = useImageCompression();
   
-  const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    stock: '',
-    category: '',
-    image: ''
-  });
+  // Form validation with custom hook
+  const {
+    values: formData,
+    errors,
+    handleChange,
+    handleBlur,
+    validate,
+    setFieldValue,
+    resetForm
+  } = useFormValidation(
+    {
+      name: '',
+      price: '',
+      stock: '',
+      category: '',
+      image: ''
+    },
+    (values) => {
+      const newErrors = {};
+      
+      if (!values.name.trim()) {
+        newErrors.name = 'Product name is required';
+      }
+      
+      if (!values.price || parseFloat(values.price) < 0) {
+        newErrors.price = 'Price must be a valid number (0 or greater)';
+      }
+      
+      if (!values.stock || parseInt(values.stock) < 0) {
+        newErrors.stock = 'Stock must be a valid number (0 or greater)';
+      }
+      
+      return newErrors;
+    }
+  );
   
-  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
@@ -32,42 +61,26 @@ const AddProductPage = () => {
   // Get unique existing categories from products
   const existingCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  // Custom handler for category with autocomplete
+  const handleCategoryChange = (e) => {
+    handleChange(e); // Use form validation hook's handler
     
-    // Handle category autocomplete
-    if (name === 'category') {
-      const trimmedValue = value.trim();
-      if (trimmedValue) {
-        const filtered = existingCategories.filter(cat => 
-          cat.toLowerCase().includes(trimmedValue.toLowerCase())
-        );
-        setCategorySuggestions(filtered);
-        setShowCategorySuggestions(filtered.length > 0);
-      } else {
-        setCategorySuggestions([]);
-        setShowCategorySuggestions(false);
-      }
-    }
-    
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+    const { value } = e.target;
+    const trimmedValue = value.trim();
+    if (trimmedValue) {
+      const filtered = existingCategories.filter(cat => 
+        cat.toLowerCase().includes(trimmedValue.toLowerCase())
+      );
+      setCategorySuggestions(filtered);
+      setShowCategorySuggestions(filtered.length > 0);
+    } else {
+      setCategorySuggestions([]);
+      setShowCategorySuggestions(false);
     }
   };
 
   const handleCategorySelect = (category) => {
-    setFormData(prev => ({
-      ...prev,
-      category
-    }));
+    setFieldValue('category', category);
     setShowCategorySuggestions(false);
     setCategorySuggestions([]);
   };
@@ -77,10 +90,7 @@ const AddProductPage = () => {
     handleImageCompress(
       file,
       (compressedImage) => {
-        setFormData(prev => ({
-          ...prev,
-          image: compressedImage
-        }));
+        setFieldValue('image', compressedImage);
       },
       (errorMessage) => {
         alert(errorMessage);
@@ -90,29 +100,7 @@ const AddProductPage = () => {
 
   const removeImage = () => {
     clearImage();
-    setFormData(prev => ({
-      ...prev,
-      image: ''
-    }));
-  };
-
-  const validate = () => {
-    const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Product name is required';
-    }
-    
-    if (!formData.price || parseFloat(formData.price) < 0) {
-      newErrors.price = 'Price must be a valid number (0 or greater)';
-    }
-    
-    if (!formData.stock || parseInt(formData.stock) < 0) {
-      newErrors.stock = 'Stock must be a valid number (0 or greater)';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setFieldValue('image', '');
   };
 
   const handleSubmit = async (e) => {
@@ -144,7 +132,7 @@ const AddProductPage = () => {
   };
 
   const handleCancel = () => {
-  navigate('/pos');
+    navigate('/pos');
   };
 
   return (
@@ -170,93 +158,48 @@ const AddProductPage = () => {
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 flex-1 flex flex-col overflow-y-auto">
               {/* Product Name */}
-              <div className="space-y-1 sm:space-y-1.5">
-                <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-gray-700">
-                  Product Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="e.g., Apple Juice 1L"
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-50 border-2 rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
-                    errors.name 
-                      ? 'border-red-300 focus:border-red-500' 
-                      : 'border-transparent focus:border-primary focus:ring-2 focus:ring-primary/20'
-                  }`}
-                />
-                {errors.name && (
-                  <div className="flex items-center gap-1.5 text-red-600 text-xs sm:text-sm mt-1">
-                    <span>⚠️</span>
-                    <span>{errors.name}</span>
-                  </div>
-                )}
-              </div>
+              <FormField
+                label="Product Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={errors.name}
+                required
+                placeholder="e.g., Apple Juice 1L"
+              />
 
               {/* Price and Stock Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {/* Price */}
-                <div className="space-y-1 sm:space-y-1.5">
-                  <label htmlFor="price" className="block text-xs sm:text-sm font-semibold text-gray-700">
-                    Price (₱) <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-500 text-base sm:text-lg">₱</span>
-                    <input
-                      id="price"
-                      type="number"
-                      name="price"
-                      step="0.01"
-                      min="0"
-                      value={formData.price}
-                      onChange={handleChange}
-                      placeholder="0.00"
-                      className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-gray-50 border-2 rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
-                        errors.price 
-                          ? 'border-red-300 focus:border-red-500' 
-                          : 'border-transparent focus:border-primary focus:ring-2 focus:ring-primary/20'
-                      }`}
-                    />
-                  </div>
-                  {errors.price && (
-                    <div className="flex items-center gap-1.5 text-red-600 text-xs sm:text-sm mt-1">
-                      <span>⚠️</span>
-                      <span>{errors.price}</span>
-                    </div>
-                  )}
-                </div>
+                <FormField
+                  label="Price (₱)"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.price}
+                  required
+                  placeholder="0.00"
+                  icon="₱"
+                  inputProps={{ step: '0.01', min: '0' }}
+                />
 
                 {/* Stock */}
-                <div className="space-y-1 sm:space-y-1.5">
-                  <label htmlFor="stock" className="block text-xs sm:text-sm font-semibold text-gray-700">
-                    Stock Quantity <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-500 text-base sm:text-lg">📦</span>
-                    <input
-                      id="stock"
-                      type="number"
-                      name="stock"
-                      min="0"
-                      value={formData.stock}
-                      onChange={handleChange}
-                      placeholder="0"
-                      className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-gray-50 border-2 rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white ${
-                        errors.stock 
-                          ? 'border-red-300 focus:border-red-500' 
-                          : 'border-transparent focus:border-primary focus:ring-2 focus:ring-primary/20'
-                      }`}
-                    />
-                  </div>
-                  {errors.stock && (
-                    <div className="flex items-center gap-1.5 text-red-600 text-xs sm:text-sm mt-1">
-                      <span>⚠️</span>
-                      <span>{errors.stock}</span>
-                    </div>
-                  )}
-                </div>
+                <FormField
+                  label="Stock Quantity"
+                  name="stock"
+                  type="number"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.stock}
+                  required
+                  placeholder="0"
+                  icon="📦"
+                  inputProps={{ min: '0' }}
+                />
               </div>
 
               {/* Category */}
