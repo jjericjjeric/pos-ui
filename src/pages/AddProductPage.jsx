@@ -4,19 +4,24 @@ import { useInventory } from '../context/useInventory';
 
 const AddProductPage = () => {
   const navigate = useNavigate();
-  const { addProduct } = useInventory();
+  const { addProduct, products } = useInventory();
   
   const [formData, setFormData] = useState({
     name: '',
     price: '',
     stock: '',
-    category: 'Uncategorized',
+    category: '',
     image: '🛍️'
   });
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
+  const [categorySuggestions, setCategorySuggestions] = useState([]);
+
+  // Get unique existing categories from products
+  const existingCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,6 +29,22 @@ const AddProductPage = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Handle category autocomplete
+    if (name === 'category') {
+      const trimmedValue = value.trim();
+      if (trimmedValue) {
+        const filtered = existingCategories.filter(cat => 
+          cat.toLowerCase().includes(trimmedValue.toLowerCase())
+        );
+        setCategorySuggestions(filtered);
+        setShowCategorySuggestions(filtered.length > 0);
+      } else {
+        setCategorySuggestions([]);
+        setShowCategorySuggestions(false);
+      }
+    }
+    
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -31,6 +52,15 @@ const AddProductPage = () => {
         [name]: ''
       }));
     }
+  };
+
+  const handleCategorySelect = (category) => {
+    setFormData(prev => ({
+      ...prev,
+      category
+    }));
+    setShowCategorySuggestions(false);
+    setCategorySuggestions([]);
   };
 
   const validate = () => {
@@ -202,26 +232,48 @@ const AddProductPage = () => {
                   Category
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">🏷️</span>
-                  <select
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg z-10">🏷️</span>
+                  <input
                     id="category"
+                    type="text"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
-                  >
-                    <option value="Uncategorized">Uncategorized</option>
-                    <option value="Beverages">Beverages</option>
-                    <option value="Food">Food</option>
-                    <option value="Snacks">Snacks</option>
-                    <option value="Dairy">Dairy</option>
-                    <option value="Produce">Produce</option>
-                    <option value="Bakery">Bakery</option>
-                    <option value="Fruits">Fruits</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">▼</span>
+                    onFocus={() => {
+                      if (formData.category && categorySuggestions.length > 0) {
+                        setShowCategorySuggestions(true);
+                      }
+                    }}
+                    onBlur={() => {
+                      // Delay to allow click on suggestion
+                      setTimeout(() => setShowCategorySuggestions(false), 200);
+                    }}
+                    placeholder="e.g., Beverages, Food, Snacks..."
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  />
+                  
+                  {/* Autocomplete Suggestions */}
+                  {showCategorySuggestions && categorySuggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                      {categorySuggestions.map((category, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => handleCategorySelect(category)}
+                          className="w-full text-left px-4 py-3 hover:bg-primary/10 transition-colors border-b border-gray-100 last:border-b-0 flex items-center gap-3"
+                        >
+                          <span className="text-lg">🏷️</span>
+                          <span className="text-sm font-medium text-gray-700">{category}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {existingCategories.length > 0 
+                    ? 'Start typing to see existing categories or enter a new one' 
+                    : 'Enter a category name for this product'}
+                </p>
               </div>
 
               {/* Image Emoji */}
