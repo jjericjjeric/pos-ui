@@ -1,17 +1,16 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import { useLazyLoad } from '../hooks/useLazyLoad';
 import { useToast } from '../hooks/useToast';
 import { useClickOutside } from '../hooks/useClickOutside';
 import Modal from '../components/Modal';
-import EditProductModal from '../components/EditProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import SearchBar from '../components/SearchBar';
 import { ToastContainer } from '../components/Toast';
 
 const ProductsManagementPage = () => {
-  const { products, loading, error, user, updateProduct, deleteProduct, logoutUser } = useInventory();
+  const { products, loading, error, user, deleteProduct, logoutUser } = useInventory();
   const { toasts, addToast, removeToast } = useToast();
   const navigate = useNavigate();
   
@@ -22,7 +21,6 @@ const ProductsManagementPage = () => {
   const [sortOrder, setSortOrder] = useState('asc'); // asc, desc
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [viewMode, setViewMode] = useState('table'); // table, grid
-  const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
@@ -95,17 +93,8 @@ const ProductsManagementPage = () => {
   
   // Product actions
   const handleEditProduct = (product) => {
-    setEditingProduct(product);
-  };
-
-  const handleSaveProduct = async (productId, updatedData) => {
-    try {
-      await updateProduct(productId, updatedData);
-      setEditingProduct(null);
-      addToast('Product updated successfully', 'success');
-    } catch (err) {
-      addToast('Failed to update product', 'error');
-    }
+    // Navigate to the add-product page with the product ID
+    navigate(`/add-product/${product.id}`);
   };
 
   const handleDeleteProduct = (product) => {
@@ -720,13 +709,6 @@ const ProductsManagementPage = () => {
       </div>
 
       {/* Modals */}
-      <EditProductModal
-        isOpen={!!editingProduct}
-        onClose={() => setEditingProduct(null)}
-        product={editingProduct}
-        onSave={handleSaveProduct}
-      />
-
       <ConfirmDialog
         isOpen={!!deletingProduct}
         onClose={() => setDeletingProduct(null)}

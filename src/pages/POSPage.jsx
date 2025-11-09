@@ -8,7 +8,6 @@ import { useClickOutside } from '../hooks/useClickOutside';
 import ProductTile from '../components/ProductTile';
 import Cart from '../components/Cart';
 import Modal from '../components/Modal';
-import EditProductModal from '../components/EditProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MenuDropdown from '../components/MenuDropdown';
 import ProgressiveImage from '../components/ProgressiveImage';
@@ -17,19 +16,18 @@ import CategoryFilter from '../components/CategoryFilter';
 import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
-  const { products, loading, error, logoutUser, user, updateProduct, deleteProduct, addProduct } = useInventory();
+  const { products, loading, error, logoutUser, user, deleteProduct, addProduct } = useInventory();
   const { cart, cartBadgeBounce, addToCart, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
   const { toasts, addToast, removeToast } = useToast();
+  const navigate = useNavigate();
   const [showCartModal, setShowCartModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDesktopMenu, setShowDesktopMenu] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
-  const navigate = useNavigate();
   const mobileMenuRef = useRef(null);
   const desktopMenuRef = useRef(null);
 
@@ -94,17 +92,8 @@ const POSPage = () => {
 
   // Product management handlers
   const handleEditProduct = (product) => {
-    setEditingProduct(product);
-  };
-
-  const handleSaveProduct = async (productId, updatedData) => {
-    try {
-      await updateProduct(productId, updatedData);
-      addToast('Product updated successfully', 'success');
-    } catch (error) {
-      addToast(error.message || 'Failed to update product', 'error');
-      throw error;
-    }
+    // Navigate to the add-product page with the product ID
+    navigate(`/add-product/${product.id}`);
   };
 
   const handleDeleteProduct = (product) => {
@@ -324,14 +313,6 @@ const POSPage = () => {
           }}
         />
       </Modal>
-
-      {/* Edit Product Modal */}
-      <EditProductModal
-        isOpen={!!editingProduct}
-        onClose={() => setEditingProduct(null)}
-        product={editingProduct}
-        onSave={handleSaveProduct}
-      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

@@ -31,6 +31,7 @@ function App() {
               <Route path="/pos" element={<RequireAuth><POSPage /></RequireAuth>} />
               <Route path="/payment" element={<RequireAuth><PaymentPage /></RequireAuth>} />
               <Route path="/add-product" element={<RequireAuth><AddProductPage /></RequireAuth>} />
+              <Route path="/add-product/:id" element={<RequireAuth><AddProductPage /></RequireAuth>} />
               <Route path="/products-management" element={<RequireAuth><ProductsManagementPage /></RequireAuth>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -1,20 +1,29 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { useFormValidation } from '../hooks/useFormValidation';
+import { useImageCache } from '../hooks/useImageCache';
 import FormField from '../components/FormField';
 
 const AddProductPage = () => {
   const navigate = useNavigate();
-  const { addProduct, products } = useInventory();
+  const { id } = useParams(); // Get product ID from URL params
+  const { addProduct, updateProduct, products, loading } = useInventory();
+  const { invalidateImage } = useImageCache();
+  
+  // Determine if we're in edit mode
+  const isEditMode = !!id;
+  const existingProduct = isEditMode ? products.find(p => p.id === parseInt(id)) : null;
+  
   const {
     imagePreview,
     fileInputRef,
     handleImageChange: handleImageCompress,
     handleCameraCapture,
     handleFileSelect,
-    removeImage: clearImage
+    removeImage: clearImage,
+    setImage
   } = useImageCompression();
   
   // Form validation with custom hook
@@ -25,7 +34,8 @@ const AddProductPage = () => {
     handleBlur,
     validate,
     setFieldValue,
-    resetForm
+    resetForm,
+    setFormValues
   } = useFormValidation(
     {
       name: '',
@@ -57,6 +67,28 @@ const AddProductPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
   const [categorySuggestions, setCategorySuggestions] = useState([]);
+
+  // Load existing product data when in edit mode
+  useEffect(() => {
+    if (isEditMode && existingProduct) {
+      console.log('Loading product data:', existingProduct); // Debug log
+      // Populate form with existing product data using setFormValues
+      setFormValues({
+        name: existingProduct.name || '',
+        price: existingProduct.price?.toString() || '',
+        stock: existingProduct.stock?.toString() || '',
+        category: existingProduct.category || '',
+        image: existingProduct.image || ''
+      });
+      // Set the image preview
+      setImage(existingProduct.image || null);
+    } else if (!isEditMode) {
+      // Reset form when adding new product
+      resetForm();
+      setImage(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, products.length]); // Depend on id and products.length to detect when products are loaded
 
   // Get unique existing categories from products
   const existingCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
@@ -113,7 +145,7 @@ const AddProductPage = () => {
     setIsSubmitting(true);
     
     try {
-      const newProduct = {
+      const productData = {
         name: formData.name.trim(),
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
@@ -121,11 +153,20 @@ const AddProductPage = () => {
         image: formData.image || '🛍️'
       };
 
-      await addProduct(newProduct);
+      if (isEditMode) {
+        // Update existing product
+        await updateProduct(parseInt(id), productData);
+        
+        // Invalidate cached image to force refresh
+        invalidateImage(parseInt(id));
+      } else {
+        // Add new product
+        await addProduct(productData);
+      }
       
       setShowSuccessModal(true);
     } catch (error) {
-      alert('Error adding product: ' + error.message);
+      alert(`Error ${isEditMode ? 'updating' : 'adding'} product: ` + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -134,6 +175,33 @@ const AddProductPage = () => {
   const handleCancel = () => {
     navigate('/pos');
   };
+
+  // Show loading state while products are being fetched in edit mode
+  if (isEditMode && loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
+        <div className="text-white text-xl sm:text-2xl">Loading product...</div>
+      </div>
+    );
+  }
+
+  // Show not found if in edit mode but product doesn't exist
+  if (isEditMode && !existingProduct && !loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 max-w-md text-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Product Not Found</h2>
+          <p className="text-gray-600 mb-6">The product you're trying to edit doesn't exist.</p>
+          <button
+            onClick={() => navigate('/products-management')}
+            className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+          >
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
@@ -147,7 +215,9 @@ const AddProductPage = () => {
           >
             <span className="text-xl sm:text-2xl text-gray-700">←</span>
           </button>
-          <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800">Add New Product</h1>
+          <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800">
+            {isEditMode ? 'Edit Product' : 'Add New Product'}
+          </h1>
         </div>
       </div>
 
@@ -333,12 +403,12 @@ const AddProductPage = () => {
                   {isSubmitting ? (
                     <>
                       <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                      <span>Adding...</span>
+                      <span>{isEditMode ? 'Updating...' : 'Adding...'}</span>
                     </>
                   ) : (
                     <>
                       <span>✓</span>
-                      <span>Add Product</span>
+                      <span>{isEditMode ? 'Update Product' : 'Add Product'}</span>
                     </>
                   )}
                 </button>
@@ -374,7 +444,9 @@ const AddProductPage = () => {
                 <span className="text-5xl">✓</span>
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Success!</h2>
-              <p className="text-green-50 text-sm">Product has been added to inventory</p>
+              <p className="text-green-50 text-sm">
+                Product has been {isEditMode ? 'updated' : 'added to inventory'}
+              </p>
             </div>
 
             {/* Product Details */}
