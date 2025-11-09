@@ -405,8 +405,18 @@ const POSPage = () => {
       >
         {viewDetailsProduct && (
           <div className="flex-1 flex flex-col gap-4">
-            <div className="text-center text-6xl sm:text-5xl mb-4">
-              {viewDetailsProduct.image}
+            <div className="text-center mb-4">
+              {viewDetailsProduct.image?.startsWith('data:image') || viewDetailsProduct.image?.startsWith('http') ? (
+                <img
+                  src={viewDetailsProduct.image}
+                  alt={viewDetailsProduct.name}
+                  className="w-48 h-48 mx-auto object-cover rounded-xl border-2 border-gray-200"
+                />
+              ) : (
+                <div className="text-6xl sm:text-5xl">
+                  {viewDetailsProduct.image || '🛍️'}
+                </div>
+              )}
             </div>
             <div className="space-y-3">
               <div className="flex justify-between border-b pb-2 text-base sm:text-sm">

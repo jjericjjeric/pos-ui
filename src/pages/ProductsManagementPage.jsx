@@ -506,7 +506,17 @@ const ProductsManagementPage = () => {
                           className="w-5 h-5 cursor-pointer"
                         />
                       </td>
-                      <td className="p-3 text-3xl">{product.image}</td>
+                      <td className="p-3">
+                        {product.image?.startsWith('data:image') || product.image?.startsWith('http') ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-12 h-12 object-cover rounded-lg"
+                          />
+                        ) : (
+                          <span className="text-3xl">{product.image || '🛍️'}</span>
+                        )}
+                      </td>
                       <td className="p-3 font-semibold text-gray-800">{product.name}</td>
                       <td className="p-3 text-gray-700">₱{product.price.toFixed(2)}</td>
                       <td className="p-3">
@@ -590,7 +600,17 @@ const ProductsManagementPage = () => {
                         )}
                       </div>
                     </button>
-                    <div className="text-5xl sm:text-6xl">{product.image}</div>
+                    <div className="flex-1 text-center">
+                      {product.image?.startsWith('data:image') || product.image?.startsWith('http') ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-24 h-24 mx-auto object-cover rounded-xl"
+                        />
+                      ) : (
+                        <div className="text-5xl sm:text-6xl">{product.image || '🛍️'}</div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Product Info */}
@@ -703,8 +723,18 @@ const ProductsManagementPage = () => {
       >
         {viewDetailsProduct && (
           <div className="flex-1 flex flex-col gap-4">
-            <div className="text-center text-6xl sm:text-5xl mb-4">
-              {viewDetailsProduct.image}
+            <div className="text-center mb-4">
+              {viewDetailsProduct.image?.startsWith('data:image') || viewDetailsProduct.image?.startsWith('http') ? (
+                <img
+                  src={viewDetailsProduct.image}
+                  alt={viewDetailsProduct.name}
+                  className="w-48 h-48 mx-auto object-cover rounded-xl border-2 border-gray-200"
+                />
+              ) : (
+                <div className="text-6xl sm:text-5xl">
+                  {viewDetailsProduct.image || '🛍️'}
+                </div>
+              )}
             </div>
             <div className="space-y-3">
               <div className="flex justify-between border-b pb-2 text-base sm:text-sm">

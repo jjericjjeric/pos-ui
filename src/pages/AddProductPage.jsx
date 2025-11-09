@@ -11,7 +11,7 @@ const AddProductPage = () => {
     price: '',
     stock: '',
     category: '',
-    image: '🛍️'
+    image: ''
   });
   
   const [errors, setErrors] = useState({});
@@ -19,6 +19,8 @@ const AddProductPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
   const [categorySuggestions, setCategorySuggestions] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useState(null);
 
   // Get unique existing categories from products
   const existingCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
@@ -61,6 +63,58 @@ const AddProductPage = () => {
     }));
     setShowCategorySuggestions(false);
     setCategorySuggestions([]);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData(prev => ({
+          ...prev,
+          image: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCameraCapture = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.setAttribute('capture', 'environment');
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelect = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.removeAttribute('capture');
+      fileInputRef.current.click();
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setFormData(prev => ({
+      ...prev,
+      image: ''
+    }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const validate = () => {
@@ -276,29 +330,67 @@ const AddProductPage = () => {
                 </p>
               </div>
 
-              {/* Image Emoji */}
+              {/* Image Upload */}
               <div className="space-y-1 sm:space-y-1.5">
-                <label htmlFor="image" className="block text-xs sm:text-sm font-semibold text-gray-700">
-                  Product Icon
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700">
+                  Product Image
                 </label>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <input
-                      id="image"
-                      type="text"
-                      name="image"
-                      value={formData.image}
-                      onChange={handleChange}
-                      placeholder="🛍️"
-                      maxLength="2"
-                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-50 border-2 border-transparent rounded-lg sm:rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                
+                {/* Hidden file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+                
+                {/* Image Preview or Upload Buttons */}
+                {imagePreview ? (
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="Product preview"
+                      className="w-full h-48 sm:h-56 object-cover rounded-lg sm:rounded-xl border-2 border-gray-200"
                     />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                      aria-label="Remove image"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center text-3xl sm:text-4xl shadow-inner flex-shrink-0">
-                    {formData.image || '🛍️'}
+                ) : (
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                    <button
+                      type="button"
+                      onClick={handleCameraCapture}
+                      className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-300 rounded-lg sm:rounded-xl transition-all active:scale-95"
+                    >
+                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span className="text-xs sm:text-sm font-semibold text-blue-700">Take Photo</span>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={handleFileSelect}
+                      className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-300 rounded-lg sm:rounded-xl transition-all active:scale-95"
+                    >
+                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-xs sm:text-sm font-semibold text-purple-700">Upload Image</span>
+                    </button>
                   </div>
-                </div>
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Enter an emoji to represent your product</p>
+                )}
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Max 5MB • JPG, PNG, GIF</p>
               </div>
 
               {/* Action Buttons */}
@@ -366,7 +458,19 @@ const AddProductPage = () => {
             {/* Product Details */}
             <div className="p-6 space-y-4">
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 text-center">
-                <div className="text-6xl mb-3">{formData.image}</div>
+                {formData.image ? (
+                  <img
+                    src={formData.image}
+                    alt={formData.name}
+                    className="w-32 h-32 mx-auto object-cover rounded-lg mb-3"
+                  />
+                ) : (
+                  <div className="w-32 h-32 mx-auto bg-gray-200 rounded-lg mb-3 flex items-center justify-center text-gray-400">
+                    <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
                 <h3 className="text-lg font-bold text-gray-800 mb-2">{formData.name}</h3>
                 <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
                   <div className="flex items-center gap-1">

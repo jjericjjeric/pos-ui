@@ -149,7 +149,17 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
         </div>
       )}
 
-      <div className="text-5xl md:text-4xl sm:text-3xl mb-3 sm:mb-2 mt-4">{product.image}</div>
+      <div className="text-5xl md:text-4xl sm:text-3xl mb-3 sm:mb-2 mt-4">
+        {product.image?.startsWith('data:image') || product.image?.startsWith('http') ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-24 sm:h-20 object-cover rounded-lg"
+          />
+        ) : (
+          <span>{product.image || '🛍️'}</span>
+        )}
+      </div>
       <div className="w-full space-y-1">
         <h3 className="text-base md:text-sm sm:text-xs font-bold text-gray-800 line-clamp-2">{product.name}</h3>
         <p className="text-xl md:text-lg sm:text-base font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">₱{product.price.toFixed(2)}</p>

@@ -16,6 +16,8 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useState(null);
 
   // Reset form when product changes or modal opens
   useEffect(() => {
@@ -27,6 +29,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
         category: product.category || '',
         image: product.image || '',
       });
+      setImagePreview(product.image || null);
       setErrors({});
     }
   }, [product, isOpen]);
@@ -64,6 +67,58 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
         ...prev,
         [name]: ''
       }));
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData(prev => ({
+          ...prev,
+          image: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCameraCapture = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.setAttribute('capture', 'environment');
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelect = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.removeAttribute('capture');
+      fileInputRef.current.click();
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setFormData(prev => ({
+      ...prev,
+      image: ''
+    }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -184,26 +239,67 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
           />
         </div>
 
-        {/* Image Emoji */}
+        {/* Image Upload */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="image" className="font-semibold text-gray-700 text-base sm:text-sm">
-            Image (Emoji)
+          <label className="font-semibold text-gray-700 text-base sm:text-sm">
+            Product Image
           </label>
+          
+          {/* Hidden file input */}
           <input
-            type="text"
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            className="px-4 py-3 sm:px-3 sm:py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary transition-colors text-base"
-            placeholder="📦"
-            maxLength="2"
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
           />
-          {formData.image && (
-            <div className="text-5xl sm:text-4xl text-center p-4 sm:p-2 bg-gray-50 rounded-lg">
-              {formData.image}
+          
+          {/* Image Preview or Upload Buttons */}
+          {imagePreview ? (
+            <div className="relative">
+              <img
+                src={imagePreview}
+                alt="Product preview"
+                className="w-full h-48 object-cover rounded-lg border-2 border-gray-200"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                aria-label="Remove image"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={handleCameraCapture}
+                className="flex flex-col items-center justify-center gap-2 p-4 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-300 rounded-lg transition-all active:scale-95"
+              >
+                <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-sm font-semibold text-blue-700">Take Photo</span>
+              </button>
+              
+              <button
+                type="button"
+                onClick={handleFileSelect}
+                className="flex flex-col items-center justify-center gap-2 p-4 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-300 rounded-lg transition-all active:scale-95"
+              >
+                <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="text-sm font-semibold text-purple-700">Upload Image</span>
+              </button>
             </div>
           )}
+          <p className="text-xs text-gray-500">Max 5MB • JPG, PNG, GIF</p>
         </div>
 
         {/* Submit Error */}
