@@ -9,6 +9,7 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
   const isOutOfStock = product.stock === 0;
   const [showMenu, setShowMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState('right');
+  const [isPressed, setIsPressed] = useState(false);
   const menuRef = useRef(null);
 
   // Always show menu if callbacks are provided (for flexibility)
@@ -73,14 +74,22 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
     onViewDetails && onViewDetails(product);
   };
 
+  const handleTileClick = () => {
+    if (!isOutOfStock) {
+      setIsPressed(true);
+      setTimeout(() => setIsPressed(false), 200);
+      onAddToCart();
+    }
+  };
+
   return (
     <div 
       className={`bg-white rounded-xl p-4 md:p-3.5 sm:p-3 cursor-pointer transition-all duration-300 flex flex-col items-center text-center relative shadow-md ${
         isOutOfStock 
           ? 'opacity-60 cursor-not-allowed bg-gray-100' 
           : 'hover:-translate-y-1 hover:shadow-xl hover:ring-2 hover:ring-primary/30'
-      }`}
-      onClick={() => !isOutOfStock && onAddToCart()}
+      } ${isPressed ? 'scale-95 shadow-sm' : ''}`}
+      onClick={handleTileClick}
     >
       {/* Category Badge */}
       {product.category && (

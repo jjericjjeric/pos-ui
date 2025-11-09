@@ -14,6 +14,7 @@ const PaymentPage = () => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [finalChange, setFinalChange] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
   const autoCloseTimer = useRef(null);
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -52,6 +53,8 @@ const PaymentPage = () => {
       return;
     }
 
+    setIsProcessing(true);
+
     try {
       // Update inventory via API
       await updateInventoryAfterPurchase(cart);
@@ -69,6 +72,8 @@ const PaymentPage = () => {
       }, 30000);
     } catch (error) {
       alert('Error completing purchase: ' + error.message);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -149,9 +154,19 @@ const PaymentPage = () => {
           <button
             className="w-full sm:flex-1 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-extrabold border-none rounded-xl cursor-pointer transition-all bg-gradient-to-br from-orange-500 to-red-600 text-white shadow-[0_8px_28px_rgba(255,87,34,0.45)] tracking-wide hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_12px_32px_rgba(255,87,34,0.55)] disabled:opacity-45 disabled:cursor-not-allowed disabled:shadow-none active:enabled:translate-y-0 active:enabled:shadow-[0_6px_18px_rgba(255,87,34,0.4)]"
             onClick={handleCompletePurchase}
-            disabled={!amountPaid || change < 0}
+            disabled={!amountPaid || change < 0 || isProcessing}
           >
-            Complete Purchase
+            {isProcessing ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            ) : (
+              'Complete Purchase'
+            )}
           </button>
         </div>
       </div>

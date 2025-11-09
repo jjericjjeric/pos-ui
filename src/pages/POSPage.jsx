@@ -19,6 +19,7 @@ const POSPage = () => {
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
+  const [cartBadgeBounce, setCartBadgeBounce] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const toastIdCounter = useRef(0);
@@ -63,12 +64,27 @@ const POSPage = () => {
           alert('Not enough stock available!');
           return prevCart;
         }
+        
+        // Trigger cart badge bounce
+        setCartBadgeBounce(true);
+        setTimeout(() => setCartBadgeBounce(false), 500);
+        
+        // Show toast notification
+        addToast(`${product.name} quantity increased`, 'success', 2000);
+        
         return prevCart.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
+        // Trigger cart badge bounce
+        setCartBadgeBounce(true);
+        setTimeout(() => setCartBadgeBounce(false), 500);
+        
+        // Show toast notification
+        addToast(`${product.name} added to cart`, 'success', 2000);
+        
         return [...prevCart, { ...product, quantity: 1 }];
       }
     });
@@ -202,7 +218,9 @@ const POSPage = () => {
           >
             <span className="text-xl sm:text-2xl">🛒</span>
             {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full min-w-[18px] sm:min-w-[20px] text-center font-bold shadow-md">
+              <span className={`absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full min-w-[18px] sm:min-w-[20px] text-center font-bold shadow-md transition-transform ${
+                cartBadgeBounce ? 'animate-bounce-scale' : ''
+              }`}>
                 {cartItemCount}
               </span>
             )}
