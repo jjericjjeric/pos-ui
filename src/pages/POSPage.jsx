@@ -265,7 +265,7 @@ const POSPage = () => {
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 sm:pl-10 pr-3 py-1.5 sm:py-2 bg-gray-50 border-2 border-transparent rounded-lg text-xs sm:text-sm transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full pl-9 sm:pl-10 pr-3 py-1.5 sm:py-2 bg-gray-50 border-2 border-transparent rounded-lg text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
               {searchQuery && (
                 <button
