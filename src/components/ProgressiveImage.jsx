@@ -218,23 +218,22 @@ const ProgressiveImage = ({
   }
 
   // Check if imageSrc is a valid image URL (data:image or http/https)
-  // If not (e.g., emoji), show fallback instead of trying to render as <img>
   const isValidImageUrl = imageSrc && (
     imageSrc.startsWith('data:image') || 
     imageSrc.startsWith('http://') || 
     imageSrc.startsWith('https://')
   );
 
+  // If not a valid image URL, show fallback emoji
   if (!isValidImageUrl && imageSrc) {
-    // It's probably an emoji or invalid format, show as fallback
     return (
       <div 
         ref={imgRef}
         className={`bg-gray-100 flex items-center justify-center ${className}`}
         aria-label={alt}
       >
-        <span className="text-6xl" role="img" aria-label="Product image">
-          {imageSrc}
+        <span className="text-6xl" role="img" aria-label="Product placeholder">
+          {fallbackEmoji}
         </span>
       </div>
     );

@@ -113,7 +113,7 @@ const normalizeProduct = (product) => {
     };
   }
   
-  // Otherwise return as-is (image is already a string)
+  // Otherwise return as-is (image is already a string with proper data URI)
   return product;
 };
 

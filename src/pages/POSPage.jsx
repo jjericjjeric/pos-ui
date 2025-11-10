@@ -341,12 +341,12 @@ const POSPage = () => {
                   productId={viewDetailsProduct.id}
                   alt={viewDetailsProduct.name}
                   className="w-48 h-48 mx-auto object-cover rounded-xl border-2 border-gray-200"
-                  fallbackEmoji={viewDetailsProduct.image || '🛍️'}
+                  fallbackEmoji="🛍️"
                   eager={true}
                 />
               ) : (
                 <div className="text-6xl sm:text-5xl">
-                  {viewDetailsProduct.image || '🛍️'}
+                  🛍️
                 </div>
               )}
             </div>

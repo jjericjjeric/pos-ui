@@ -156,10 +156,10 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
             productId={product.id}
             alt={product.name}
             className="w-full h-24 sm:h-20 object-cover rounded-lg"
-            fallbackEmoji={product.image || '🛍️'}
+            fallbackEmoji="🛍️"
           />
         ) : (
-          <span>{product.image || '🛍️'}</span>
+          <span>🛍️</span>
         )}
       </div>
       <div className="w-full space-y-1">
