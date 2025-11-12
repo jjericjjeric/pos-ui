@@ -407,5 +407,141 @@ export const deleteProduct = async (productId) => {
   }
 };
 
+// ============ STORE MANAGEMENT ============
+
+/**
+ * Get all stores for the current user
+ */
+export const getUserStores = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/stores`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      throw new Error(`Failed to fetch stores: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching stores:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a new store
+ */
+export const createStore = async (storeData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/stores`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(storeData),
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Failed to create store: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating store:', error);
+    throw error;
+  }
+};
+
+/**
+ * Switch to a different store
+ */
+export const switchStore = async (storeId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/stores/${storeId}/switch`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      throw new Error(`Failed to switch store: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error switching store:', error);
+    throw error;
+  }
+};
+
+// Helper to add store_id to query params if available
+export const addStoreIdToUrl = (url, storeId) => {
+  if (!storeId) return url;
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}store_id=${storeId}`;
+};
+
+const api = {
+  get: async (url, options = {}) => {
+    const storeId = localStorage.getItem('currentStoreId');
+    const fullUrl = storeId ? addStoreIdToUrl(`${API_BASE_URL}${url}`, storeId) : `${API_BASE_URL}${url}`;
+    
+    const response = await fetch(fullUrl, {
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      throw new Error(`Request failed: ${response.statusText}`);
+    }
+    
+    return response.json();
+  },
+  
+  post: async (url, data = {}, options = {}) => {
+    const storeId = localStorage.getItem('currentStoreId');
+    const fullUrl = storeId ? addStoreIdToUrl(`${API_BASE_URL}${url}`, storeId) : `${API_BASE_URL}${url}`;
+    
+    const response = await fetch(fullUrl, {
+      method: 'POST',
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Request failed: ${response.statusText}`);
+    }
+    
+    return response.json();
+  },
+};
+
+export default api;
+
+
+
+
 
 

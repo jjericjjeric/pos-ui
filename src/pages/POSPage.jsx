@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
 import { useCart } from '../context/useCart';
+import { useStore } from '../context/useStore';
 import { useLazyLoad } from '../hooks/useLazyLoad';
 import { useToast } from '../hooks/useToast';
 import { useClickOutside } from '../hooks/useClickOutside';
@@ -10,6 +11,7 @@ import Cart from '../components/Cart';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MenuDropdown from '../components/MenuDropdown';
+import StoreSelector from '../components/StoreSelector';
 import ProgressiveImage from '../components/ProgressiveImage';
 import SearchBar from '../components/SearchBar';
 import CategoryFilter from '../components/CategoryFilter';
@@ -146,6 +148,7 @@ const POSPage = () => {
     <div className="h-dvh w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
       {/* Compact Header - Only on mobile for Cart & Menu */}
       <div className="lg:hidden bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2 flex-shrink-0">
+        <StoreSelector className="flex-shrink-0" />
         {user && (
           <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate max-w-[100px]">
             <strong>{user.username}</strong>

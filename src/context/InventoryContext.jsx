@@ -89,6 +89,12 @@ export const InventoryProvider = ({ children }) => {
       const data = await api.login(username, password, remember);
       setIsAuthenticated(true);
       setUser({ username: data.username, role: data.role });
+      
+      // Handle store data if present in response
+      if (data.store) {
+        localStorage.setItem('currentStoreId', data.store.id.toString());
+      }
+      
       await loadProducts();
       return { success: true };
     } catch (err) {
