@@ -13,22 +13,32 @@ export const StoreProvider = ({ children }) => {
   // Load stores on mount
   useEffect(() => {
     const loadUserStores = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token');
       if (!token) {
         setLoading(false);
         return;
       }
 
       try {
-        const response = await api.get('/stores');
-        const stores = response.data.stores || [];
+        const stores = await api.get('/stores');
         setUserStores(stores);
 
         // Get current store from localStorage or use first store
         const savedStoreId = localStorage.getItem('currentStoreId');
         if (savedStoreId) {
           const savedStore = stores.find(s => s.id === parseInt(savedStoreId));
-          setCurrentStore(savedStore || stores[0] || null);
+          if (savedStore) {
+            // Saved store exists and user has access
+            setCurrentStore(savedStore);
+          } else {
+            // Saved store not found or user doesn't have access - use first store
+            setCurrentStore(stores[0] || null);
+            if (stores[0]) {
+              localStorage.setItem('currentStoreId', stores[0].id.toString());
+            } else {
+              localStorage.removeItem('currentStoreId');
+            }
+          }
         } else {
           setCurrentStore(stores[0] || null);
           if (stores[0]) {
@@ -54,9 +64,10 @@ export const StoreProvider = ({ children }) => {
       // Call backend to switch store and get new token
       const response = await api.post(`/stores/${storeId}/switch`);
       
-      if (response.data.token) {
-        // Update token in localStorage
-        localStorage.setItem('token', response.data.token);
+      if (response.token) {
+        // Update token in localStorage or sessionStorage
+        const storage = localStorage.getItem('jwt_token') ? localStorage : sessionStorage;
+        storage.setItem('jwt_token', response.token);
         localStorage.setItem('currentStoreId', storeId.toString());
         
         // Update current store
@@ -80,7 +91,7 @@ export const StoreProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await api.post('/stores', storeData);
-      const newStore = response.data.store;
+      const newStore = response.store;
       
       // Add to user stores
       setUserStores([...userStores, newStore]);
@@ -103,8 +114,7 @@ export const StoreProvider = ({ children }) => {
   // Refresh stores list
   const refreshStores = async () => {
     try {
-      const response = await api.get('/stores');
-      const stores = response.data.stores || [];
+      const stores = await api.get('/stores');
       setUserStores(stores);
       
       // Update current store if it exists in the new list

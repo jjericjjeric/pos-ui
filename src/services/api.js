@@ -55,6 +55,7 @@ export const setAuth = ({ token, username, role }, remember) => {
 export const clearAuth = () => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  localStorage.removeItem('currentStoreId'); // Clear store context on logout
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(USER_KEY);
 };
@@ -251,18 +252,7 @@ export const isAuthenticated = () => {
  */
 export const fetchProducts = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products`, {
-      headers: getAuthHeaders(),
-    });
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Token expired or invalid, clear it
-        logout();
-        throw new Error('Authentication required. Please login again.');
-      }
-      throw new Error(`Failed to fetch products: ${response.statusText}`);
-    }
-    const products = await response.json();
+    const products = await api.get('/products');
     return normalizeProducts(products);
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -275,20 +265,7 @@ export const fetchProducts = async () => {
  */
 export const createProduct = async (product) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(product),
-    });
-    if (!response.ok) {
-      if (response.status === 401) {
-        logout();
-        throw new Error('Authentication required. Please login again.');
-      }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Failed to create product: ${response.statusText}`);
-    }
-    const newProduct = await response.json();
+    const newProduct = await api.post('/products', product);
     return normalizeProduct(newProduct);
   } catch (error) {
     console.error('Error creating product:', error);
@@ -301,19 +278,7 @@ export const createProduct = async (product) => {
  */
 export const updateProductStock = async (productId, quantitySold) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}/stock`, {
-      method: 'PATCH',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ quantitySold }),
-    });
-    if (!response.ok) {
-      if (response.status === 401) {
-        logout();
-        throw new Error('Authentication required. Please login again.');
-      }
-      throw new Error(`Failed to update product stock: ${response.statusText}`);
-    }
-    const updatedProduct = await response.json();
+    const updatedProduct = await api.patch(`/products/${productId}/stock`, { quantitySold });
     return normalizeProduct(updatedProduct);
   } catch (error) {
     console.error('Error updating product stock:', error);
@@ -328,28 +293,7 @@ export const updateProductStock = async (productId, quantitySold) => {
  */
 export const batchUpdateProductStock = async (items) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/stock/batch`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ items }),
-    });
-    
-    if (!response.ok) {
-      if (response.status === 401) {
-        logout();
-        throw new Error('Authentication required. Please login again.');
-      }
-      // For 207 Multi-Status or 400, we still want to parse the response to get partial results
-      if (response.status === 207 || response.status === 400) {
-        const data = await response.json();
-        return {
-          ...data,
-          updatedProducts: normalizeProducts(data.updatedProducts || [])
-        };
-      }
-      throw new Error(`Failed to batch update product stock: ${response.statusText}`);
-    }
-    const result = await response.json();
+    const result = await api.post('/products/stock/batch', { items });
     return {
       ...result,
       updatedProducts: normalizeProducts(result.updatedProducts || [])
@@ -365,19 +309,7 @@ export const batchUpdateProductStock = async (items) => {
  */
 export const updateProduct = async (productId, productData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(productData),
-    });
-    if (!response.ok) {
-      if (response.status === 401) {
-        logout();
-        throw new Error('Authentication required. Please login again.');
-      }
-      throw new Error(`Failed to update product: ${response.statusText}`);
-    }
-    const updatedProduct = await response.json();
+    const updatedProduct = await api.put(`/products/${productId}`, productData);
     return normalizeProduct(updatedProduct);
   } catch (error) {
     console.error('Error updating product:', error);
@@ -390,17 +322,7 @@ export const updateProduct = async (productId, productData) => {
  */
 export const deleteProduct = async (productId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    if (!response.ok) {
-      if (response.status === 401) {
-        logout();
-        throw new Error('Authentication required. Please login again.');
-      }
-      throw new Error(`Failed to delete product: ${response.statusText}`);
-    }
+    await api.delete(`/products/${productId}`);
   } catch (error) {
     console.error('Error deleting product:', error);
     throw error;
@@ -517,6 +439,84 @@ const api = {
     
     const response = await fetch(fullUrl, {
       method: 'POST',
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Request failed: ${response.statusText}`);
+    }
+    
+    return response.json();
+  },
+  
+  put: async (url, data = {}, options = {}) => {
+    const storeId = localStorage.getItem('currentStoreId');
+    const fullUrl = storeId ? addStoreIdToUrl(`${API_BASE_URL}${url}`, storeId) : `${API_BASE_URL}${url}`;
+    
+    const response = await fetch(fullUrl, {
+      method: 'PUT',
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Request failed: ${response.statusText}`);
+    }
+    
+    return response.json();
+  },
+  
+  delete: async (url, options = {}) => {
+    const storeId = localStorage.getItem('currentStoreId');
+    const fullUrl = storeId ? addStoreIdToUrl(`${API_BASE_URL}${url}`, storeId) : `${API_BASE_URL}${url}`;
+    
+    const response = await fetch(fullUrl, {
+      method: 'DELETE',
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        throw new Error('Authentication required. Please login again.');
+      }
+      throw new Error(`Request failed: ${response.statusText}`);
+    }
+    
+    // DELETE may return no content
+    if (response.status === 204) return null;
+    return response.json();
+  },
+  
+  patch: async (url, data = {}, options = {}) => {
+    const storeId = localStorage.getItem('currentStoreId');
+    const fullUrl = storeId ? addStoreIdToUrl(`${API_BASE_URL}${url}`, storeId) : `${API_BASE_URL}${url}`;
+    
+    const response = await fetch(fullUrl, {
+      method: 'PATCH',
       ...options,
       headers: {
         ...getAuthHeaders(),
