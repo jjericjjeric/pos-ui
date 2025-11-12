@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useInventory } from '../context/useInventory';
+import { useStore } from '../context/useStore';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { useFormValidation } from '../hooks/useFormValidation';
 import { useImageCache } from '../hooks/useImageCache';
 import FormField from '../components/FormField';
+import StoreSelector from '../components/StoreSelector';
 
 const AddProductPage = () => {
   const navigate = useNavigate();
@@ -214,9 +216,12 @@ const AddProductPage = () => {
           >
             <span className="text-xl sm:text-2xl text-gray-700">←</span>
           </button>
-          <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800">
+          <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800 flex-1">
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h1>
+          
+          {/* Store Selector */}
+          <StoreSelector className="flex-shrink-0" />
         </div>
       </div>
 
