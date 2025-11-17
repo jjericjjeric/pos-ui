@@ -32,6 +32,7 @@ const ProgressiveImage = ({
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
+  const MAX_RETRIES = 2; // Maximum number of retry attempts
   
   const imgRef = useRef(null);
   const observerRef = useRef(null);
@@ -63,6 +64,7 @@ const ProgressiveImage = ({
         // Cache the image
         setCachedImage(productId, data.image);
         setImageSrc(data.image);
+        setIsLoading(false);
       } else {
         // No image or empty image - show fallback, don't throw error
         setHasError(true);
@@ -71,15 +73,17 @@ const ProgressiveImage = ({
     } catch (error) {
       console.error(`Error loading image for product ${productId}:`, error);
       
-      // Retry once if this is the first failure
-      if (retryCount === 0) {
-        setRetryCount(1);
-        setTimeout(() => fetchImage(), 1000); // Retry after 1 second
+      // Retry up to MAX_RETRIES times with exponential backoff
+      if (retryCount < MAX_RETRIES) {
+        const backoffDelay = Math.min(1000 * Math.pow(2, retryCount), 5000); // Max 5 seconds
+        setRetryCount(prev => prev + 1);
+        console.log(`Retrying image load for product ${productId} (attempt ${retryCount + 1}/${MAX_RETRIES}) in ${backoffDelay}ms`);
+        setTimeout(() => fetchImage(), backoffDelay);
       } else {
+        console.error(`Max retries (${MAX_RETRIES}) reached for product ${productId} image`);
         setHasError(true);
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
