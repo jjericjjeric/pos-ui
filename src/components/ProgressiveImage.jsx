@@ -9,7 +9,7 @@ import { useImageCache } from '../hooks/useImageCache';
  * - Caches images in localStorage (7-day expiry)
  * - Shows loading skeleton while fetching
  * - Falls back to emoji if image fails to load
- * - Automatically retries failed loads (once)
+ * - Automatically retries failed loads (max 2 times)
  * 
  * @param {Object} props
  * @param {number} props.productId - Product ID to load image for
@@ -17,15 +17,13 @@ import { useImageCache } from '../hooks/useImageCache';
  * @param {string} props.className - CSS classes for the image element
  * @param {string} props.fallbackEmoji - Emoji to show on error (default: 📦)
  * @param {boolean} props.eager - Load immediately without Intersection Observer
- * @param {string} props.apiUrl - Base API URL (default: from env or localhost)
  */
 const ProgressiveImage = ({ 
   productId, 
   alt = 'Product', 
   className = '', 
   fallbackEmoji = '📦',
-  eager = false,
-  apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  eager = false
 }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,6 +36,10 @@ const ProgressiveImage = ({
   const observerRef = useRef(null);
   
   const { getCachedImage, setCachedImage } = useImageCache();
+
+  // Get base URL from VITE_API_BASE_URL and remove /api suffix
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+  const apiUrl = apiBaseUrl.replace(/\/api$/, ''); // Remove trailing /api
 
   /**
    * Fetch image from API with cache-busting support
