@@ -34,12 +34,15 @@ const ProgressiveImage = ({
   
   const imgRef = useRef(null);
   const observerRef = useRef(null);
+  const retryCountRef = useRef(0); // Use ref to track retries across async calls
   
   const { getCachedImage, setCachedImage } = useImageCache();
 
   // Get base URL from VITE_API_BASE_URL and remove /api suffix
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
   const apiUrl = apiBaseUrl.replace(/\/api$/, ''); // Remove trailing /api
+  
+  console.log(`[ProgressiveImage] Product ${productId}: apiUrl = ${apiUrl}`);
 
   /**
    * Fetch image from API with cache-busting support
@@ -76,10 +79,11 @@ const ProgressiveImage = ({
       console.error(`Error loading image for product ${productId}:`, error);
       
       // Retry up to MAX_RETRIES times with exponential backoff
-      if (retryCount < MAX_RETRIES) {
-        const backoffDelay = Math.min(1000 * Math.pow(2, retryCount), 5000); // Max 5 seconds
-        setRetryCount(prev => prev + 1);
-        console.log(`Retrying image load for product ${productId} (attempt ${retryCount + 1}/${MAX_RETRIES}) in ${backoffDelay}ms`);
+      if (retryCountRef.current < MAX_RETRIES) {
+        const backoffDelay = Math.min(1000 * Math.pow(2, retryCountRef.current), 5000); // Max 5 seconds
+        retryCountRef.current += 1;
+        setRetryCount(retryCountRef.current);
+        console.log(`Retrying image load for product ${productId} (attempt ${retryCountRef.current}/${MAX_RETRIES}) in ${backoffDelay}ms`);
         setTimeout(() => fetchImage(), backoffDelay);
       } else {
         console.error(`Max retries (${MAX_RETRIES}) reached for product ${productId} image`);
@@ -159,6 +163,7 @@ const ProgressiveImage = ({
         setIsLoading(true);
         setHasError(false);
         setRetryCount(0);
+        retryCountRef.current = 0; // Reset retry counter
         // Re-load image
         loadImage();
       }
