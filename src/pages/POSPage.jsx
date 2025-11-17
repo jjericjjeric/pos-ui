@@ -270,6 +270,11 @@ const POSPage = () => {
 
         {/* Desktop Cart - hidden on mobile/tablet */}
         <div className="hidden lg:flex flex-[0_0_30%] bg-white rounded-xl p-3 flex-col shadow-lg min-w-0 relative">
+          {/* Store Selector for Desktop - Top Section */}
+          <div className="mb-3 flex items-center justify-between">
+            <StoreSelector className="flex-shrink-0" />
+          </div>
+          
           {/* Menu Button for Desktop - Top Right Corner */}
           <div className="absolute top-2 right-2 z-10" ref={desktopMenuRef}>
             <button

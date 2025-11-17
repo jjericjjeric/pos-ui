@@ -288,9 +288,13 @@ const AddProductPage = () => {
                     type="text"
                     name="category"
                     value={formData.category}
-                    onChange={handleChange}
+                    onChange={handleCategoryChange}
                     onFocus={() => {
                       if (formData.category && categorySuggestions.length > 0) {
+                        setShowCategorySuggestions(true);
+                      } else if (existingCategories.length > 0) {
+                        // Show all categories when focused with empty field
+                        setCategorySuggestions(existingCategories);
                         setShowCategorySuggestions(true);
                       }
                     }}
