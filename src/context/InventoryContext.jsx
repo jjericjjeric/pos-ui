@@ -32,7 +32,13 @@ export const InventoryProvider = ({ children }) => {
       if (api.isAuthenticated()) {
         try {
           setUser(api.getUser());
-          await loadProducts();
+          // Only load products if currentStoreId is set
+          const currentStoreId = localStorage.getItem('currentStoreId');
+          if (currentStoreId) {
+            await loadProducts();
+          } else {
+            setLoading(false);
+          }
         } catch (err) {
           console.error('Initial product load failed:', err);
         }
@@ -41,6 +47,24 @@ export const InventoryProvider = ({ children }) => {
       }
     };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Re-fetch products when currentStoreId changes (store switching)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'currentStoreId' && e.newValue && api.isAuthenticated()) {
+        console.log('Store changed, reloading products for store:', e.newValue);
+        loadProducts();
+      }
+    };
+    
+    // Listen for storage changes from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

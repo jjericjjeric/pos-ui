@@ -22,8 +22,8 @@ const RequireAuth = ({ children }) => {
 function App() {
   return (
     <div className="overflow-x-hidden w-full">
-      <InventoryProvider>
-        <StoreProvider>
+      <StoreProvider>
+        <InventoryProvider>
           <CartProvider>
             <Router>
               <Routes>
@@ -39,8 +39,8 @@ function App() {
               </Routes>
             </Router>
           </CartProvider>
-        </StoreProvider>
-      </InventoryProvider>
+        </InventoryProvider>
+      </StoreProvider>
     </div>
   );
 }
