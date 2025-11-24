@@ -2,32 +2,40 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import StoreSelector from '../../components/StoreSelector';
-import { StoreContext } from '../../context/StoreContext';
+import useAppStore from '../../store/useAppStore';
+
+// Mock the Zustand store
+vi.mock('../../store/useAppStore');
 
 describe('StoreSelector Component', () => {
   const mockStores = [
-    { id: 1, name: 'Store A', description: '123 Main St', role: 'Owner' },
-    { id: 2, name: 'Store B', description: '456 Oak Ave', role: 'Admin' },
-    { id: 3, name: 'Store C', description: '789 Pine Rd', role: 'Manager' },
+    { id: 1, name: 'Store A', address: '123 Main St', role: 'Owner' },
+    { id: 2, name: 'Store B', address: '456 Oak Ave', role: 'Admin' },
+    { id: 3, name: 'Store C', address: '789 Pine Rd', role: 'Manager' },
   ];
 
   const mockSwitchStore = vi.fn();
+  const mockUpdateStore = vi.fn();
 
-  const renderWithContext = (stores, currentStoreId = 1) => {
+  const setupMockStore = (stores, currentStoreId = 1) => {
     const currentStore = stores.find(s => s.id === currentStoreId);
-    const contextValue = {
-      userStores: stores,
-      currentStore,
-      switchStore: mockSwitchStore,
-      loading: false,
-      error: null,
-    };
+    
+    useAppStore.mockImplementation((selector) => {
+      const state = {
+        userStores: stores,
+        currentStore,
+        switchStore: mockSwitchStore,
+        updateStore: mockUpdateStore,
+        storesLoading: false,
+      };
+      return selector(state);
+    });
+  };
 
+  const renderComponent = () => {
     return render(
       <BrowserRouter>
-        <StoreContext.Provider value={contextValue}>
-          <StoreSelector />
-        </StoreContext.Provider>
+        <StoreSelector variant="light" />
       </BrowserRouter>
     );
   };
@@ -36,23 +44,26 @@ describe('StoreSelector Component', () => {
     vi.clearAllMocks();
   });
 
-  it('should not render when user has only one store', () => {
+  it('should show single store without dropdown when user has only one store', () => {
     const singleStore = [mockStores[0]];
-    renderWithContext(singleStore);
+    setupMockStore(singleStore);
+    renderComponent();
     
-    // Should show single store badge instead of dropdown
-    expect(screen.queryByText('Store A')).toBeInTheDocument();
+    // Should show single store badge
+    expect(screen.getByText('Store A')).toBeInTheDocument();
   });
 
-  it('should render dropdown when user has multiple stores', () => {
-    renderWithContext(mockStores);
+  it('should render dropdown button when user has multiple stores', () => {
+    setupMockStore(mockStores);
+    renderComponent();
     
     // Should show current store name
     expect(screen.getByText('Store A')).toBeInTheDocument();
   });
 
   it('should show all stores when dropdown is clicked', async () => {
-    renderWithContext(mockStores);
+    setupMockStore(mockStores);
+    renderComponent();
     
     // Click to open dropdown
     const button = screen.getByRole('button');
@@ -69,7 +80,8 @@ describe('StoreSelector Component', () => {
   });
 
   it('should display role badges correctly', async () => {
-    renderWithContext(mockStores);
+    setupMockStore(mockStores);
+    renderComponent();
     
     const button = screen.getByRole('button');
     fireEvent.click(button);
@@ -82,7 +94,8 @@ describe('StoreSelector Component', () => {
   });
 
   it('should call switchStore when a different store is selected', async () => {
-    renderWithContext(mockStores, 1);
+    setupMockStore(mockStores, 1);
+    renderComponent();
     
     // Open dropdown
     const button = screen.getByRole('button');
@@ -90,15 +103,18 @@ describe('StoreSelector Component', () => {
     
     // Click on Store B
     await waitFor(() => {
-      const storeB = screen.getAllByText('Store B')[0].closest('button');
-      fireEvent.click(storeB);
+      const storeButtons = screen.getAllByText('Store B');
+      // Find the actual store button, not the name text
+      const storeButton = storeButtons[0].closest('button');
+      fireEvent.click(storeButton);
     });
     
     expect(mockSwitchStore).toHaveBeenCalledWith(2);
   });
 
   it('should show checkmark on current store', async () => {
-    renderWithContext(mockStores, 1);
+    setupMockStore(mockStores, 1);
+    renderComponent();
     
     const button = screen.getByRole('button');
     fireEvent.click(button);
@@ -109,20 +125,21 @@ describe('StoreSelector Component', () => {
     });
   });
 
-  it('should truncate long store descriptions', () => {
-    const storesWithLongDesc = [
+  it('should handle single store without dropdown', () => {
+    const storesWithOneStore = [
       { id: 1, name: 'Store A', role: 'Owner' },
     ];
     
-    renderWithContext(storesWithLongDesc);
+    setupMockStore(storesWithOneStore);
+    renderComponent();
     
-    // With single store, component shows badge (no button), so this test doesn't apply
-    // StoreSelector only shows dropdown button when userStores.length > 1
+    // With single store, component shows badge (no dropdown button)
     expect(screen.getByText('Store A')).toBeInTheDocument();
   });
 
   it('should close dropdown when clicking outside', async () => {
-    renderWithContext(mockStores);
+    setupMockStore(mockStores);
+    renderComponent();
     
     // Open dropdown
     const button = screen.getByRole('button');
@@ -144,24 +161,11 @@ describe('StoreSelector Component', () => {
     });
   });
 
-  it('should handle loading state', () => {
-    const contextValue = {
-      userStores: [],
-      currentStore: null,
-      switchStore: mockSwitchStore,
-      loading: true,
-      error: null,
-    };
-
-    render(
-      <BrowserRouter>
-        <StoreContext.Provider value={contextValue}>
-          <StoreSelector />
-        </StoreContext.Provider>
-      </BrowserRouter>
-    );
+  it('should handle empty stores state', () => {
+    setupMockStore([]);
+    renderComponent();
     
-    // Should not render anything while loading
+    // Should not render anything when no stores
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 });

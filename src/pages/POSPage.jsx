@@ -1,8 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useInventory } from '../context/useInventory';
-import { useCart } from '../context/useCart';
-import { useStore } from '../context/useStore';
+import useAppStore from '../store/useAppStore';
 import { useLazyLoad } from '../hooks/useLazyLoad';
 import { useToast } from '../hooks/useToast';
 import { useClickOutside } from '../hooks/useClickOutside';
@@ -18,8 +16,21 @@ import CategoryFilter from '../components/CategoryFilter';
 import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
-  const { products, loading, error, logoutUser, user, deleteProduct, addProduct } = useInventory();
-  const { cart, cartBadgeBounce, addToCart, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
+  // Zustand store selectors
+  const products = useAppStore((state) => state.products);
+  const loading = useAppStore((state) => state.productsLoading);
+  const user = useAppStore((state) => state.user);
+  const cart = useAppStore((state) => state.cart);
+  const cartBadgeBounce = useAppStore((state) => state.cartBadgeBounce);
+  
+  // Zustand actions (stable references)
+  const logout = useAppStore((state) => state.logout);
+  const deleteProduct = useAppStore((state) => state.deleteProduct);
+  const addProduct = useAppStore((state) => state.addProduct);
+  const addToCart = useAppStore((state) => state.addToCart);
+  const removeFromCart = useAppStore((state) => state.removeFromCart);
+  const updateCartQuantity = useAppStore((state) => state.updateCartQuantity);
+  
   const { toasts, addToast, removeToast } = useToast();
   const navigate = useNavigate();
   const [showCartModal, setShowCartModal] = useState(false);
@@ -32,6 +43,15 @@ const POSPage = () => {
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
   const mobileMenuRef = useRef(null);
   const desktopMenuRef = useRef(null);
+
+  // Helper functions for cart (memoized)
+  const getTotalPrice = useMemo(() => {
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }, [cart]);
+  
+  const getTotalItems = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  }, [cart]);
 
   // Get unique categories from products
   const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
@@ -75,10 +95,13 @@ const POSPage = () => {
   };
 
   const handleUpdateQuantity = (productId, newQuantity) => {
-    const result = updateQuantity(productId, newQuantity, products);
-    if (!result.success && result.message) {
-      alert(result.message);
+    const product = products.find(p => p.id === productId);
+    if (product && newQuantity > product.stock) {
+      alert(`Cannot exceed stock quantity (${product.stock})`);
+      return { success: false, message: `Cannot exceed stock quantity (${product.stock})` };
     }
+    updateCartQuantity(productId, newQuantity);
+    return { success: true };
   };
 
   const handleCheckout = () => {
@@ -89,8 +112,8 @@ const POSPage = () => {
     navigate('/payment');
   };
 
-  const totalPrice = getTotalPrice();
-  const cartItemCount = getTotalItems();
+  const totalPrice = getTotalPrice;
+  const cartItemCount = getTotalItems;
 
   // Product management handlers
   const handleEditProduct = (product) => {
@@ -148,7 +171,7 @@ const POSPage = () => {
     <div className="h-dvh w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
       {/* Compact Header - Only on mobile for Cart & Menu */}
       <div className="lg:hidden bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2 flex-shrink-0">
-        <StoreSelector className="flex-shrink-0" />
+        <StoreSelector className="flex-shrink-0" variant="light" />
         {user && (
           <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate max-w-[100px]">
             <strong>{user.username}</strong>
@@ -184,7 +207,7 @@ const POSPage = () => {
             <MenuDropdown 
               isOpen={showMobileMenu}
               onClose={() => setShowMobileMenu(false)}
-              logoutUser={logoutUser}
+              logoutUser={logout}
             />
           </div>
         </div>
@@ -214,12 +237,7 @@ const POSPage = () => {
             {loading && (
               <div className="text-center p-6 text-gray-600 text-base sm:text-lg">Loading products...</div>
             )}
-            {error && (
-              <div className="text-center p-4 bg-red-50 text-red-700 rounded-lg my-2 border border-red-200 text-sm">
-                Error loading products: {error}. Please make sure the API server is running.
-              </div>
-            )}
-            {!loading && !error && (
+            {!loading && (
               <>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-2.5">
                   {displayedProducts.length === 0 ? (
@@ -272,7 +290,7 @@ const POSPage = () => {
         <div className="hidden lg:flex flex-[0_0_30%] bg-white rounded-xl p-3 flex-col shadow-lg min-w-0 relative">
           {/* Store Selector for Desktop - Top Section */}
           <div className="mb-3 flex items-center justify-between">
-            <StoreSelector className="flex-shrink-0" />
+            <StoreSelector className="flex-shrink-0" variant="light" />
           </div>
           
           {/* Menu Button for Desktop - Top Right Corner */}
@@ -290,7 +308,7 @@ const POSPage = () => {
             <MenuDropdown 
               isOpen={showDesktopMenu}
               onClose={() => setShowDesktopMenu(false)}
-              logoutUser={logoutUser}
+              logoutUser={logout}
             />
           </div>
           

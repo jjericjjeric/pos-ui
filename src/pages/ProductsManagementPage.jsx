@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useInventory } from '../context/useInventory';
-import { useStore } from '../context/useStore';
+import useAppStore from '../store/useAppStore';
 import { useLazyLoad } from '../hooks/useLazyLoad';
 import { useToast } from '../hooks/useToast';
 import { useClickOutside } from '../hooks/useClickOutside';
@@ -12,7 +11,13 @@ import StoreSelector from '../components/StoreSelector';
 import { ToastContainer } from '../components/Toast';
 
 const ProductsManagementPage = () => {
-  const { products, loading, error, user, deleteProduct, logoutUser } = useInventory();
+  // Zustand store selectors
+  const products = useAppStore((state) => state.products);
+  const loading = useAppStore((state) => state.productsLoading);
+  const user = useAppStore((state) => state.user);
+  const deleteProduct = useAppStore((state) => state.deleteProduct);
+  const logout = useAppStore((state) => state.logout);
+  
   const { toasts, addToast, removeToast } = useToast();
   const navigate = useNavigate();
   
@@ -223,14 +228,6 @@ const ProductsManagementPage = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
-        <div className="text-white text-xl sm:text-2xl">Error: {error}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
       {/* Compact Header */}
@@ -272,7 +269,7 @@ const ProductsManagementPage = () => {
                     className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold flex items-center gap-2"
                     onClick={() => {
                       setShowMenu(false);
-                      logoutUser();
+                      logout();
                       navigate('/');
                     }}
                   >

@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useInventory } from '../context/useInventory';
+import useAppStore from '../store/useAppStore';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loginUser, error, loading } = useInventory();
+  const { login } = useAppStore();
 
   const [mobileNumber, setMobileNumber] = useState('');
   const [pin, setPin] = useState('');
   const [localError, setLocalError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Check for registration success message
@@ -61,7 +62,10 @@ const LoginPage = () => {
       return;
     }
 
-    const result = await loginUser(cleanMobile, pin, rememberMe);
+    setLoading(true);
+    const result = await login(cleanMobile, pin, rememberMe);
+    setLoading(false);
+    
     if (result.success) {
       navigate('/pos');
     } else {
@@ -162,11 +166,11 @@ const LoginPage = () => {
             )}
 
             {/* Error Message */}
-            {(localError || error) && (
+            {localError && (
               <div className="bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-lg flex items-start gap-3">
                 <span className="text-red-500 text-xl mt-0.5">⚠️</span>
                 <div className="flex-1">
-                  <p className="text-red-800 text-sm font-medium m-0">{localError || error}</p>
+                  <p className="text-red-800 text-sm font-medium m-0">{localError}</p>
                 </div>
               </div>
             )}

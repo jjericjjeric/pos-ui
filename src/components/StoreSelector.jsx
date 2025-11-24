@@ -1,14 +1,24 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useStore } from '../context/useStore';
+import useAppStore from '../store/useAppStore';
 import { useClickOutside } from '../hooks/useClickOutside';
 
-const StoreSelector = ({ className = '' }) => {
-  const { currentStore, userStores, switchStore, loading } = useStore();
+const StoreSelector = ({ className = '', variant = 'dark' }) => {
+  const currentStore = useAppStore((state) => state.currentStore);
+  const userStores = useAppStore((state) => state.userStores);
+  const switchStore = useAppStore((state) => state.switchStore);
+  const updateStore = useAppStore((state) => state.updateStore);
+  const loading = useAppStore((state) => state.storesLoading);
   const [isOpen, setIsOpen] = useState(false);
+  const [editingStoreId, setEditingStoreId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
   const dropdownRef = useRef(null);
 
-  useClickOutside(dropdownRef, () => setIsOpen(false));
+  useClickOutside(dropdownRef, () => {
+    setIsOpen(false);
+    setEditingStoreId(null);
+  });
 
   const handleStoreChange = async (storeId) => {
     if (storeId === currentStore?.id) {
@@ -25,16 +35,58 @@ const StoreSelector = ({ className = '' }) => {
     }
   };
 
+  const handleEditClick = (store, e) => {
+    e.stopPropagation();
+    setEditingStoreId(store.id);
+    setEditName(store.name);
+  };
+
+  const handleSaveEdit = async (storeId, e) => {
+    e.stopPropagation();
+    
+    if (!editName.trim()) {
+      alert('Store name cannot be empty');
+      return;
+    }
+
+    if (editName.trim() === userStores.find(s => s.id === storeId)?.name) {
+      setEditingStoreId(null);
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      await updateStore(storeId, { name: editName.trim() });
+      setEditingStoreId(null);
+      setIsUpdating(false);
+    } catch (error) {
+      console.error('Failed to update store name:', error);
+      alert('Failed to update store name. Please try again.');
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancelEdit = (e) => {
+    e.stopPropagation();
+    setEditingStoreId(null);
+    setEditName('');
+  };
+
   if (!currentStore || userStores.length === 0) {
     return null;
   }
 
+  // Styling based on variant (dark for purple bg, light for white bg)
+  const bgClass = variant === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-primary/10 hover:bg-primary/20 border border-primary/30';
+  const textClass = variant === 'dark' ? 'text-white' : 'text-gray-800';
+  const subTextClass = variant === 'dark' ? 'text-white/70' : 'text-gray-600';
+
   // Only show selector if user has multiple stores
   if (userStores.length === 1) {
     return (
-      <div className={`flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg ${className}`}>
+      <div className={`flex items-center gap-2 px-3 py-2 ${bgClass} rounded-lg ${className}`}>
         <span className="text-sm md:text-base">🏪</span>
-        <span className="text-sm md:text-base font-medium text-white truncate max-w-[150px] md:max-w-none">
+        <span className={`text-sm md:text-base font-medium ${textClass} truncate max-w-[150px] md:max-w-none`}>
           {currentStore.name}
         </span>
       </div>
@@ -46,51 +98,106 @@ const StoreSelector = ({ className = '' }) => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={loading}
-        className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors min-w-[180px] md:min-w-[200px]"
+        className={`flex items-center gap-2 px-3 py-2 ${bgClass} rounded-lg transition-colors min-w-[180px] md:min-w-[200px]`}
       >
         <span className="text-sm md:text-base">🏪</span>
         <div className="flex-1 text-left">
-          <div className="text-xs text-white/70">Current Store</div>
-          <div className="text-sm md:text-base font-medium text-white truncate">
+          <div className={`text-xs ${subTextClass}`}>Current Store</div>
+          <div className={`text-sm md:text-base font-medium ${textClass} truncate`}>
             {currentStore.name}
           </div>
         </div>
-        <span className="text-white text-sm">▼</span>
+        <span className={`${textClass} text-sm`}>▼</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto">
+        <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto">
           <div className="p-2">
-            <div className="text-xs font-semibold text-gray-500 uppercase px-2 py-1">
+            <div className="text-xs font-semibold text-gray-500 uppercase px-2 py-1 mb-1">
               Your Stores ({userStores.length})
             </div>
             {userStores.map((store) => (
-              <button
+              <div
                 key={store.id}
-                onClick={() => handleStoreChange(store.id)}
-                className={`w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition-colors ${
+                className={`rounded-md mb-1 ${
                   store.id === currentStore.id
-                    ? 'bg-primary/10 text-primary font-semibold'
-                    : 'text-gray-700'
+                    ? 'bg-primary/10'
+                    : ''
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="font-medium">{store.name}</div>
-                    {store.address && (
-                      <div className="text-xs text-gray-500 truncate">
-                        {store.address}
-                      </div>
-                    )}
-                    <div className="text-xs text-gray-400 mt-1">
-                      Role: <span className="font-medium">{store.role}</span>
+                {editingStoreId === store.id ? (
+                  // Edit mode
+                  <div className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveEdit(store.id, e);
+                        if (e.key === 'Escape') handleCancelEdit(e);
+                      }}
+                      className="w-full px-2 py-1 border border-primary rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      autoFocus
+                      disabled={isUpdating}
+                    />
+                    <div className="flex gap-1 mt-2">
+                      <button
+                        onClick={(e) => handleSaveEdit(store.id, e)}
+                        disabled={isUpdating}
+                        className="flex-1 px-2 py-1 bg-primary text-white rounded text-xs hover:bg-primary/90 disabled:opacity-50"
+                      >
+                        {isUpdating ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={isUpdating}
+                        className="flex-1 px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300 disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
                     </div>
                   </div>
-                  {store.id === currentStore.id && (
-                    <span className="text-primary ml-2">✓</span>
-                  )}
-                </div>
-              </button>
+                ) : (
+                  // View mode
+                  <div className="flex items-center justify-between group">
+                    <button
+                      onClick={() => handleStoreChange(store.id)}
+                      className={`flex-1 text-left px-3 py-2 hover:bg-gray-100 transition-colors rounded-md ${
+                        store.id === currentStore.id
+                          ? 'text-primary font-semibold'
+                          : 'text-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 mr-2">
+                          <div className="font-medium">{store.name}</div>
+                          {store.address && (
+                            <div className="text-xs text-gray-500 truncate">
+                              {store.address}
+                            </div>
+                          )}
+                          <div className="text-xs text-gray-400 mt-1">
+                            Role: <span className="font-medium">{store.role}</span>
+                          </div>
+                        </div>
+                        {store.id === currentStore.id && (
+                          <span className="text-primary">✓</span>
+                        )}
+                      </div>
+                    </button>
+                    {/* Edit button - show only for Owner/Admin */}
+                    {(store.role === 'Owner' || store.role === 'Admin') && (
+                      <button
+                        onClick={(e) => handleEditClick(store, e)}
+                        className="px-2 py-1 text-gray-400 hover:text-primary hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Rename store"
+                      >
+                        ✏️
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -101,6 +208,7 @@ const StoreSelector = ({ className = '' }) => {
 
 StoreSelector.propTypes = {
   className: PropTypes.string,
+  variant: PropTypes.oneOf(['dark', 'light']),
 };
 
 export default StoreSelector;

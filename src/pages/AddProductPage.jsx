@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useInventory } from '../context/useInventory';
-import { useStore } from '../context/useStore';
+import useAppStore from '../store/useAppStore';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { useFormValidation } from '../hooks/useFormValidation';
 import { useImageCache } from '../hooks/useImageCache';
@@ -11,7 +10,13 @@ import StoreSelector from '../components/StoreSelector';
 const AddProductPage = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Get product ID from URL params
-  const { addProduct, updateProduct, products, loading } = useInventory();
+  
+  // Zustand store selectors
+  const products = useAppStore((state) => state.products);
+  const loading = useAppStore((state) => state.productsLoading);
+  const addProduct = useAppStore((state) => state.addProduct);
+  const updateProduct = useAppStore((state) => state.updateProduct);
+  
   const { invalidateImage } = useImageCache();
   
   // Determine if we're in edit mode

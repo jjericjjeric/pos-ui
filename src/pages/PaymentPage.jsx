@@ -1,13 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Modal from '../components/Modal';
 import { useNavigate } from 'react-router-dom';
-import { useInventory } from '../context/useInventory';
-import { useCart } from '../context/useCart';
+import useAppStore from '../store/useAppStore';
 
 const PaymentPage = () => {
   const navigate = useNavigate();
-  const { updateInventoryAfterPurchase } = useInventory();
-  const { cart, getTotalPrice, clearCart } = useCart();
+  
+  // Zustand store selectors
+  const cart = useAppStore((state) => state.cart);
+  const products = useAppStore((state) => state.products);
+  const loadProducts = useAppStore((state) => state.loadProducts);
+  const clearCart = useAppStore((state) => state.clearCart);
+  
   const orderItemsRef = useRef(null);
 
   const [amountPaid, setAmountPaid] = useState('');
@@ -17,7 +21,11 @@ const PaymentPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const autoCloseTimer = useRef(null);
 
-  const totalPrice = getTotalPrice();
+  // Calculate total price (memoized)
+  const totalPrice = useMemo(() => {
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }, [cart]);
+  
   const change = amountPaid ? parseFloat(amountPaid) - totalPrice : 0;
 
   // Removed auto-redirect on empty cart to allow cart persistence
@@ -52,8 +60,21 @@ const PaymentPage = () => {
     setIsProcessing(true);
 
     try {
-      // Update inventory via API
-      await updateInventoryAfterPurchase(cart);
+      // Update inventory: reduce stock for each cart item
+      for (const cartItem of cart) {
+        const product = products.find(p => p.id === cartItem.id);
+        if (product) {
+          const newStock = product.stock - cartItem.quantity;
+          // Update product with new stock
+          await useAppStore.getState().updateProduct(product.id, {
+            ...product,
+            stock: newStock
+          });
+        }
+      }
+
+      // Reload products to get fresh data
+      await loadProducts();
 
       // Clear cart after successful purchase
       clearCart();
