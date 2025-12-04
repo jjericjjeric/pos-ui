@@ -37,6 +37,14 @@ const MenuDropdown = ({ isOpen, onClose, logoutUser }) => {
           📋 Manage All Products
         </button>
         <div className="border-t border-gray-200 my-1"></div>
+        <div className="px-3 sm:px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">Store</div>
+        <button
+          className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
+          onClick={() => handleNavigation('/store-settings')}
+        >
+          ⚙️ Store Settings
+        </button>
+        <div className="border-t border-gray-200 my-1"></div>
         <button
           className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
           onClick={handleLogout}

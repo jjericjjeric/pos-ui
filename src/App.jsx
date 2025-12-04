@@ -5,6 +5,7 @@ import POSPage from './pages/POSPage';
 import PaymentPage from './pages/PaymentPage';
 import AddProductPage from './pages/AddProductPage';
 import ProductsManagementPage from './pages/ProductsManagementPage';
+import StoreSettingsPage from './pages/StoreSettingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/add-product" element={<RequireAuth><AddProductPage /></RequireAuth>} />
           <Route path="/add-product/:id" element={<RequireAuth><AddProductPage /></RequireAuth>} />
           <Route path="/products-management" element={<RequireAuth><ProductsManagementPage /></RequireAuth>} />
+          <Route path="/store-settings" element={<RequireAuth><StoreSettingsPage /></RequireAuth>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
