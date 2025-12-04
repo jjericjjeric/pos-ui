@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useImageCache } from '../hooks/useImageCache';
+import { getToken } from '../services/api';
 
 /**
  * ProgressiveImage Component
@@ -52,10 +53,20 @@ const ProgressiveImage = ({
       setIsLoading(true);
       setHasError(false);
 
+      // Get auth token for Authorization header
+      const token = getToken();
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       // Add cache-busting query parameter to bypass HTTP cache
       const url = `${apiUrl}/api/products/${productId}/image?_t=${cacheBuster}`;
       const response = await fetch(url, {
         cache: 'no-cache', // Ensure fresh fetch from server
+        headers,
       });
       
       if (!response.ok) {
