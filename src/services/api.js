@@ -152,6 +152,32 @@ export const login = async (username, password, remember = true) => {
 };
 
 /**
+ * Guest login - creates a guest user with a temporary session
+ */
+export const loginAsGuest = async (storeName = 'My Store') => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/guest`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ store_name: storeName }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to create guest session');
+    }
+    const data = await response.json();
+    // Store auth in sessionStorage only (guests shouldn't be remembered)
+    setAuth({ token: data.token, username: 'Guest', role: 'GUEST' }, false);
+    return data;
+  } catch (error) {
+    console.error('Error logging in as guest:', error);
+    throw error;
+  }
+};
+
+/**
  * Send OTP to mobile number
  */
 export const sendOTP = async (mobileNumber) => {

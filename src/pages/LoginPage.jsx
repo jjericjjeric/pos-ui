@@ -5,7 +5,7 @@ import useAppStore from '../store/useAppStore';
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAppStore();
+  const { login, loginAsGuest } = useAppStore();
 
   const [mobileNumber, setMobileNumber] = useState('');
   const [pin, setPin] = useState('');
@@ -70,6 +70,20 @@ const LoginPage = () => {
       navigate('/pos');
     } else {
       setLocalError(result.error || 'Login failed. Please check your mobile number and PIN.');
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    setLocalError('');
+    setLoading(true);
+    
+    const result = await loginAsGuest('Guest Store');
+    setLoading(false);
+    
+    if (result.success) {
+      navigate('/pos');
+    } else {
+      setLocalError(result.error || 'Failed to start guest session. Please try again.');
     }
   };
 
@@ -196,7 +210,25 @@ const LoginPage = () => {
           </form>
 
           {/* Footer */}
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center space-y-3">
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center space-y-4">
+            {/* Guest Login Option */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-900 font-medium mb-2">
+                🎯 Want to try it first?
+              </p>
+              <button
+                type="button"
+                onClick={handleGuestLogin}
+                disabled={loading}
+                className="w-full px-6 py-2.5 text-sm font-semibold text-blue-700 bg-white border-2 border-blue-300 rounded-lg transition-all hover:bg-blue-50 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Starting...' : '✨ Continue as Guest'}
+              </button>
+              <p className="text-xs text-blue-700 mt-2">
+                No registration required • Quick demo access
+              </p>
+            </div>
+
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
               <button

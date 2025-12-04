@@ -43,6 +43,25 @@ const useAppStore = create(
         }
       },
 
+      loginAsGuest: async (storeName = 'My Store') => {
+        try {
+          const data = await api.loginAsGuest(storeName);
+          
+          set({
+            isAuthenticated: true,
+            user: { username: 'Guest', role: 'GUEST' },
+            token: data.token,
+          });
+
+          // Load user's stores after guest login
+          await get().loadUserStores();
+
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
       logout: () => {
         api.logout();
         set({

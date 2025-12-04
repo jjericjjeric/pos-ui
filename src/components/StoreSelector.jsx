@@ -169,7 +169,7 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
                             </div>
                           )}
                           <div className="text-xs text-gray-400 mt-1">
-                            Role: <span className="font-medium">{store.role}</span>
+                            Role: <span className="font-medium">{store.role.charAt(0).toUpperCase() + store.role.slice(1)}</span>
                           </div>
                         </div>
                         {store.id === currentStore.id && (
@@ -178,7 +178,7 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
                       </div>
                     </button>
                     {/* Edit button - show only for Owner/Admin */}
-                    {(store.role === 'Owner' || store.role === 'Admin') && (
+                    {(store.role === 'owner' || store.role === 'admin') && (
                       <button
                         onClick={(e) => handleEditClick(store, e)}
                         className="px-2 py-1 text-gray-400 hover:text-primary hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"
