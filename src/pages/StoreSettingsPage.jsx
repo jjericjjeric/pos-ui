@@ -15,6 +15,7 @@ const StoreSettingsPage = () => {
   const updateStore = useAppStore((state) => state.updateStore);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   
   // Get current store's role (role is directly on the store object)
   const currentStoreRole = currentStore?.role || null;
@@ -88,6 +89,7 @@ const StoreSettingsPage = () => {
     }
     
     setIsSubmitting(true);
+    setSaveSuccess(false);
     
     try {
       await updateStore(currentStore.id, {
@@ -96,7 +98,11 @@ const StoreSettingsPage = () => {
         is_active: formData.isActive
       });
       
+      setSaveSuccess(true);
       addToast('Store settings updated successfully', 'success');
+      
+      // Reset success indicator after 3 seconds
+      setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
       console.error('Error updating store:', error);
       addToast(error.message || 'Failed to update store settings', 'error');
@@ -299,9 +305,11 @@ const StoreSettingsPage = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting || !canEdit}
-                  className={`flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-all text-sm sm:text-base ${
+                  className={`flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-all text-sm sm:text-base relative overflow-hidden ${
                     isSubmitting || !canEdit
                       ? 'bg-gray-400 cursor-not-allowed'
+                      : saveSuccess
+                      ? 'bg-green-500'
                       : 'bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg active:scale-95'
                   }`}
                 >
@@ -312,6 +320,13 @@ const StoreSettingsPage = () => {
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
                       Saving...
+                    </span>
+                  ) : saveSuccess ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Saved!
                     </span>
                   ) : (
                     'Save Changes'
