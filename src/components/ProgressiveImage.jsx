@@ -62,8 +62,15 @@ const ProgressiveImage = ({
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      // Add cache-busting query parameter to bypass HTTP cache
-      const url = `${apiUrl}/api/products/${productId}/image?_t=${cacheBuster}`;
+      // Get store_id from localStorage (required by backend middleware)
+      const storeId = localStorage.getItem('currentStoreId');
+      
+      // Build URL with cache-busting and store_id parameters
+      let url = `${apiUrl}/api/products/${productId}/image?_t=${cacheBuster}`;
+      if (storeId) {
+        url += `&store_id=${storeId}`;
+      }
+      
       const response = await fetch(url, {
         cache: 'no-cache', // Ensure fresh fetch from server
         headers,
