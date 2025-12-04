@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import * as api from '../services/api';
+import api, * as apiExports from '../services/api';
 
 const useAppStore = create(
   persist(
@@ -26,7 +26,7 @@ const useAppStore = create(
       // ============ AUTH ACTIONS ============
       login: async (username, password, remember = true) => {
         try {
-          const data = await api.login(username, password, remember);
+          const data = await apiExports.login(username, password, remember);
           
           set({
             isAuthenticated: true,
@@ -45,7 +45,7 @@ const useAppStore = create(
 
       loginAsGuest: async (storeName = 'My Store') => {
         try {
-          const data = await api.loginAsGuest(storeName);
+          const data = await apiExports.loginAsGuest(storeName);
           
           set({
             isAuthenticated: true,
@@ -63,7 +63,7 @@ const useAppStore = create(
       },
 
       logout: () => {
-        api.logout();
+        apiExports.logout();
         set({
           isAuthenticated: false,
           user: null,
@@ -79,7 +79,7 @@ const useAppStore = create(
       loadUserStores: async () => {
         try {
           set({ storesLoading: true });
-          const stores = await api.getUserStores();
+          const stores = await apiExports.getUserStores();
           
           // Get saved store or use first store
           const savedStoreId = localStorage.getItem('currentStoreId');
@@ -112,7 +112,7 @@ const useAppStore = create(
 
       switchStore: async (storeId) => {
         try {
-          const response = await api.switchStore(storeId);
+          const response = await apiExports.switchStore(storeId);
           
           if (response.token) {
             // Update token
@@ -171,7 +171,7 @@ const useAppStore = create(
 
         try {
           set({ productsLoading: true, productsError: null });
-          const products = await api.fetchProducts();
+          const products = await apiExports.fetchProducts();
           set({ products, productsLoading: false });
         } catch (error) {
           console.error('Failed to load products:', error);
@@ -189,7 +189,7 @@ const useAppStore = create(
 
       addProduct: async (productData) => {
         try {
-          const newProduct = await api.createProduct(productData);
+          const newProduct = await apiExports.createProduct(productData);
           set((state) => ({
             products: [...state.products, newProduct],
           }));
@@ -202,7 +202,7 @@ const useAppStore = create(
 
       updateProduct: async (productId, productData) => {
         try {
-          const updatedProduct = await api.updateProduct(productId, productData);
+          const updatedProduct = await apiExports.updateProduct(productId, productData);
           set((state) => ({
             products: state.products.map((p) =>
               p.id === productId ? updatedProduct : p
@@ -217,7 +217,7 @@ const useAppStore = create(
 
       deleteProduct: async (productId) => {
         try {
-          await api.deleteProduct(productId);
+          await apiExports.deleteProduct(productId);
           set((state) => ({
             products: state.products.filter((p) => p.id !== productId),
           }));
@@ -280,9 +280,9 @@ const useAppStore = create(
       // ============ INITIALIZATION ============
       initialize: async () => {
         // Check if already authenticated
-        if (api.isAuthenticated()) {
-          const user = api.getUser();
-          const token = api.getToken();
+        if (apiExports.isAuthenticated()) {
+          const user = apiExports.getUser();
+          const token = apiExports.getToken();
           
           set({
             isAuthenticated: true,
