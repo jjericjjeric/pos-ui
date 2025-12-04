@@ -226,7 +226,7 @@ const AddProductPage = () => {
           </h1>
           
           {/* Store Selector */}
-          <StoreSelector className="flex-shrink-0" />
+          <StoreSelector className="flex-shrink-0" variant="light" />
         </div>
       </div>
 

@@ -247,7 +247,7 @@ const ProductsManagementPage = () => {
         {/* Right side actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {/* Store Selector */}
-          <StoreSelector className="flex-shrink-0" />
+          <StoreSelector className="flex-shrink-0" variant="light" />
           
           {user && (
             <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate">

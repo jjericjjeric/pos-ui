@@ -81,37 +81,29 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
   const textClass = variant === 'dark' ? 'text-white' : 'text-gray-800';
   const subTextClass = variant === 'dark' ? 'text-white/70' : 'text-gray-600';
 
-  // Only show selector if user has multiple stores
-  if (userStores.length === 1) {
-    return (
-      <div className={`flex items-center gap-2 px-3 py-2 ${bgClass} rounded-lg ${className}`}>
-        <span className="text-sm md:text-base">🏪</span>
-        <span className={`text-sm md:text-base font-medium ${textClass} truncate max-w-[150px] md:max-w-none`}>
-          {currentStore.name}
-        </span>
-      </div>
-    );
-  }
+  // Show dropdown button even with single store (for editing capability)
+  const showAsButton = true; // Always show as button for consistency
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('StoreSelector clicked, current isOpen:', isOpen, 'stores:', userStores.length);
+          setIsOpen(!isOpen);
+        }}
         disabled={loading}
-        className={`flex items-center gap-2 px-3 py-2 ${bgClass} rounded-lg transition-colors min-w-[180px] md:min-w-[200px]`}
+        className={`flex items-center gap-2 px-3 py-2 ${bgClass} rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-95`}
+        type="button"
       >
         <span className="text-sm md:text-base">🏪</span>
-        <div className="flex-1 text-left">
-          <div className={`text-xs ${subTextClass}`}>Current Store</div>
-          <div className={`text-sm md:text-base font-medium ${textClass} truncate`}>
-            {currentStore.name}
-          </div>
-        </div>
-        <span className={`${textClass} text-sm`}>▼</span>
+        <span className={`text-sm md:text-base font-medium ${textClass} truncate`}>
+          {currentStore.name}
+        </span>
+        <span className={`${textClass} text-sm ml-1`}>▼</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto">
+        <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto">
           <div className="p-2">
             <div className="text-xs font-semibold text-gray-500 uppercase px-2 py-1 mb-1">
               Your Stores ({userStores.length})
