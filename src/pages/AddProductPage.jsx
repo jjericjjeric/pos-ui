@@ -72,6 +72,7 @@ const AddProductPage = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [submittedProduct, setSubmittedProduct] = useState(null);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
   const [categorySuggestions, setCategorySuggestions] = useState([]);
 
@@ -170,6 +171,8 @@ const AddProductPage = () => {
         await addProduct(productData);
       }
       
+      // Store the submitted product data for display in success modal
+      setSubmittedProduct(productData);
       setShowSuccessModal(true);
     } catch (error) {
       alert(`Error ${isEditMode ? 'updating' : 'adding'} product: ` + error.message);
@@ -465,35 +468,33 @@ const AddProductPage = () => {
             {/* Product Details */}
             <div className="p-6 space-y-4">
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 text-center">
-                {formData.image ? (
+                {submittedProduct?.image && submittedProduct.image.startsWith('data:image') ? (
                   <img
-                    src={formData.image}
-                    alt={formData.name}
+                    src={submittedProduct.image}
+                    alt={submittedProduct.name}
                     className="w-32 h-32 mx-auto object-cover rounded-lg mb-3"
                   />
                 ) : (
-                  <div className="w-32 h-32 mx-auto bg-gray-200 rounded-lg mb-3 flex items-center justify-center text-gray-400">
-                    <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                  <div className="w-32 h-32 mx-auto bg-gray-200 rounded-lg mb-3 flex items-center justify-center text-6xl">
+                    {submittedProduct?.image || '🛍️'}
                   </div>
                 )}
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{formData.name}</h3>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{submittedProduct?.name}</h3>
                 <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
                   <div className="flex items-center gap-1">
                     <span>₱</span>
-                    <span className="font-semibold text-primary">{parseFloat(formData.price).toFixed(2)}</span>
+                    <span className="font-semibold text-primary">{(submittedProduct?.price || 0).toFixed(2)}</span>
                   </div>
                   <span className="text-gray-400">•</span>
                   <div className="flex items-center gap-1">
                     <span>📦</span>
-                    <span className="font-semibold">{formData.stock} in stock</span>
+                    <span className="font-semibold">{submittedProduct?.stock || 0} in stock</span>
                   </div>
                 </div>
-                {formData.category && formData.category !== 'Uncategorized' && (
+                {submittedProduct?.category && submittedProduct.category !== 'Uncategorized' && (
                   <div className="mt-3">
                     <span className="inline-block bg-gradient-to-r from-primary to-primary-dark text-white text-xs px-3 py-1 rounded-full font-semibold uppercase">
-                      {formData.category}
+                      {submittedProduct.category}
                     </span>
                   </div>
                 )}
