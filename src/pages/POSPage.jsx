@@ -252,7 +252,20 @@ const POSPage = () => {
               <>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(130px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:gap-2.5">
                   {displayedProducts.length === 0 ? (
-                    <div className="text-center p-8 text-gray-400 text-base col-span-full">No products available</div>
+                    <div className="col-span-full flex flex-col items-center justify-center p-12 sm:p-16">
+                      <div className="text-6xl sm:text-7xl mb-4">📦</div>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-700 mb-2">No Products Yet</h3>
+                      <p className="text-sm sm:text-base text-gray-500 mb-6 text-center max-w-md">
+                        Get started by adding your first product to the inventory
+                      </p>
+                      <button
+                        onClick={() => navigate('/add-product')}
+                        className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg font-semibold hover:shadow-lg active:scale-95 transition-all flex items-center gap-2 text-sm sm:text-base"
+                      >
+                        <span className="text-xl">➕</span>
+                        Add Your First Product
+                      </button>
+                    </div>
                   ) : (
                     displayedProducts.map(product => (
                       <ProductTile
