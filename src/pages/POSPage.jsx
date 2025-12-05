@@ -225,7 +225,7 @@ const POSPage = () => {
       </div>
       
       <div className="flex flex-1 overflow-hidden gap-2 p-2 lg:p-3 flex-col lg:flex-row max-w-full min-h-0">
-        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-0 bg-white rounded-xl overflow-hidden shadow-lg flex flex-col max-w-full">
+        <div className="flex-[1_1_auto] lg:flex-[0_0_70%] min-h-0 bg-white rounded-xl overflow-hidden shadow-lg flex flex-col max-w-full relative">
           {/* Search and Category Filter - Sticky */}
           <div className="sticky top-0 bg-white z-10 px-2 sm:px-3 pt-2 sm:pt-3 pb-2 border-b border-gray-200 flex-shrink-0 space-y-2">
             {/* Search Bar */}
@@ -308,6 +308,19 @@ const POSPage = () => {
               </>
             )}
           </div>
+
+          {/* Floating Action Button - Add Product */}
+          <button
+            onClick={() => navigate('/add-product')}
+            className="absolute bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-primary to-primary-dark rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center group"
+            title="Add Product"
+            aria-label="Add Product"
+          >
+            <span className="text-4xl sm:text-5xl filter brightness-0 invert">➕</span>
+            <span className="absolute -top-12 right-0 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden sm:block">
+              Add Product
+            </span>
+          </button>
         </div>
 
         {/* Desktop Cart - hidden on mobile/tablet */}
