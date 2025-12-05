@@ -178,6 +178,48 @@ export const loginAsGuest = async (storeName = 'My Store') => {
 };
 
 /**
+ * Upgrade guest account to registered account
+ * Follows the same flow as registration: Mobile Number → OTP → PIN
+ * Preserves all existing products and store data
+ */
+export const upgradeGuestAccount = async (mobileNumber, otp, pin) => {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/guest/upgrade`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        mobile_number: mobileNumber,
+        otp: otp,
+        pin: pin,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to upgrade account');
+    }
+
+    const data = await response.json();
+    
+    // Update auth with new token and user info
+    setAuth({ token: data.token, username: data.user.username, role: data.user.role }, true);
+    
+    return data;
+  } catch (error) {
+    console.error('Error upgrading guest account:', error);
+    throw error;
+  }
+};
+
+/**
  * Send OTP to mobile number
  */
 export const sendOTP = async (mobileNumber) => {

@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDialog from './ConfirmDialog';
+import UpgradeGuestModal from './UpgradeGuestModal';
+import Toast from './Toast';
 
 const MenuDropdown = ({ isOpen, onClose, logoutUser, user }) => {
   const navigate = useNavigate();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [toast, setToast] = useState(null);
 
   if (!isOpen) return null;
 
@@ -28,6 +32,15 @@ const MenuDropdown = ({ isOpen, onClose, logoutUser, user }) => {
     navigate('/');
     onClose();
     setShowLogoutConfirm(false);
+  };
+
+  const handleUpgradeSuccess = (data) => {
+    setToast({
+      message: `Welcome, ${data.username}! Your account has been upgraded successfully.`,
+      type: 'success',
+    });
+    setShowUpgradeModal(false);
+    onClose();
   };
 
   return (
@@ -59,6 +72,24 @@ const MenuDropdown = ({ isOpen, onClose, logoutUser, user }) => {
           ⚙️ Store Settings
         </button>
         <div className="border-t border-gray-200 my-1"></div>
+        
+        {/* Guest Upgrade Option */}
+        {isGuest && (
+          <>
+            <div className="px-3 sm:px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">Account</div>
+            <button
+              className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-green-50 transition-colors text-green-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
+              onClick={() => {
+                setShowUpgradeModal(true);
+                onClose();
+              }}
+            >
+              ✨ Register Account
+            </button>
+            <div className="border-t border-gray-200 my-1"></div>
+          </>
+        )}
+        
         <button
           className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
           onClick={handleLogoutClick}
@@ -77,6 +108,22 @@ const MenuDropdown = ({ isOpen, onClose, logoutUser, user }) => {
           cancelText="Cancel"
           onConfirm={handleLogout}
           variant="danger"
+        />
+      )}
+
+      {/* Upgrade Guest Modal */}
+      <UpgradeGuestModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onSuccess={handleUpgradeSuccess}
+      />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

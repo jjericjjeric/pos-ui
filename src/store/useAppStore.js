@@ -62,6 +62,43 @@ const useAppStore = create(
         }
       },
 
+      upgradeGuestAccount: async (mobileNumber, otp, pin) => {
+        try {
+          const data = await apiExports.upgradeGuestAccount(mobileNumber, otp, pin);
+          
+          set({
+            isAuthenticated: true,
+            user: { username: data.user.username, role: data.user.role },
+            token: data.token,
+          });
+
+          // Reload user's stores with updated user info
+          await get().loadUserStores();
+
+          return { success: true, data };
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      sendOTP: async (mobileNumber) => {
+        try {
+          const data = await apiExports.sendOTP(mobileNumber);
+          return { success: true, data };
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      verifyOTP: async (mobileNumber, otp) => {
+        try {
+          const data = await apiExports.verifyOTP(mobileNumber, otp);
+          return { success: true, data };
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
       logout: () => {
         apiExports.logout();
         set({
