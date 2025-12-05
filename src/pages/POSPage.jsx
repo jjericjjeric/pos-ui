@@ -169,6 +169,16 @@ const POSPage = () => {
 
   return (
     <div className="h-dvh w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
+      {/* Guest Warning Banner */}
+      {user?.role === 'GUEST' && (
+        <div className="bg-yellow-500 text-white px-3 py-2 text-center text-xs sm:text-sm font-medium flex-shrink-0 shadow-md">
+          <span className="inline-flex items-center gap-2">
+            <span>⚠️</span>
+            <span>Guest Mode: All products and data will be permanently deleted when you logout</span>
+          </span>
+        </div>
+      )}
+      
       {/* Compact Header - Only on mobile for Cart & Menu */}
       <div className="lg:hidden bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex justify-between items-center gap-2 flex-shrink-0">
         <StoreSelector className="flex-shrink-0" variant="light" />
@@ -208,6 +218,7 @@ const POSPage = () => {
               isOpen={showMobileMenu}
               onClose={() => setShowMobileMenu(false)}
               logoutUser={logout}
+              user={user}
             />
           </div>
         </div>
@@ -309,6 +320,7 @@ const POSPage = () => {
               isOpen={showDesktopMenu}
               onClose={() => setShowDesktopMenu(false)}
               logoutUser={logout}
+              user={user}
             />
           </div>
           
