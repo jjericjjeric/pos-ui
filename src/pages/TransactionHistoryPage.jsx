@@ -5,7 +5,6 @@ import { useClickOutside } from '../hooks/useClickOutside';
 import { useToast } from '../hooks/useToast';
 import { ToastContainer } from '../components/Toast';
 import MenuDropdown from '../components/MenuDropdown';
-import StoreSelector from '../components/StoreSelector';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 const TransactionHistoryPage = () => {
@@ -181,10 +180,8 @@ const TransactionHistoryPage = () => {
             </h1>
           </div>
 
-          {/* Right: Store Selector + Menu */}
+          {/* Right: Menu */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <StoreSelector />
-            
             {/* Desktop Menu (hidden on mobile) */}
             <div className="hidden sm:block relative" ref={desktopMenuRef}>
               <button

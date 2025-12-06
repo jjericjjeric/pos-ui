@@ -5,7 +5,6 @@ import { useImageCompression } from '../hooks/useImageCompression';
 import { useFormValidation } from '../hooks/useFormValidation';
 import { useImageCache } from '../hooks/useImageCache';
 import FormField from '../components/FormField';
-import StoreSelector from '../components/StoreSelector';
 
 const AddProductPage = () => {
   const navigate = useNavigate();
@@ -224,12 +223,9 @@ const AddProductPage = () => {
           >
             <span className="text-xl sm:text-2xl text-gray-700">←</span>
           </button>
-          <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800 flex-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h1>
-          
-          {/* Store Selector */}
-          <StoreSelector className="flex-shrink-0" variant="light" />
         </div>
       </div>
 
