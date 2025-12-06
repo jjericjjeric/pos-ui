@@ -163,7 +163,7 @@ const TransactionHistoryPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header - Matches POSPage style */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <div className="flex items-center justify-between p-3 sm:p-4">
+        <div className="flex items-center justify-between px-2 sm:px-3 py-2.5 sm:py-3">
           {/* Left: Back + Title */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
@@ -175,8 +175,8 @@ const TransactionHistoryPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
-              Transaction History
+            <h1 className="text-lg sm:text-xl font-bold text-gray-800">
+              📊 Transaction History
             </h1>
           </div>
 

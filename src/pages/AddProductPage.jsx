@@ -218,17 +218,19 @@ const AddProductPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Compact Header */}
-      <div className="bg-white px-2 sm:px-3 py-1.5 sm:py-2 border-b border-gray-200 z-50">
+      <div className="bg-white px-2 sm:px-3 py-2.5 sm:py-3 border-b border-gray-200 z-50">
         <div className="flex items-center gap-2">
           <button
             onClick={handleCancel}
-            className="p-2 hover:bg-gray-100 rounded-full transition-all active:bg-gray-200 min-w-11 min-h-11 flex items-center justify-center"
+            className="p-2 hover:bg-gray-50 rounded-lg transition-colors min-w-11 min-h-11 flex items-center justify-center"
             aria-label="Go back"
           >
-            <span className="text-xl sm:text-2xl text-gray-700">←</span>
+            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
-            {isEditMode ? 'Edit Product' : 'Add New Product'}
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
+            {isEditMode ? '✏️ Edit Product' : '➕ Add Product'}
           </h1>
         </div>
       </div>
