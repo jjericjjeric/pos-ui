@@ -42,8 +42,6 @@ const ProgressiveImage = ({
   // Get base URL from VITE_API_BASE_URL and remove /api suffix
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
   const apiUrl = apiBaseUrl.replace(/\/api$/, ''); // Remove trailing /api
-  
-  console.log(`[ProgressiveImage] Product ${productId}: apiUrl = ${apiUrl}`);
 
   /**
    * Fetch image from API with cache-busting support

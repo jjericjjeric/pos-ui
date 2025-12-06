@@ -266,12 +266,15 @@ const useAppStore = create(
 
       // ============ CART ACTIONS ============
       addToCart: (product) => {
+        let result = { success: true };
+        
         set((state) => {
           const existingItem = state.cart.find((item) => item.id === product.id);
           
           if (existingItem) {
             // Check stock before increasing quantity
             if (existingItem.quantity >= product.stock) {
+              result = { success: false, message: `Cannot exceed stock quantity (${product.stock})` };
               return {
                 cart: state.cart,
               };
@@ -289,6 +292,8 @@ const useAppStore = create(
             cart: [...state.cart, { ...product, quantity: 1 }],
           };
         });
+        
+        return result;
       },
 
       removeFromCart: (productId) => {
@@ -312,6 +317,73 @@ const useAppStore = create(
 
       clearCart: () => {
         set({ cart: [] });
+      },
+
+      // ============ TRANSACTION ACTIONS ============
+      transactions: [],
+      transactionsLoading: false,
+      transactionsError: null,
+      transactionStats: null,
+      transactionPagination: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        total_pages: 0,
+      },
+
+      createTransaction: async (transactionData) => {
+        try {
+          const result = await apiExports.createTransaction(transactionData);
+          return result;
+        } catch (error) {
+          console.error('Failed to create transaction:', error);
+          throw error;
+        }
+      },
+
+      loadTransactions: async (filters = {}) => {
+        set({ transactionsLoading: true, transactionsError: null });
+        try {
+          const data = await apiExports.getTransactions(filters);
+          set({
+            transactions: data.transactions || [],
+            transactionPagination: {
+              page: data.page || 1,
+              limit: data.limit || 20,
+              total: data.total || 0,
+              total_pages: data.total_pages || 0,
+            },
+            transactionsLoading: false,
+          });
+        } catch (error) {
+          set({
+            transactionsError: error.message,
+            transactionsLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      loadTransactionStats: async (dateRange = {}) => {
+        try {
+          const data = await apiExports.getTransactionStats(dateRange);
+          set({ transactionStats: data.stats });
+        } catch (error) {
+          console.error('Failed to load transaction stats:', error);
+          throw error;
+        }
+      },
+
+      cancelTransaction: async (id) => {
+        try {
+          const result = await apiExports.cancelTransaction(id);
+          // Reload transactions to reflect the cancellation
+          await get().loadTransactions();
+          return result;
+        } catch (error) {
+          console.error('Failed to cancel transaction:', error);
+          throw error;
+        }
       },
 
       // ============ INITIALIZATION ============

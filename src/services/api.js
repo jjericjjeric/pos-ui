@@ -608,8 +608,84 @@ const api = {
 
 export default api;
 
+// ============ TRANSACTION API FUNCTIONS ============
 
+/**
+ * Create a new transaction
+ * @param {Object} transactionData - { items, total_amount, amount_paid, payment_method, notes }
+ * @returns {Promise<Object>} - Created transaction
+ */
+export const createTransaction = async (transactionData) => {
+  const storeId = localStorage.getItem('currentStoreId');
+  
+  if (!storeId) {
+    throw new Error('No store selected');
+  }
 
+  const payload = {
+    store_id: parseInt(storeId, 10),
+    items: transactionData.items,
+    total_amount: transactionData.total_amount,
+    amount_paid: transactionData.amount_paid,
+    payment_method: transactionData.payment_method || 'cash',
+    notes: transactionData.notes || '',
+  };
 
+  return api.post('/transactions', payload);
+};
 
+/**
+ * Get transactions with optional filters
+ * @param {Object} filters - { start_date, end_date, status, payment_method, page, limit }
+ * @returns {Promise<Object>} - { transactions, total, page, limit, total_pages }
+ */
+export const getTransactions = async (filters = {}) => {
+  const params = new URLSearchParams();
+  
+  if (filters.start_date) params.append('start_date', filters.start_date);
+  if (filters.end_date) params.append('end_date', filters.end_date);
+  if (filters.status) params.append('status', filters.status);
+  if (filters.payment_method) params.append('payment_method', filters.payment_method);
+  if (filters.page) params.append('page', filters.page.toString());
+  if (filters.limit) params.append('limit', filters.limit.toString());
+  
+  const queryString = params.toString();
+  const url = queryString ? `/transactions?${queryString}` : '/transactions';
+  
+  return api.get(url);
+};
 
+/**
+ * Get a single transaction by ID
+ * @param {number} id - Transaction ID
+ * @returns {Promise<Object>} - Transaction object with items
+ */
+export const getTransaction = async (id) => {
+  return api.get(`/transactions/${id}`);
+};
+
+/**
+ * Get transaction statistics
+ * @param {Object} dateRange - { start_date, end_date }
+ * @returns {Promise<Object>} - Statistics object
+ */
+export const getTransactionStats = async (dateRange = {}) => {
+  const params = new URLSearchParams();
+  
+  if (dateRange.start_date) params.append('start_date', dateRange.start_date);
+  if (dateRange.end_date) params.append('end_date', dateRange.end_date);
+  
+  const queryString = params.toString();
+  const url = queryString ? `/transactions/stats?${queryString}` : '/transactions/stats';
+  
+  return api.get(url);
+};
+
+/**
+ * Cancel a transaction and restore inventory
+ * @param {number} id - Transaction ID
+ * @returns {Promise<Object>} - Cancellation response
+ */
+export const cancelTransaction = async (id) => {
+  return api.post(`/transactions/${id}/cancel`);
+};

@@ -84,8 +84,8 @@ const POSPage = () => {
   useClickOutside(desktopMenuRef, () => setShowDesktopMenu(false), showDesktopMenu);
 
   const handleAddToCart = (product) => {
-    const result = addToCart(product, addToast);
-    if (!result.success && result.message) {
+    const result = addToCart(product);
+    if (result && !result.success && result.message) {
       alert(result.message);
     }
   };

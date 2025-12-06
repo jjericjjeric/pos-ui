@@ -11,6 +11,8 @@ const PaymentPage = () => {
   const products = useAppStore((state) => state.products);
   const loadProducts = useAppStore((state) => state.loadProducts);
   const clearCart = useAppStore((state) => state.clearCart);
+  const createTransaction = useAppStore((state) => state.createTransaction);
+  const currentStore = useAppStore((state) => state.currentStore);
   
   const orderItemsRef = useRef(null);
 
@@ -60,20 +62,27 @@ const PaymentPage = () => {
     setIsProcessing(true);
 
     try {
-      // Update inventory: reduce stock for each cart item
-      for (const cartItem of cart) {
-        const product = products.find(p => p.id === cartItem.id);
-        if (product) {
-          const newStock = product.stock - cartItem.quantity;
-          // Update product with new stock
-          await useAppStore.getState().updateProduct(product.id, {
-            ...product,
-            stock: newStock
-          });
-        }
-      }
+      // Prepare transaction data
+      const transactionItems = cart.map(item => ({
+        product_id: item.id,
+        product_name: item.name,
+        quantity: item.quantity,
+        unit_price: item.price,
+        subtotal: item.price * item.quantity,
+      }));
 
-      // Reload products to get fresh data
+      const transactionData = {
+        items: transactionItems,
+        total_amount: totalPrice,
+        amount_paid: paid,
+        payment_method: 'cash',
+        notes: '',
+      };
+
+      // Create transaction (this will also update inventory on the backend)
+      await createTransaction(transactionData);
+
+      // Reload products to get fresh data with updated stock
       await loadProducts();
 
       // Clear cart after successful purchase

@@ -71,6 +71,12 @@ const MenuDropdown = ({ isOpen, onClose, logoutUser, user }) => {
         >
           ⚙️ Store Settings
         </button>
+        <button
+          className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm"
+          onClick={() => handleNavigation('/transaction-history')}
+        >
+          📊 Transaction History
+        </button>
         <div className="border-t border-gray-200 my-1"></div>
         
         {/* Guest Upgrade Option */}
