@@ -87,7 +87,6 @@ const MenuDropdown = ({ isOpen, onClose, logoutUser, user }) => {
               className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-green-50 transition-colors text-green-600 border-none bg-transparent cursor-pointer text-sm font-semibold"
               onClick={() => {
                 setShowUpgradeModal(true);
-                onClose();
               }}
             >
               ✨ Register Account
