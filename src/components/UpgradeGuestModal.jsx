@@ -290,7 +290,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="flex-1 px-4 py-2.5 bg-[#667eea] text-white rounded-lg font-semibold hover:bg-[#5568d3] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 {loading ? (
                   <>
@@ -360,7 +360,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="flex-1 px-4 py-2.5 bg-[#667eea] text-white rounded-lg font-semibold hover:bg-[#5568d3] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 {loading ? (
                   <>
@@ -434,7 +434,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="flex-1 px-4 py-2.5 bg-[#667eea] text-white rounded-lg font-semibold hover:bg-[#5568d3] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 {loading ? (
                   <>

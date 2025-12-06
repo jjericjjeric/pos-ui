@@ -187,8 +187,11 @@ const AddProductPage = () => {
   // Show loading state while products are being fetched in edit mode
   if (isEditMode && loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
-        <div className="text-white text-xl sm:text-2xl">Loading product...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#00C853] mx-auto mb-4"></div>
+          <p className="text-xl font-semibold text-gray-700">Loading product...</p>
+        </div>
       </div>
     );
   }
@@ -196,13 +199,14 @@ const AddProductPage = () => {
   // Show not found if in edit mode but product doesn't exist
   if (isEditMode && !existingProduct && !loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 max-w-md text-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-6 sm:p-8 max-w-md text-center">
+          <div className="text-6xl mb-4">⚠️</div>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Product Not Found</h2>
           <p className="text-gray-600 mb-6">The product you're trying to edit doesn't exist.</p>
           <button
             onClick={() => navigate('/products-management')}
-            className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+            className="px-6 py-3 bg-[#667eea] text-white rounded-lg font-semibold hover:bg-[#5568d3] transition-all"
           >
             Back to Products
           </button>
@@ -212,9 +216,9 @@ const AddProductPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Compact Header */}
-      <div className="bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50">
+      <div className="bg-white px-2 sm:px-3 py-1.5 sm:py-2 border-b border-gray-200 z-50">
         <div className="flex items-center gap-2">
           <button
             onClick={handleCancel}
@@ -373,7 +377,7 @@ const AddProductPage = () => {
                     <button
                       type="button"
                       onClick={handleCameraCapture}
-                      className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-300 rounded-lg sm:rounded-xl transition-all active:scale-95"
+                      className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg sm:rounded-xl transition-all active:scale-95"
                     >
                       <svg className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -385,7 +389,7 @@ const AddProductPage = () => {
                     <button
                       type="button"
                       onClick={handleFileSelect}
-                      className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-300 rounded-lg sm:rounded-xl transition-all active:scale-95"
+                      className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg sm:rounded-xl transition-all active:scale-95"
                     >
                       <svg className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -451,19 +455,19 @@ const AddProductPage = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Success Icon */}
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-8 text-center">
+            <div className="bg-[#00C853] p-8 text-center">
               <div className="w-20 h-20 mx-auto bg-white rounded-full flex items-center justify-center shadow-lg mb-4">
-                <span className="text-5xl">✓</span>
+                <span className="text-5xl text-[#00C853]">✓</span>
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Success!</h2>
-              <p className="text-green-50 text-sm">
+              <p className="text-white/90 text-sm">
                 Product has been {isEditMode ? 'updated' : 'added to inventory'}
               </p>
             </div>
 
             {/* Product Details */}
             <div className="p-6 space-y-4">
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 text-center">
+              <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 text-center">
                 {submittedProduct?.image && submittedProduct.image.startsWith('data:image') ? (
                   <img
                     src={submittedProduct.image}
@@ -489,7 +493,7 @@ const AddProductPage = () => {
                 </div>
                 {submittedProduct?.category && submittedProduct.category !== 'Uncategorized' && (
                   <div className="mt-3">
-                    <span className="inline-block bg-gradient-to-r from-primary to-primary-dark text-white text-xs px-3 py-1 rounded-full font-semibold uppercase">
+                    <span className="inline-block bg-[#667eea] text-white text-xs px-3 py-1 rounded-full font-semibold uppercase">
                       {submittedProduct.category}
                     </span>
                   </div>

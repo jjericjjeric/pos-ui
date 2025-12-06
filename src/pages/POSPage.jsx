@@ -168,9 +168,9 @@ const POSPage = () => {
   };
 
   return (
-    <div className="h-dvh w-full flex flex-col bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
+    <div className="h-dvh w-full flex flex-col bg-gray-50 overflow-hidden">
       {/* Guest Warning Banner */}
-      {user?.role === 'GUEST' && (
+      {user && user.role === 'GUEST' && (
         <div className="bg-yellow-500 text-white px-3 py-2 text-center text-xs sm:text-sm font-medium flex-shrink-0 shadow-md">
           <span className="inline-flex items-center gap-2">
             <span>⚠️</span>
@@ -260,7 +260,7 @@ const POSPage = () => {
                       </p>
                       <button
                         onClick={() => navigate('/add-product')}
-                        className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg font-semibold hover:shadow-lg active:scale-95 transition-all flex items-center gap-2 text-sm sm:text-base"
+                        className="px-6 py-3 bg-[#00C853] text-white rounded-lg font-semibold hover:bg-[#00B548] active:scale-95 transition-all flex items-center gap-2 text-sm sm:text-base"
                       >
                         <span className="text-xl">➕</span>
                         Add Your First Product
@@ -275,7 +275,7 @@ const POSPage = () => {
                         onEdit={handleEditProduct}
                         onDelete={handleDeleteProduct}
                         onViewDetails={handleViewDetails}
-                        userRole={user?.role}
+                        userRole={user && user.role}
                       />
                     ))
                   )}
@@ -385,7 +385,7 @@ const POSPage = () => {
         onConfirm={handleConfirmDelete}
         title="Delete Product"
         message="Are you sure you want to delete this product? You'll have 5 seconds to undo."
-        productName={deletingProduct?.name}
+        productName={deletingProduct && deletingProduct.name}
         confirmText="Delete"
         cancelText="Cancel"
         variant="danger"
