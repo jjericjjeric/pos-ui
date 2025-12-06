@@ -38,8 +38,8 @@ const Modal = ({ isOpen, title, children, actions, onClose }) => {
   if (!render) return null;
 
   return (
-    <div className={`fixed inset-0 bg-black/45 flex items-center justify-center z-[1000] p-4 sm:p-2 ${closing ? 'animate-[fadeOverlayOut_180ms_ease-in_forwards]' : ''}`} onClick={handleOverlayClick}>
-      <div className={`bg-white rounded-[14px] w-full max-w-[480px] md:max-w-[90%] sm:max-w-[95%] h-[80vh] max-h-[700px] sm:h-[85vh] flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden ${closing ? 'animate-modal-out' : 'animate-modal-in'}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div className={`fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4 sm:p-2 ${closing ? 'animate-[fadeOverlayOut_180ms_ease-in_forwards]' : ''}`} onClick={handleOverlayClick}>
+      <div className={`bg-white rounded-lg w-full max-w-[480px] md:max-w-[90%] sm:max-w-[95%] h-[80vh] max-h-[700px] sm:h-[85vh] flex flex-col shadow-xl border border-gray-200 overflow-hidden ${closing ? 'animate-modal-out' : 'animate-modal-in'}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div className="flex items-center justify-between px-5 sm:px-4 py-4 sm:py-3.5 border-b border-gray-200 flex-shrink-0">
           <h3 id="modal-title" className="m-0 text-xl md:text-lg sm:text-base text-gray-800">{title}</h3>
           <button className="border-none bg-transparent text-2xl md:text-xl sm:text-xl leading-none cursor-pointer text-gray-500 hover:text-gray-700" aria-label="Close" onClick={requestClose}>×</button>

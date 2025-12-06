@@ -120,13 +120,13 @@ const StoreSettingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Compact Header */}
-      <div className="bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50">
+      <div className="bg-white px-2 sm:px-3 py-2 sm:py-2.5 border-b border-gray-200 z-50">
         <div className="flex items-center gap-2">
           <button
             onClick={handleCancel}
-            className="p-2 hover:bg-gray-100 rounded-full transition-all active:bg-gray-200 min-w-11 min-h-11 flex items-center justify-center"
+            className="p-2 hover:bg-gray-50 rounded-lg transition-all active:bg-gray-100 min-w-11 min-h-11 flex items-center justify-center"
             aria-label="Go back"
           >
             <span className="text-xl sm:text-2xl text-gray-700">←</span>
@@ -141,7 +141,7 @@ const StoreSettingsPage = () => {
       {/* Main Content */}
       <div className="flex-1 p-2 sm:p-3 overflow-auto">
         <div className="max-w-2xl mx-auto h-full flex flex-col">
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden flex-1 flex flex-col">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden flex-1 flex flex-col">
             {/* Store Info Header */}
             <div className="p-4 sm:p-6 border-b border-gray-200">
               <div className="flex items-start justify-between mb-4">
@@ -150,14 +150,14 @@ const StoreSettingsPage = () => {
                     {currentStore.name}
                   </h2>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
+                    <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium border ${
                       currentStore.is_active 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-green-50 text-green-700 border-green-200' 
+                        : 'bg-gray-50 text-gray-700 border-gray-200'
                     }`}>
                       {currentStore.is_active ? '✓ Active' : 'Inactive'}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-100 text-blue-800">
+                    <span className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
                       {currentStoreRole ? currentStoreRole.charAt(0).toUpperCase() + currentStoreRole.slice(1) : 'Staff'}
                     </span>
                   </div>
@@ -170,10 +170,10 @@ const StoreSettingsPage = () => {
                   <div className="flex items-start gap-3">
                     <span className="text-xl sm:text-2xl">⚠️</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-yellow-900 mb-1 text-sm sm:text-base">
+                      <h3 className="font-semibold text-yellow-800 mb-1 text-sm sm:text-base">
                         Read-Only Access
                       </h3>
-                      <p className="text-xs sm:text-sm text-yellow-800">
+                      <p className="text-xs sm:text-sm text-yellow-700">
                         You need Owner or Admin role to modify store settings. 
                         Contact the store owner to request permission changes.
                       </p>
@@ -222,10 +222,10 @@ const StoreSettingsPage = () => {
                   placeholder="Brief description of your store..."
                   rows={4}
                   maxLength={500}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none text-sm sm:text-base ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#00C853] focus:border-[#00C853] transition-all resize-none text-sm sm:text-base ${
                     errors.description 
                       ? 'border-red-300 bg-red-50' 
-                      : 'border-gray-300 bg-white'
+                      : 'border-gray-200 bg-white'
                   } ${
                     !canEdit ? 'bg-gray-100 cursor-not-allowed' : ''
                   }`}
@@ -270,9 +270,9 @@ const StoreSettingsPage = () => {
                       }
                     }}
                     disabled={!canEdit}
-                    className={`relative inline-flex h-7 w-12 sm:h-8 sm:w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                    className={`relative inline-flex h-7 w-12 sm:h-8 sm:w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00C853] focus:ring-offset-2 ${
                       formData.isActive 
-                        ? 'bg-green-500' 
+                        ? 'bg-[#00C853]' 
                         : 'bg-gray-300'
                     } ${
                       !canEdit ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
@@ -297,7 +297,7 @@ const StoreSettingsPage = () => {
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="flex-1 px-6 py-3 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all text-sm sm:text-base"
+                  className="flex-1 px-6 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all text-sm sm:text-base"
                 >
                   Cancel
                 </button>
@@ -309,8 +309,8 @@ const StoreSettingsPage = () => {
                     isSubmitting || !canEdit
                       ? 'bg-gray-400 cursor-not-allowed'
                       : saveSuccess
-                      ? 'bg-green-500'
-                      : 'bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg active:scale-95'
+                      ? 'bg-[#00C853]'
+                      : 'bg-[#667eea] hover:bg-[#5568d3] active:bg-[#4557b8]'
                   }`}
                 >
                   {isSubmitting ? (

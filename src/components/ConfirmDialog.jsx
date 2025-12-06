@@ -23,8 +23,8 @@ const ConfirmDialog = ({
 
   // Mobile-first: Larger, more visible buttons
   const confirmButtonClass = variant === 'danger'
-    ? 'bg-red-500 hover:bg-red-600 active:bg-red-700 text-white min-h-[48px] sm:min-h-[44px]'
-    : 'bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white min-h-[48px] sm:min-h-[44px]';
+    ? 'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white border border-red-600 min-h-[48px] sm:min-h-[44px]'
+    : 'bg-[#00C853] hover:bg-[#00B548] active:bg-[#009E42] text-white border border-[#00C853] min-h-[48px] sm:min-h-[44px]';
 
   return (
     <Modal
@@ -49,7 +49,7 @@ const ConfirmDialog = ({
         <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end mt-auto pt-4">
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-6 py-3 sm:px-4 sm:py-2 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-gray-800 rounded-lg font-semibold transition-colors min-h-[48px] sm:min-h-[44px]"
+            className="w-full sm:w-auto px-6 py-3 sm:px-4 sm:py-2 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-800 rounded-lg font-semibold transition-colors border border-gray-300 min-h-[48px] sm:min-h-[44px]"
             aria-label="Cancel action"
           >
             {cancelText}

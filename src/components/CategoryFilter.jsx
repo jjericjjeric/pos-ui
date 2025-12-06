@@ -20,14 +20,14 @@ const CategoryFilter = ({
 }) => {
   if (mode === 'pills') {
     return (
-      <div className={`flex gap-1.5 sm:gap-2 flex-wrap ${className}`}>
+      <div className={`flex gap-1.5 flex-wrap ${className}`}>
         {categories.map(category => (
           <button
             key={category}
-            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold cursor-pointer transition-all ${
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all ${
               selectedCategory === category
-                ? 'bg-gradient-to-br from-primary to-primary-dark text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
+                ? 'bg-[#00C853] text-white'
+                : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
             }`}
             onClick={() => onCategoryChange(category)}
           >

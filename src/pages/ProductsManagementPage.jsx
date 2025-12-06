@@ -222,27 +222,27 @@ const ProductsManagementPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
-        <div className="text-white text-xl sm:text-2xl">Loading products...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-700 text-xl sm:text-2xl">Loading products...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary to-primary-dark flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Compact Header */}
-      <div className="bg-white/95 px-2 sm:px-3 py-1.5 sm:py-2 shadow-md z-50 flex items-center gap-2">
+      <div className="bg-white px-2 sm:px-3 py-2 sm:py-2.5 border-b border-gray-200 z-50 flex items-center gap-2">
         {/* Back Button - Leftmost */}
         <button
           onClick={() => navigate('/pos')}
-          className="p-2 hover:bg-gray-100 rounded-full transition-all active:bg-gray-200 min-w-11 min-h-11 flex items-center justify-center flex-shrink-0"
+          className="p-2 hover:bg-gray-50 rounded-lg transition-all active:bg-gray-100 min-w-11 min-h-11 flex items-center justify-center flex-shrink-0"
           aria-label="Go back"
         >
           <span className="text-xl sm:text-2xl text-gray-700">←</span>
         </button>
         
         {/* Title */}
-        <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800 truncate flex-1">📋 Products Management</h1>
+        <h1 className="m-0 text-sm sm:text-base md:text-lg font-bold text-gray-800 truncate flex-1">📋 Products</h1>
         
         {/* Right side actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -257,13 +257,13 @@ const ProductsManagementPage = () => {
           {/* Menu Button */}
           <div className="relative" ref={menuRef}>
             <button
-              className="px-2 sm:px-2.5 py-1.5 bg-gray-600 text-white border-none rounded-lg font-semibold cursor-pointer shadow-md transition-all hover:shadow-lg active:scale-95 text-xs sm:text-sm min-w-11 min-h-11 flex items-center justify-center"
+              className="px-2 sm:px-2.5 py-1.5 bg-white border border-gray-200 text-gray-700 rounded-lg font-semibold cursor-pointer transition-all hover:bg-gray-50 active:bg-gray-100 text-xs sm:text-sm min-w-11 min-h-11 flex items-center justify-center"
               onClick={() => setShowMenu(!showMenu)}
             >
               ☰ <span className="hidden xs:inline ml-1">Menu</span>
             </button>
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
+              <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-[9999]">
                 <div className="py-2">
                   <button
                     className="w-full text-left px-3 sm:px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm font-semibold flex items-center gap-2"
@@ -284,7 +284,7 @@ const ProductsManagementPage = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-2 sm:p-3 overflow-auto">
-        <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-2 sm:p-3 md:p-4">
+        <div className="max-w-7xl mx-auto bg-white rounded-lg border border-gray-200 p-2 sm:p-3 md:p-4">
           {/* Search and Filters */}
           <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4">
             {/* Search Bar - First Priority */}
@@ -301,7 +301,7 @@ const ProductsManagementPage = () => {
               <div className="relative w-[40%]" ref={categoryMenuRef}>
                 <button
                   onClick={() => setShowCategoryMenu(!showCategoryMenu)}
-                  className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
+                  className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-[#00C853] transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
                 >
                   <span className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                     <span className="flex-shrink-0 text-sm sm:text-base">🏷️</span>
@@ -311,7 +311,7 @@ const ProductsManagementPage = () => {
                 </button>
                 
                 {showCategoryMenu && (
-                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:min-w-[200px] bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50 max-h-64 overflow-y-auto">
+                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:min-w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 max-h-64 overflow-y-auto">
                     {categories.map(cat => (
                       <button
                         key={cat}
@@ -319,11 +319,11 @@ const ProductsManagementPage = () => {
                           setSelectedCategory(cat);
                           setShowCategoryMenu(false);
                         }}
-                        className={`w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-none bg-transparent cursor-pointer text-sm sm:text-base flex items-center gap-2 ${
-                          selectedCategory === cat ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700'
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-none bg-transparent cursor-pointer text-sm sm:text-base flex items-center gap-2 ${
+                          selectedCategory === cat ? 'bg-green-50 text-[#00C853] font-semibold' : 'text-gray-700'
                         }`}
                       >
-                        {selectedCategory === cat && <span className="text-primary flex-shrink-0">✓</span>}
+                        {selectedCategory === cat && <span className="text-[#00C853] flex-shrink-0">✓</span>}
                         <span className="truncate">{cat}</span>
                       </button>
                     ))}
@@ -335,7 +335,7 @@ const ProductsManagementPage = () => {
               <div className="relative w-[40%]" ref={sortMenuRef}>
                 <button
                   onClick={() => setShowSortMenu(!showSortMenu)}
-                  className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
+                  className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-[#00C853] transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
                 >
                   <span className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                     <span className="flex-shrink-0 text-sm sm:text-base">↕️</span>
@@ -350,7 +350,7 @@ const ProductsManagementPage = () => {
                 </button>
                 
                 {showSortMenu && (
-                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:min-w-[200px] bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-200 overflow-hidden z-50">
+                  <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:min-w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
                     {[
                       { value: 'name', label: 'Name', icon: '📝' },
                       { value: 'price', label: 'Price', icon: '💰' },
@@ -363,13 +363,13 @@ const ProductsManagementPage = () => {
                           setSortBy(option.value);
                           setShowSortMenu(false);
                         }}
-                        className={`w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-none bg-transparent cursor-pointer text-sm sm:text-base flex items-center gap-2 ${
-                          sortBy === option.value ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700'
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-none bg-transparent cursor-pointer text-sm sm:text-base flex items-center gap-2 ${
+                          sortBy === option.value ? 'bg-green-50 text-[#00C853] font-semibold' : 'text-gray-700'
                         }`}
                       >
                         <span className="flex-shrink-0">{option.icon}</span>
                         <span className="flex-1 truncate">{option.label}</span>
-                        {sortBy === option.value && <span className="text-primary flex-shrink-0">✓</span>}
+                        {sortBy === option.value && <span className="text-[#00C853] flex-shrink-0">✓</span>}
                       </button>
                     ))}
                   </div>
@@ -379,7 +379,7 @@ const ProductsManagementPage = () => {
               {/* Sort Order - 20% */}
               <button
                 onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                className="w-[20%] px-1 sm:px-2 md:px-3 py-2.5 bg-white border-2 border-gray-300 rounded-lg hover:border-primary hover:shadow-md transition-all text-xs sm:text-sm md:text-base min-h-11 flex flex-col sm:flex-row items-center justify-center font-bold gap-0 sm:gap-1"
+                className="w-[20%] px-1 sm:px-2 md:px-3 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-[#00C853] transition-all text-xs sm:text-sm md:text-base min-h-11 flex flex-col sm:flex-row items-center justify-center font-bold gap-0 sm:gap-1"
                 title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               >
                 <span className="text-base sm:text-lg md:text-xl font-black leading-none" style={{ fontWeight: 900 }}>
@@ -396,7 +396,7 @@ const ProductsManagementPage = () => {
               {/* View Mode Toggle */}
               <button
                 onClick={() => setViewMode(prev => prev === 'table' ? 'grid' : 'table')}
-                className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-sm sm:text-base min-h-[44px] flex items-center justify-center gap-2"
+                className="px-3 sm:px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-sm sm:text-base min-h-[44px] flex items-center justify-center gap-2"
               >
                 {viewMode === 'table' ? '📋 Table' : '🎯 Grid'}
               </button>
@@ -404,7 +404,7 @@ const ProductsManagementPage = () => {
               {/* Add Product Button */}
               <button
                 onClick={() => navigate('/add-product')}
-                className="px-3 sm:px-4 py-2 bg-gradient-to-br from-primary to-primary-dark text-white rounded-lg font-semibold hover:-translate-y-0.5 transition-all shadow-md text-sm sm:text-base min-h-[44px] flex items-center justify-center gap-2"
+                className="px-3 sm:px-4 py-2 bg-[#00C853] text-white rounded-lg font-semibold hover:bg-[#00B548] transition-all text-sm sm:text-base min-h-[44px] flex items-center justify-center gap-2"
               >
                 ➕ Add Product
               </button>
@@ -412,8 +412,8 @@ const ProductsManagementPage = () => {
 
             {/* Bulk Actions */}
             {selectedProducts.length > 0 && (
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
-                <span className="text-sm sm:text-base font-semibold text-blue-700">
+              <div className="bg-white border border-green-200 rounded-lg p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
+                <span className="text-sm sm:text-base font-semibold text-gray-700">
                   {selectedProducts.length} product{selectedProducts.length !== 1 ? 's' : ''} selected
                 </span>
                 <div className="flex gap-2 flex-wrap w-full sm:w-auto">
@@ -425,7 +425,7 @@ const ProductsManagementPage = () => {
                   </button>
                   <button
                     onClick={() => setSelectedProducts([])}
-                    className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors text-sm sm:text-base min-h-[44px]"
+                    className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-sm sm:text-base min-h-[44px]"
                   >
                     Clear Selection
                   </button>
@@ -572,24 +572,24 @@ const ProductsManagementPage = () => {
                 {displayedProducts.map((product) => (
                   <div
                     key={product.id}
-                    className={`bg-white rounded-xl p-4 sm:p-5 shadow-md hover:shadow-lg transition-all relative overflow-hidden ${
+                    className={`bg-white rounded-lg p-4 sm:p-5 hover:shadow-md transition-all relative overflow-hidden ${
                       selectedProducts.includes(product.id) 
-                        ? 'ring-2 ring-primary shadow-[0_4px_20px_rgba(102,126,234,0.3)]' 
-                        : 'border border-gray-200 hover:border-primary'
+                        ? 'ring-2 ring-[#00C853] border border-[#00C853]' 
+                        : 'border border-gray-200 hover:border-[#00C853]'
                     }`}
                   >
                   {/* Material Design Checkbox */}
                   <div className="flex justify-between items-start mb-3">
                     <button
                       onClick={() => handleSelectProduct(product.id)}
-                      className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all hover:bg-gray-100 active:bg-gray-200 ${
-                        selectedProducts.includes(product.id) ? 'bg-primary/10' : ''
+                      className={`relative w-11 h-11 rounded-lg flex items-center justify-center transition-all hover:bg-gray-50 active:bg-gray-100 ${
+                        selectedProducts.includes(product.id) ? 'bg-green-50' : ''
                       }`}
                       aria-label="Select product"
                     >
                       <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
                         selectedProducts.includes(product.id) 
-                          ? 'bg-primary border-primary' 
+                          ? 'bg-[#00C853] border-[#00C853]' 
                           : 'border-gray-400 bg-white'
                       }`}>
                         {selectedProducts.includes(product.id) && (
@@ -618,13 +618,13 @@ const ProductsManagementPage = () => {
                       {product.name}
                     </h3>
                     <div className="flex justify-between items-center">
-                      <span className="text-lg sm:text-xl font-bold text-primary">
+                      <span className="text-lg sm:text-xl font-bold text-gray-900">
                         ₱{product.price.toFixed(2)}
                       </span>
                       <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
-                        product.stock === 0 ? 'bg-red-100 text-red-700' :
-                        product.stock < 10 ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
+                        product.stock === 0 ? 'bg-red-50 text-red-700 border border-red-200' :
+                        product.stock < 10 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
+                        'bg-green-50 text-green-700 border border-green-200'
                       }`}>
                         Stock: {product.stock}
                       </span>

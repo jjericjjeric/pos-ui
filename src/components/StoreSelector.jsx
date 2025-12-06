@@ -103,7 +103,7 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto">
+        <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto">
           <div className="p-2">
             <div className="text-xs font-semibold text-gray-500 uppercase px-2 py-1 mb-1">
               Your Stores ({userStores.length})
@@ -136,14 +136,14 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
                       <button
                         onClick={(e) => handleSaveEdit(store.id, e)}
                         disabled={isUpdating}
-                        className="flex-1 px-2 py-1 bg-primary text-white rounded text-xs hover:bg-primary/90 disabled:opacity-50"
+                        className="flex-1 px-2 py-1 bg-[#00C853] text-white rounded text-xs hover:bg-[#00B548] disabled:opacity-50 border border-[#00C853]"
                       >
                         {isUpdating ? 'Saving...' : 'Save'}
                       </button>
                       <button
                         onClick={handleCancelEdit}
                         disabled={isUpdating}
-                        className="flex-1 px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300 disabled:opacity-50"
+                        className="flex-1 px-2 py-1 bg-white text-gray-700 rounded text-xs hover:bg-gray-50 disabled:opacity-50 border border-gray-300"
                       >
                         Cancel
                       </button>

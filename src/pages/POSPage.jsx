@@ -312,11 +312,11 @@ const POSPage = () => {
           {/* Floating Action Button - Add Product */}
           <button
             onClick={() => navigate('/add-product')}
-            className="absolute bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-primary to-primary-dark rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center group"
+            className="absolute bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 bg-[#00C853] rounded-full shadow-lg hover:bg-[#00B548] hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center group border-2 border-white"
             title="Add Product"
             aria-label="Add Product"
           >
-            <span className="text-4xl sm:text-5xl filter brightness-0 invert">➕</span>
+            <span className="text-3xl sm:text-4xl text-white font-bold">+</span>
             <span className="absolute -top-12 right-0 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden sm:block">
               Add Product
             </span>

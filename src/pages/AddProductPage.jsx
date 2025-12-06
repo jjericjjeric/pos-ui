@@ -407,14 +407,14 @@ const AddProductPage = () => {
                   type="button"
                   onClick={handleCancel}
                   disabled={isSubmitting}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-transparent hover:border-gray-300"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-gray-700 rounded-lg sm:rounded-lg text-sm sm:text-base font-semibold transition-all hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300 hover:border-gray-400"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[#00C853] text-white rounded-lg sm:rounded-lg text-sm sm:text-base font-bold transition-all hover:bg-[#00B548] active:bg-[#009E42] disabled:opacity-50 disabled:cursor-not-allowed border border-[#00C853] flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -505,7 +505,7 @@ const AddProductPage = () => {
                   setShowSuccessModal(false);
                   navigate('/pos');
                 }}
-                className="w-full px-6 py-3.5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl text-base font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 shadow-md"
+                className="w-full px-6 py-3.5 bg-[#00C853] text-white rounded-lg text-base font-bold transition-all hover:bg-[#00B548] active:bg-[#009E42] border border-[#00C853]"
               >
                 Back to POS
               </button>

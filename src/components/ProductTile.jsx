@@ -85,38 +85,38 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
 
   return (
     <div 
-      className={`bg-white rounded-xl p-4 md:p-3.5 sm:p-3 cursor-pointer transition-all duration-300 flex flex-col items-center text-center relative shadow-md ${
+      className={`bg-white rounded-lg p-2 cursor-pointer transition-all duration-200 flex flex-col items-center text-center relative border ${
         isOutOfStock 
-          ? 'opacity-60 cursor-not-allowed bg-gray-100' 
-          : 'hover:-translate-y-1 hover:shadow-xl hover:ring-2 hover:ring-primary/30'
-      } ${isPressed ? 'scale-95 shadow-sm' : ''}`}
+          ? 'opacity-60 cursor-not-allowed bg-gray-50 border-gray-200' 
+          : 'border-gray-200 hover:border-[#00C853] hover:shadow-sm'
+      } ${isPressed ? 'scale-95' : ''}`}
       onClick={handleTileClick}
     >
       {/* Category Badge */}
       {product.category && (
-        <div className="absolute top-2 left-2 bg-gradient-to-r from-primary to-primary-dark text-white text-[10px] px-2.5 py-1 rounded-full font-semibold uppercase z-[5] shadow-sm">
+        <div className="absolute top-1.5 left-1.5 bg-white border border-gray-200 text-gray-600 text-[10px] px-1.5 py-0.5 rounded font-medium uppercase z-[5]">
           {product.category}
         </div>
       )}
 
       {/* Action Menu Button - Only show if user can manage (mobile-first: larger touch target) */}
       {canManage && (
-        <div className="absolute top-2 right-2 z-20" ref={menuRef}>
+        <div className="absolute top-1.5 right-1.5 z-20" ref={menuRef}>
           <button
             onClick={handleMenuClick}
-            className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-full shadow-sm transition-all hover:shadow-md text-gray-600 hover:text-gray-800"
+            className="w-6 h-6 flex items-center justify-center bg-white hover:bg-gray-50 active:bg-gray-100 rounded border border-gray-200 transition-colors text-gray-500 hover:text-gray-700"
             aria-label="Product actions menu"
             aria-expanded={showMenu}
             aria-haspopup="true"
           >
-            <span className="text-xl sm:text-lg font-bold leading-none">⋮</span>
+            <span className="text-sm font-bold leading-none">⋮</span>
           </button>
           
           {/* Dropdown Menu - Mobile optimized with dynamic positioning */}
           {showMenu && (
             <div 
               data-dropdown
-              className={`absolute mt-2 w-48 sm:w-44 bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-[100] ${
+              className={`absolute mt-1 w-40 sm:w-36 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-[100] ${
                 menuPosition === 'left' 
                   ? 'right-0 origin-top-right' 
                   : 'left-0 origin-top-left'
@@ -124,53 +124,53 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
             >
               <button
                 onClick={handleEdit}
-                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-blue-50 active:bg-blue-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2 font-medium"
+                className="w-full text-left px-3 py-2 sm:px-2.5 sm:py-1.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm flex items-center gap-1.5 font-medium"
                 aria-label="Edit product"
               >
-                <span className="text-lg sm:text-base">✏️</span> Edit Product
+                <span className="text-base sm:text-sm">✏️</span> Edit
               </button>
               <div className="border-t border-gray-100"></div>
               <button
                 onClick={handleDelete}
-                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-red-50 active:bg-red-100 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2 font-medium"
+                className="w-full text-left px-3 py-2 sm:px-2.5 sm:py-1.5 hover:bg-red-50 active:bg-red-100 transition-colors text-red-600 border-none bg-transparent cursor-pointer text-sm flex items-center gap-1.5 font-medium"
                 aria-label="Delete product"
               >
-                <span className="text-lg sm:text-base">🗑️</span> Delete Product
+                <span className="text-base sm:text-sm">🗑️</span> Delete
               </button>
               <div className="border-t border-gray-100"></div>
               <button
                 onClick={handleViewDetails}
-                className="w-full text-left px-4 py-3 sm:px-3 sm:py-2.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-base sm:text-sm flex items-center gap-2 font-medium"
+                className="w-full text-left px-3 py-2 sm:px-2.5 sm:py-1.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm flex items-center gap-1.5 font-medium"
                 aria-label="View product details"
               >
-                <span className="text-lg sm:text-base">👁️</span> View Details
+                <span className="text-base sm:text-sm">👁️</span> Details
               </button>
             </div>
           )}
         </div>
       )}
 
-      <div className="text-5xl md:text-4xl sm:text-3xl mb-3 sm:mb-2 mt-4">
+      <div className="text-4xl md:text-3xl sm:text-2xl mb-1.5 mt-2">
         {product.id ? (
           <ProgressiveImage
             productId={product.id}
             alt={product.name}
-            className="w-full h-24 sm:h-20 object-cover rounded-lg"
+            className="w-full h-16 object-cover rounded"
             fallbackEmoji="🛍️"
           />
         ) : (
           <span>🛍️</span>
         )}
       </div>
-      <div className="w-full space-y-1">
-        <h3 className="text-base md:text-sm sm:text-xs font-bold text-gray-800 line-clamp-2">{product.name}</h3>
-        <p className="text-xl md:text-lg sm:text-base font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">₱{product.price.toFixed(2)}</p>
-        <div className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
-          product.stock === 0 ? 'bg-red-100 text-red-700' :
-          product.stock < 10 ? 'bg-yellow-100 text-yellow-700' :
-          'bg-green-100 text-green-700'
+      <div className="w-full space-y-0.5">
+        <h3 className="text-xs font-semibold text-gray-800 line-clamp-2">{product.name}</h3>
+        <p className="text-sm font-bold text-gray-900">₱{product.price.toFixed(2)}</p>
+        <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium ${
+          product.stock === 0 ? 'bg-red-50 text-red-700 border border-red-200' :
+          product.stock < 10 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
+          'bg-green-50 text-green-700 border border-green-200'
         }`}>
-          Stock: {product.stock}
+          {product.stock}
         </div>
       </div>
       {isOutOfStock && (

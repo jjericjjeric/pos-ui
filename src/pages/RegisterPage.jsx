@@ -157,23 +157,23 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark p-4 sm:p-6">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
+      <div className="bg-white rounded-lg border border-gray-200 w-full max-w-md overflow-hidden">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-primary to-primary-dark p-6 sm:p-8 text-white text-center relative">
+        <div className="bg-white p-6 sm:p-8 text-center relative border-b border-gray-200">
           <button
             onClick={() => navigate('/login')}
-            className="absolute left-4 top-4 w-10 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-full transition-all"
+            className="absolute left-4 top-4 w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-all"
             aria-label="Back to login"
           >
             <span className="text-2xl">←</span>
           </button>
           
-          <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-5xl">📱</span>
+          <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <span className="text-5xl">🎉</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold m-0 mb-2">Register</h1>
-          <p className="text-white/90 m-0 text-sm sm:text-base">Create your Pinoy POS account</p>
+          <h1 className="text-2xl sm:text-3xl font-bold m-0 mb-2 text-gray-900">Register Your Account</h1>
+          <p className="text-gray-600 m-0 text-sm sm:text-base">Enter your mobile number to get started</p>
         </div>
 
         {/* Form Section */}
@@ -182,23 +182,23 @@ const RegisterPage = () => {
           <div className="mb-6">
             <div className="flex items-center justify-center gap-2 mb-4">
               <div className={`flex items-center justify-center w-8 h-8 rounded-full font-semibold text-sm transition-all ${
-                step >= 1 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500'
+                step >= 1 ? 'bg-[#667eea] text-white' : 'bg-gray-200 text-gray-500'
               }`}>
                 1
               </div>
               <div className={`h-1 w-12 rounded transition-all ${
-                step >= 2 ? 'bg-primary' : 'bg-gray-200'
+                step >= 2 ? 'bg-[#667eea]' : 'bg-gray-200'
               }`}></div>
               <div className={`flex items-center justify-center w-8 h-8 rounded-full font-semibold text-sm transition-all ${
-                step >= 2 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500'
+                step >= 2 ? 'bg-[#667eea] text-white' : 'bg-gray-200 text-gray-500'
               }`}>
                 2
               </div>
               <div className={`h-1 w-12 rounded transition-all ${
-                step >= 3 ? 'bg-primary' : 'bg-gray-200'
+                step >= 3 ? 'bg-[#667eea]' : 'bg-gray-200'
               }`}></div>
               <div className={`flex items-center justify-center w-8 h-8 rounded-full font-semibold text-sm transition-all ${
-                step >= 3 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500'
+                step >= 3 ? 'bg-[#667eea] text-white' : 'bg-gray-200 text-gray-500'
               }`}>
                 3
               </div>
@@ -224,7 +224,7 @@ const RegisterPage = () => {
                     onChange={handleMobileChange}
                     placeholder="09XX-XXX-XXXX"
                     autoComplete="tel"
-                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
@@ -233,7 +233,7 @@ const RegisterPage = () => {
               </div>
 
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-lg flex items-start gap-3">
+                <div className="bg-red-50 border border-red-200 px-4 py-3 rounded-lg flex items-start gap-3">
                   <span className="text-red-500 text-xl mt-0.5">⚠️</span>
                   <div className="flex-1">
                     <p className="text-red-800 text-sm font-medium m-0">{error}</p>
@@ -244,7 +244,7 @@ const RegisterPage = () => {
               <button
                 type="submit"
                 disabled={loading || mobileNumber.replace(/\D/g, '').length !== 11}
-                className="w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-dark rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
+                className="w-full px-6 py-3.5 text-base font-semibold text-white bg-[#667eea] rounded-lg transition-all hover:bg-[#5568d3] active:bg-[#4557b8] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -266,17 +266,16 @@ const RegisterPage = () => {
             <form onSubmit={handleVerifyAndRegister} className="space-y-5">
               {/* Demo OTP Display - Remove in production */}
               {generatedOTP && (
-                <div className="bg-blue-50 border-l-4 border-blue-500 px-4 py-3 rounded-lg">
+                <div className="bg-blue-50 border border-blue-200 px-4 py-3 rounded-lg">
                   <div className="flex items-start gap-3">
-                    <span className="text-blue-500 text-xl mt-0.5">ℹ️</span>
+                    <span className="text-blue-500 text-xl mt-0.5">📋</span>
                     <div className="flex-1">
-                      <p className="text-blue-800 text-sm font-medium m-0 mb-1">Demo Mode</p>
-                      <p className="text-blue-700 text-xs m-0">
-                        Your OTP is: <span className="font-bold text-lg">{generatedOTP}</span>
-                      </p>
-                      <p className="text-blue-600 text-xs mt-1 m-0">
-                        In production, this will be sent via SMS
-                      </p>
+                      <p className="text-blue-800 text-sm font-medium m-0 mb-1">Next steps:</p>
+                      <ul className="text-blue-700 text-xs m-0 space-y-1 list-disc list-inside">
+                        <li>We'll send an OTP to verify your number</li>
+                        <li>Set a 4-digit PIN for secure login</li>
+                        <li>All your products and data will be preserved</li>
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -298,7 +297,7 @@ const RegisterPage = () => {
                     }}
                     placeholder="000000"
                     maxLength="6"
-                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-center text-2xl tracking-widest font-bold"
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20 text-center text-2xl tracking-widest font-bold"
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
@@ -307,7 +306,7 @@ const RegisterPage = () => {
               </div>
 
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-lg flex items-start gap-3">
+                <div className="bg-red-50 border border-red-200 px-4 py-3 rounded-lg flex items-start gap-3">
                   <span className="text-red-500 text-xl mt-0.5">⚠️</span>
                   <div className="flex-1">
                     <p className="text-red-800 text-sm font-medium m-0">{error}</p>
@@ -318,7 +317,7 @@ const RegisterPage = () => {
               <button
                 type="submit"
                 disabled={loading || otp.length !== 6}
-                className="w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-dark rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
+                className="w-full px-6 py-3.5 text-base font-semibold text-white bg-[#667eea] rounded-lg transition-all hover:bg-[#5568d3] active:bg-[#4557b8] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -338,7 +337,7 @@ const RegisterPage = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={loading}
-                  className="text-primary hover:text-primary-dark font-semibold text-sm transition-colors disabled:opacity-50"
+                  className="text-[#667eea] hover:text-[#5568d3] font-semibold text-sm transition-colors disabled:opacity-50"
                 >
                   Resend OTP
                 </button>
@@ -363,7 +362,7 @@ const RegisterPage = () => {
           {/* Step 3: Set PIN */}
           {step === 3 && (
             <form onSubmit={handleSetPinAndRegister} className="space-y-5">
-              <div className="bg-green-50 border-l-4 border-green-500 px-4 py-3 rounded-lg mb-5">
+              <div className="bg-green-50 border border-green-200 px-4 py-3 rounded-lg mb-5">
                 <div className="flex items-start gap-3">
                   <span className="text-green-500 text-xl mt-0.5">✓</span>
                   <div className="flex-1">
@@ -389,7 +388,7 @@ const RegisterPage = () => {
                     }}
                     placeholder="••••"
                     maxLength="4"
-                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-center text-2xl tracking-widest font-bold"
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20 text-center text-2xl tracking-widest font-bold"
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
@@ -413,13 +412,13 @@ const RegisterPage = () => {
                     }}
                     placeholder="••••"
                     maxLength="4"
-                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-center text-2xl tracking-widest font-bold"
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20 text-center text-2xl tracking-widest font-bold"
                   />
                 </div>
               </div>
 
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-lg flex items-start gap-3">
+                <div className="bg-red-50 border border-red-200 px-4 py-3 rounded-lg flex items-start gap-3">
                   <span className="text-red-500 text-xl mt-0.5">⚠️</span>
                   <div className="flex-1">
                     <p className="text-red-800 text-sm font-medium m-0">{error}</p>
@@ -430,7 +429,7 @@ const RegisterPage = () => {
               <button
                 type="submit"
                 disabled={loading || pin.length !== 4 || confirmPin.length !== 4}
-                className="w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-dark rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
+                className="w-full px-6 py-3.5 text-base font-semibold text-white bg-[#667eea] rounded-lg transition-all hover:bg-[#5568d3] active:bg-[#4557b8] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -453,7 +452,7 @@ const RegisterPage = () => {
               Already have an account?{' '}
               <button
                 onClick={() => navigate('/login')}
-                className="text-primary hover:text-primary-dark font-semibold transition-colors"
+                className="text-[#667eea] hover:text-[#5568d3] font-semibold transition-colors"
               >
                 Sign In
               </button>

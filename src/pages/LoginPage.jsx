@@ -88,15 +88,15 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark p-4 sm:p-6">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
+      <div className="bg-white rounded-lg border border-gray-200 w-full max-w-md overflow-hidden">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-primary to-primary-dark p-6 sm:p-8 text-white text-center">
-          <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+        <div className="bg-white p-6 sm:p-8 text-center border-b border-gray-200">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
             <span className="text-5xl">🛒</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold m-0 mb-2">Pinoy POS</h1>
-          <p className="text-white/90 m-0 text-sm sm:text-base">Point of Sale System</p>
+          <h1 className="text-2xl sm:text-3xl font-bold m-0 mb-2 text-gray-900">Pinoy POS</h1>
+          <p className="text-gray-600 m-0 text-sm sm:text-base">Point of Sale System</p>
         </div>
 
         {/* Form Section */}
@@ -121,7 +121,7 @@ const LoginPage = () => {
                   onChange={handleMobileChange}
                   placeholder="09XX-XXX-XXXX"
                   autoComplete="tel"
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
                 />
               </div>
               <p className="text-xs text-gray-500 mt-2">
@@ -147,7 +147,7 @@ const LoginPage = () => {
                   placeholder="••••"
                   maxLength="4"
                   autoComplete="current-password"
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-center text-2xl tracking-widest font-bold"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20 text-center text-2xl tracking-widest font-bold"
                 />
               </div>
             </div>
@@ -162,7 +162,7 @@ const LoginPage = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-primary transition-all"></div>
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-[#667eea] transition-all"></div>
                   <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5 shadow-md"></div>
                 </div>
                 <span className="text-sm text-gray-700 select-none group-hover:text-gray-900">Remember me</span>
@@ -171,7 +171,7 @@ const LoginPage = () => {
 
             {/* Success Message */}
             {successMessage && (
-              <div className="bg-green-50 border-l-4 border-green-500 px-4 py-3 rounded-lg flex items-start gap-3 mb-5">
+              <div className="bg-green-50 border border-green-200 px-4 py-3 rounded-lg flex items-start gap-3 mb-5">
                 <span className="text-green-500 text-xl mt-0.5">✓</span>
                 <div className="flex-1">
                   <p className="text-green-800 text-sm font-medium m-0">{successMessage}</p>
@@ -181,7 +181,7 @@ const LoginPage = () => {
 
             {/* Error Message */}
             {localError && (
-              <div className="bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-lg flex items-start gap-3">
+              <div className="bg-red-50 border border-red-200 px-4 py-3 rounded-lg flex items-start gap-3">
                 <span className="text-red-500 text-xl mt-0.5">⚠️</span>
                 <div className="flex-1">
                   <p className="text-red-800 text-sm font-medium m-0">{localError}</p>
@@ -193,7 +193,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={!mobileNumber || mobileNumber.replace(/\D/g, '').length !== 11 || pin.length !== 4 || loading}
-              className="w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-dark rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2 mt-6"
+              className="w-full px-6 py-3.5 text-base font-bold text-white bg-[#00C853] rounded-lg transition-all hover:bg-[#00B548] active:bg-[#009E42] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
             >
               {loading ? (
                 <>
@@ -220,7 +220,7 @@ const LoginPage = () => {
                 type="button"
                 onClick={handleGuestLogin}
                 disabled={loading}
-                className="w-full px-6 py-2.5 text-sm font-semibold text-blue-700 bg-white border-2 border-blue-300 rounded-lg transition-all hover:bg-blue-50 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg transition-all hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Starting...' : '✨ Continue as Guest'}
               </button>
@@ -233,7 +233,7 @@ const LoginPage = () => {
               Don't have an account?{' '}
               <button
                 onClick={() => navigate('/register')}
-                className="text-primary hover:text-primary-dark font-semibold transition-colors"
+                className="text-[#667eea] hover:text-[#5568d3] font-semibold transition-colors"
               >
                 Register Now
               </button>

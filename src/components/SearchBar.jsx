@@ -37,7 +37,7 @@ const SearchBar = ({
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
-        className="w-full pl-9 sm:pl-10 pr-10 py-1.5 sm:py-2 bg-gray-50 border-2 border-transparent rounded-lg text-base transition-all focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="w-full pl-9 sm:pl-10 pr-10 py-2 bg-white border border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
         inputMode="search"
       />
       {value && (

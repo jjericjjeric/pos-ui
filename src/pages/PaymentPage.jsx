@@ -112,37 +112,35 @@ const PaymentPage = () => {
 
   return (
     <>
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-2 sm:p-3 md:p-4">
-      <div className="bg-white rounded-xl p-4 sm:p-5 md:p-6 max-w-[600px] w-full shadow-xl max-h-[95vh] overflow-y-auto">
-        <h1 className="m-0 mb-3 sm:mb-4 text-gray-800 text-xl sm:text-2xl text-center border-b-2 border-[#667eea] pb-2">Payment</h1>
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-2 sm:p-3 md:p-4">
+      <div className="bg-white rounded-lg p-4 sm:p-5 md:p-6 max-w-[600px] w-full border border-gray-200 max-h-[95vh] overflow-y-auto">
+        <h1 className="m-0 mb-3 sm:mb-4 text-gray-800 text-xl sm:text-2xl font-bold">Payment</h1>
         
         <div className="mb-4 sm:mb-5">
-          <h2 className="m-0 mb-2 text-gray-800 text-base sm:text-lg border-b-2 border-[#667eea] pb-1.5">Order Summary</h2>
+          <h2 className="m-0 mb-2 text-gray-800 text-base sm:text-lg font-semibold">Order Summary</h2>
           <div ref={orderItemsRef} className="max-h-[250px] sm:max-h-[220px] overflow-y-auto mb-3 pr-2 -mr-2">
             {cart.length === 0 ? (
               <p className="text-center text-gray-400 p-4 sm:p-6 md:p-8 italic text-sm sm:text-base">No items in cart</p>
             ) : (
               cart.map(item => (
-                <div key={item.id} className="bg-gray-50 rounded-lg p-2 sm:p-2.5 md:p-3 mb-1.5 sm:mb-2 border-l-4 border-[#667eea]">
-                  <div className="flex justify-between items-start mb-1 sm:mb-1.5 gap-1">
-                    <span className="font-semibold text-gray-800 text-sm sm:text-base leading-tight flex-1">{item.name}</span>
-                    <span className="text-[#667eea] font-semibold text-xs sm:text-sm whitespace-nowrap">₱{item.price.toFixed(2)}</span>
+                <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-2 mb-1.5">
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="font-semibold text-gray-800 text-sm leading-tight flex-1 line-clamp-1">{item.name}</span>
+                    <span className="text-gray-600 text-xs whitespace-nowrap ml-2">₱{item.price.toFixed(2)}</span>
                   </div>
                   
-                  <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-1.5">
-                    <span className="min-w-[60px] sm:min-w-[70px] text-sm text-gray-600">Qty: {item.quantity}</span>
-                  </div>
-                  
-                  <div className="text-right font-bold text-gray-800 text-xs sm:text-sm">
-                    Total: ₱{(item.price * item.quantity).toFixed(2)}
+                  <div className="flex justify-between items-center text-xs text-gray-500">
+                    <span>Qty: {item.quantity}</span>
+                    <span className="font-bold text-gray-900">₱{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 </div>
               ))
             )}
           </div>
           
-          <div className="text-center text-lg sm:text-xl mb-3 sm:mb-4 p-2 sm:p-2.5 md:p-3 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white rounded-lg font-bold">
-            Total: ₱{totalPrice.toFixed(2)}
+          <div className="flex justify-between items-center text-lg mb-3 sm:mb-4 pt-2 border-t border-gray-200">
+            <span className="font-semibold text-gray-700">Total</span>
+            <span className="text-xl font-bold text-gray-900">₱{totalPrice.toFixed(2)}</span>
           </div>
         </div>
 
@@ -157,31 +155,31 @@ const PaymentPage = () => {
               value={amountPaid}
               onChange={handleAmountChange}
               placeholder="0.00"
-              className={`w-full px-3 py-3 text-lg sm:text-xl border-2 ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg transition-colors focus:outline-none focus:border-[#667eea]`}
+              className={`w-full px-3 py-3 text-lg sm:text-xl border ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg transition-colors focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20`}
               inputMode="decimal"
             />
             {error && <span className="block text-red-500 text-sm mt-2">{error}</span>}
           </div>
           
           {amountPaid && change >= 0 && (
-            <div className="p-3 bg-green-50 border-l-4 border-green-500 rounded-lg">
+            <div className="p-3 bg-white border border-green-200 rounded-lg">
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-gray-700 text-sm sm:text-base">Change:</span>
-                <span className="font-bold text-green-600 text-lg sm:text-xl">₱{change.toFixed(2)}</span>
+                <span className="font-semibold text-gray-700 text-sm sm:text-base">Change</span>
+                <span className="font-bold text-[#00C853] text-lg sm:text-xl">₱{change.toFixed(2)}</span>
               </div>
             </div>
           )}
         </div>
 
-        <div className="flex gap-3 sm:gap-4 flex-col sm:flex-row">
+        <div className="flex gap-2 flex-col sm:flex-row">
           <button 
-            className="w-full sm:flex-1 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-semibold border-none rounded-xl cursor-pointer transition-all bg-gray-200 text-gray-800 hover:bg-gray-300 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(0,0,0,0.2)] active:translate-y-0" 
+            className="w-full sm:flex-1 px-4 py-3 text-base font-semibold border border-gray-200 rounded-lg cursor-pointer transition-all bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100" 
             onClick={handleCancel}
           >
             Cancel
           </button>
           <button
-            className="w-full sm:flex-1 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-extrabold border-none rounded-xl cursor-pointer transition-all bg-gradient-to-br from-orange-500 to-red-600 text-white shadow-[0_8px_28px_rgba(255,87,34,0.45)] tracking-wide hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_12px_32px_rgba(255,87,34,0.55)] disabled:opacity-45 disabled:cursor-not-allowed disabled:shadow-none active:enabled:translate-y-0 active:enabled:shadow-[0_6px_18px_rgba(255,87,34,0.4)]"
+            className="w-full sm:flex-1 px-4 py-3 text-base font-bold rounded-lg cursor-pointer transition-all bg-[#00C853] text-white hover:enabled:bg-[#00B548] disabled:opacity-50 disabled:cursor-not-allowed active:enabled:bg-[#009E42]"
             onClick={handleCompletePurchase}
             disabled={!amountPaid || change < 0 || isProcessing}
           >
@@ -213,8 +211,8 @@ const PaymentPage = () => {
       <div className="flex flex-col items-center justify-center py-4 sm:py-6 md:py-8">
         {/* Success Icon */}
         <div className="mb-6 sm:mb-8">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-green-500 to-green-600 relative shadow-[0_12px_40px_rgba(34,197,94,0.3)] animate-pop-in">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[3rem] sm:text-[3.5rem] text-white font-bold animate-fade-in-check">✓</div>
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#00C853] relative">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[3rem] sm:text-[3.5rem] text-white font-bold">✓</div>
           </div>
         </div>
 
@@ -224,11 +222,11 @@ const PaymentPage = () => {
 
         {/* Change Amount - Center of Attention */}
         <div className="w-full max-w-sm mb-8 sm:mb-10">
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(34,197,94,0.15)] border-2 border-green-200">
+          <div className="bg-white rounded-lg p-6 sm:p-8 border border-green-200">
             <div className="text-center">
-              <p className="text-sm sm:text-base font-medium text-gray-600 mb-2 uppercase tracking-wide">Your Change</p>
+              <p className="text-sm sm:text-base font-medium text-gray-600 mb-2">Your Change</p>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#00C853]">
                   ₱{finalChange.toFixed(2)}
                 </span>
               </div>
@@ -236,9 +234,9 @@ const PaymentPage = () => {
           </div>
         </div>
 
-        {/* New Sale Button - Beautified */}
+        {/* New Sale Button */}
         <button
-          className="w-full max-w-sm px-6 py-4 sm:py-5 bg-gradient-to-r from-primary to-primary-dark text-white text-base sm:text-lg font-semibold rounded-xl shadow-[0_8px_24px_rgba(102,126,234,0.35)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(102,126,234,0.45)] active:translate-y-0 active:shadow-[0_6px_20px_rgba(102,126,234,0.3)] border-none cursor-pointer"
+          className="w-full max-w-sm px-6 py-4 bg-[#00C853] text-white text-base font-semibold rounded-lg transition-all hover:bg-[#00B548] active:bg-[#009E42] cursor-pointer"
           onClick={() => {
             setShowModal(false);
             navigate('/pos');
