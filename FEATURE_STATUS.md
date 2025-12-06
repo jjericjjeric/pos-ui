@@ -1,7 +1,7 @@
 # Feature Status Tracking
 
 **Last Updated:** December 7, 2025  
-**Version:** 2.1.0
+**Version:** 2.2.0
 
 This document tracks the implementation status of all features across the pos-workspace monorepo.
 
@@ -156,6 +156,10 @@ This document tracks the implementation status of all features across the pos-wo
 | Keyboard Shortcuts | ✅ | N/A | ✅ | Ctrl+F, Delete, Alt+E |
 | Mobile-First Design | ✅ | N/A | ✅ | 320px to 1920px |
 | Touch-Friendly Targets | ✅ | N/A | ✅ | Minimum 44×44px |
+| Modern Minimalist Design | 🚧 | N/A | 🚧 | Cart redesigned, rolling out app-wide |
+| Compact Space Optimization | 🚧 | N/A | 🚧 | Reducing padding, margins app-wide |
+| WhatsApp-Inspired CTAs | 🚧 | N/A | 🚧 | Green checkout buttons |
+| Clean Card Design | 🚧 | N/A | 🚧 | Border-based instead of heavy shadows |
 | Dark Mode | 📋 | N/A | 📋 | Future feature |
 | Accessibility (WCAG AA) | 🚧 | N/A | 🚧 | Ongoing improvement |
 
@@ -264,6 +268,13 @@ This document tracks the implementation status of all features across the pos-wo
 
 ### 🚧 Phase 3: Enhanced Features (In Progress)
 - ✅ Transaction history UI (completed)
+- ✅ Modern minimalist Cart design (completed)
+- 🚧 App-wide design system refresh
+  - Compact spacing and margins
+  - Clean borders instead of heavy shadows
+  - WhatsApp-inspired green CTAs
+  - Minimalist card designs
+  - Optimized information density
 - OTP SMS integration
 - Inventory alerts
 - Sales analytics dashboard
