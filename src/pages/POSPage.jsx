@@ -168,7 +168,7 @@ const POSPage = () => {
   };
 
   return (
-    <div className="h-dvh w-full flex flex-col bg-gray-50 overflow-hidden">
+    <div className="h-dvh w-full flex flex-col bg-gray-50 overflow-hidden pb-nav">
       {/* Guest Warning Banner */}
       {user && user.role === 'GUEST' && (
         <div className="bg-yellow-500 text-white px-3 py-2 text-center text-xs sm:text-sm font-medium flex-shrink-0 shadow-md">

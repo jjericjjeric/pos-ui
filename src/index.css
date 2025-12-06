@@ -194,5 +194,22 @@
   .text-responsive-xl { font-size: var(--font-size-xl); }
   .text-responsive-2xl { font-size: var(--font-size-2xl); }
   .text-responsive-3xl { font-size: var(--font-size-3xl); }
+  
+  /* Bottom navigation spacing */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Page container with bottom nav spacing */
+  .pb-nav {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+  
+  @media (min-width: 1024px) {
+    .pb-nav {
+      padding-bottom: 0;
+    }
+  }
 }
+
 

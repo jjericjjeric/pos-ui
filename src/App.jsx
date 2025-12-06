@@ -9,6 +9,7 @@ import StoreSettingsPage from './pages/StoreSettingsPage';
 import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import BottomNav from './components/BottomNav';
 
 // Simple auth guard component
 const RequireAuth = ({ children }) => {
@@ -43,6 +44,7 @@ function App() {
           <Route path="/transaction-history" element={<RequireAuth><TransactionHistoryPage /></RequireAuth>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <BottomNav />
       </Router>
     </div>
   );
