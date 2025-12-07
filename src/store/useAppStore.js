@@ -5,6 +5,10 @@ import api, * as apiExports from '../services/api';
 // Store a reference to any ongoing loadProducts call to prevent race conditions
 let loadProductsAbortController = null;
 
+// Simple in-memory cache for products by store (expires after 2 minutes)
+const productCache = new Map();
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+
 const useAppStore = create(
   persist(
     (set, get) => ({
@@ -167,17 +171,9 @@ const useAppStore = create(
             loadProductsAbortController = null;
           }
 
-          const response = await apiExports.switchStore(storeId);
-          
-          if (response.token) {
-            // Update token
-            const storage = localStorage.getItem('jwt_token') ? localStorage : sessionStorage;
-            storage.setItem('jwt_token', response.token);
-          }
-
           const store = get().userStores.find(s => s.id === storeId);
           
-          // IMPORTANT: Update localStorage BEFORE setting state and loading products
+          // OPTIMISTIC UPDATE: Update UI immediately
           localStorage.setItem('currentStoreId', storeId.toString());
           
           set({ 
@@ -187,8 +183,24 @@ const useAppStore = create(
             productsError: null
           });
 
-          // Reload products for new store (now uses correct currentStoreId from localStorage)
-          await get().loadProducts();
+          // Load products immediately (no need to wait for backend switch)
+          const productsPromise = get().loadProducts();
+
+          // Update JWT token in background (non-blocking)
+          apiExports.switchStore(storeId)
+            .then(response => {
+              if (response.token) {
+                const storage = localStorage.getItem('jwt_token') ? localStorage : sessionStorage;
+                storage.setItem('jwt_token', response.token);
+              }
+            })
+            .catch(error => {
+              console.error('Failed to update token during store switch:', error);
+              // Don't throw - token update failure shouldn't break the UX
+            });
+
+          // Wait for products to load
+          await productsPromise;
           
           set({ storeSwitching: false });
         } catch (error) {
@@ -228,9 +240,11 @@ const useAppStore = create(
           const response = await api.post('/stores', storeData);
           const newStore = response.store;
 
-          // Reload all stores to get complete data with roles
-          // This ensures the new store has all required fields (id, name, role, etc.)
-          await get().loadUserStores();
+          // Add the new store with default role 'owner' to avoid reloading all stores
+          const storeWithRole = { ...newStore, role: 'owner' };
+          set((state) => ({
+            userStores: [...state.userStores, storeWithRole],
+          }));
 
           return newStore;
         } catch (error) {
@@ -240,11 +254,21 @@ const useAppStore = create(
       },
 
       // ============ PRODUCTS ACTIONS ============
-      loadProducts: async () => {
+      loadProducts: async (forceRefresh = false) => {
         const currentStore = get().currentStore;
         if (!currentStore) {
           console.log('No current store, skipping product load');
           return;
+        }
+
+        // Check cache first (unless force refresh)
+        if (!forceRefresh) {
+          const cached = productCache.get(currentStore.id);
+          if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
+            console.log('Using cached products for store', currentStore.id);
+            set({ products: cached.data, productsLoading: false });
+            return;
+          }
         }
 
         // Cancel any previous ongoing request
@@ -261,6 +285,12 @@ const useAppStore = create(
           
           // Only update if this request wasn't aborted
           if (!loadProductsAbortController.signal.aborted) {
+            // Cache the products
+            productCache.set(currentStore.id, {
+              data: products,
+              timestamp: Date.now()
+            });
+            
             set({ products, productsLoading: false });
           }
         } catch (error) {
@@ -284,12 +314,19 @@ const useAppStore = create(
       },
 
       refreshProducts: async () => {
-        await get().loadProducts();
+        await get().loadProducts(true); // Force refresh bypasses cache
       },
 
       addProduct: async (productData) => {
         try {
           const newProduct = await apiExports.createProduct(productData);
+          
+          // Invalidate cache for current store
+          const currentStore = get().currentStore;
+          if (currentStore) {
+            productCache.delete(currentStore.id);
+          }
+          
           set((state) => ({
             products: [...state.products, newProduct],
           }));
@@ -303,6 +340,13 @@ const useAppStore = create(
       updateProduct: async (productId, productData) => {
         try {
           const updatedProduct = await apiExports.updateProduct(productId, productData);
+          
+          // Invalidate cache for current store
+          const currentStore = get().currentStore;
+          if (currentStore) {
+            productCache.delete(currentStore.id);
+          }
+          
           set((state) => ({
             products: state.products.map((p) =>
               p.id === productId ? updatedProduct : p
@@ -318,6 +362,13 @@ const useAppStore = create(
       deleteProduct: async (productId) => {
         try {
           await apiExports.deleteProduct(productId);
+          
+          // Invalidate cache for current store
+          const currentStore = get().currentStore;
+          if (currentStore) {
+            productCache.delete(currentStore.id);
+          }
+          
           set((state) => ({
             products: state.products.filter((p) => p.id !== productId),
           }));
