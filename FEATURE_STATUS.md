@@ -42,6 +42,7 @@ This document tracks the implementation status of all features across the pos-wo
 | Feature | Status | Backend | Frontend | Notes |
 |---------|--------|---------|----------|-------|
 | Create Store | ✅ | ✅ | ✅ | Auto-created on registration |
+| Create Additional Store | ✅ | ✅ | ✅ | UI with form, appears in Store Selector |
 | Update Store | ✅ | ✅ | ✅ | With success indicator |
 | Delete Store | ✅ | ✅ | ✅ | Owner only, confirmation dialog |
 | List User Stores | ✅ | ✅ | ✅ | With role info |
@@ -282,11 +283,17 @@ This document tracks the implementation status of all features across the pos-wo
   - ✅ Consistent focus states
 - ✅ Bottom Navigation Bar (completed - v2.3.0)
   - ✅ Mobile-first sticky navigation
-  - ✅ Icon-based menu (Home, Inventory, History, Settings)
+  - ✅ Icon-based menu (Home, Inventory, History)
   - ✅ Active state indicators with green accent
   - ✅ Cart badge on Home icon
-  - ✅ Role-based visibility (hides from guests)
   - ✅ Safe area support for notched devices
+- ✅ Create Additional Stores UI (completed - v2.3.0)
+  - ✅ Add new store interface with form
+  - ✅ Form with store name, description, location
+  - ✅ Automatic owner role assignment
+  - ✅ Store appears in Store Selector dropdown
+  - ✅ Seamless switching between owned stores
+  - ✅ Success modal with store details
 - 📋 OTP SMS integration
 - 📋 Inventory alerts
 - 📋 Sales analytics dashboard
@@ -336,10 +343,10 @@ To request a new feature:
 |---------|----------------|--------|
 | Email Verification | Nov 10, 2025 | Using mobile OTP instead |
 | React 19 | Nov 10, 2025 | Reverted to React 18.3.1 LTS |
-**Total Features Tracked:** 141  
-**Completed:** ~111 (78.7%)  
+**Total Features Tracked:** 142  
+**Completed:** ~112 (78.9%)  
 **In Progress:** ~0 (0%)  
-**Planned:** ~30 (21.3%)
+**Planned:** ~30 (21.1%)
 
 **Backend Completion:** ~95%  
 **Frontend Completion:** ~95%  

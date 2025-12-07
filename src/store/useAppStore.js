@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api, * as apiExports from '../services/api';
 
+// Store a reference to any ongoing loadProducts call to prevent race conditions
+let loadProductsAbortController = null;
+
 const useAppStore = create(
   persist(
     (set, get) => ({
@@ -14,6 +17,7 @@ const useAppStore = create(
       currentStore: null,
       userStores: [],
       storesLoading: false,
+      storeSwitching: false, // Track if we're currently switching stores
 
       // ============ PRODUCTS STATE ============
       products: [],
@@ -148,7 +152,21 @@ const useAppStore = create(
       },
 
       switchStore: async (storeId) => {
+        // Prevent multiple simultaneous store switches
+        if (get().storeSwitching) {
+          console.log('Store switch already in progress, ignoring...');
+          return;
+        }
+
         try {
+          set({ storeSwitching: true });
+
+          // Cancel any ongoing product load
+          if (loadProductsAbortController) {
+            loadProductsAbortController.abort();
+            loadProductsAbortController = null;
+          }
+
           const response = await apiExports.switchStore(storeId);
           
           if (response.token) {
@@ -158,17 +176,24 @@ const useAppStore = create(
           }
 
           const store = get().userStores.find(s => s.id === storeId);
+          
+          // IMPORTANT: Update localStorage BEFORE setting state and loading products
           localStorage.setItem('currentStoreId', storeId.toString());
           
-          set({ currentStore: store });
+          set({ 
+            currentStore: store,
+            cart: [], // Clear cart immediately when switching stores
+            products: [], // Clear products to show fresh state
+            productsError: null
+          });
 
-          // Reload products for new store
+          // Reload products for new store (now uses correct currentStoreId from localStorage)
           await get().loadProducts();
           
-          // Clear cart when switching stores
-          set({ cart: [] });
+          set({ storeSwitching: false });
         } catch (error) {
           console.error('Failed to switch store:', error);
+          set({ storeSwitching: false });
           throw error;
         }
       },
@@ -198,6 +223,22 @@ const useAppStore = create(
         }
       },
 
+      createStore: async (storeData) => {
+        try {
+          const response = await api.post('/stores', storeData);
+          const newStore = response.store;
+
+          // Reload all stores to get complete data with roles
+          // This ensures the new store has all required fields (id, name, role, etc.)
+          await get().loadUserStores();
+
+          return newStore;
+        } catch (error) {
+          console.error('Failed to create store:', error);
+          throw error;
+        }
+      },
+
       // ============ PRODUCTS ACTIONS ============
       loadProducts: async () => {
         const currentStore = get().currentStore;
@@ -206,17 +247,39 @@ const useAppStore = create(
           return;
         }
 
+        // Cancel any previous ongoing request
+        if (loadProductsAbortController) {
+          loadProductsAbortController.abort();
+        }
+
+        // Create new abort controller for this request
+        loadProductsAbortController = new AbortController();
+
         try {
           set({ productsLoading: true, productsError: null });
           const products = await apiExports.fetchProducts();
-          set({ products, productsLoading: false });
+          
+          // Only update if this request wasn't aborted
+          if (!loadProductsAbortController.signal.aborted) {
+            set({ products, productsLoading: false });
+          }
         } catch (error) {
+          // Ignore abort errors
+          if (error.name === 'AbortError') {
+            console.log('Product load was cancelled');
+            return;
+          }
+          
           console.error('Failed to load products:', error);
-          set({
-            productsError: error.message,
-            productsLoading: false,
-            products: [],
-          });
+          if (!loadProductsAbortController.signal.aborted) {
+            set({
+              productsError: error.message,
+              productsLoading: false,
+              products: [],
+            });
+          }
+        } finally {
+          loadProductsAbortController = null;
         }
       },
 

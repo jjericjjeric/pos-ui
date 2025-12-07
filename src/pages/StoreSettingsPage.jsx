@@ -141,7 +141,7 @@ const StoreSettingsPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-2 sm:p-3 overflow-auto">
+      <div className="flex-1 p-2 sm:p-3 pb-20 overflow-auto">
         <div className="max-w-2xl mx-auto h-full flex flex-col">
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden flex-1 flex flex-col">
             {/* Store Info Header */}
@@ -346,6 +346,26 @@ const StoreSettingsPage = () => {
               <p className="text-xs text-gray-500 mt-2">
                 Use this ID for API integration and technical support
               </p>
+            </div>
+
+            {/* Create New Store Button */}
+            <div className="p-4 sm:p-6 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-1">Add Another Store</h3>
+                  <p className="text-xs text-gray-500">
+                    Create and manage multiple store locations under your account
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/create-store')}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-[#00C853] text-white rounded-lg font-semibold hover:bg-[#00B548] transition-all flex items-center justify-center gap-2 text-sm"
+                >
+                  <span>+</span>
+                  <span>Create New Store</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

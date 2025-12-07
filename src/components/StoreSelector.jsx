@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import useAppStore from '../store/useAppStore';
 import { useClickOutside } from '../hooks/useClickOutside';
 
 const StoreSelector = ({ className = '', variant = 'dark' }) => {
+  const navigate = useNavigate();
   const currentStore = useAppStore((state) => state.currentStore);
   const userStores = useAppStore((state) => state.userStores);
   const switchStore = useAppStore((state) => state.switchStore);
@@ -103,7 +105,7 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto">
+        <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 z-[9999] max-h-[calc(100vh-120px)] overflow-y-auto">
           <div className="p-2">
             <div className="text-xs font-semibold text-gray-500 uppercase px-2 py-1 mb-1">
               Your Stores ({userStores.length})
@@ -169,7 +171,7 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
                             </div>
                           )}
                           <div className="text-xs text-gray-400 mt-1">
-                            Role: <span className="font-medium">{store.role.charAt(0).toUpperCase() + store.role.slice(1)}</span>
+                            Role: <span className="font-medium">{store.role ? store.role.charAt(0).toUpperCase() + store.role.slice(1) : 'Unknown'}</span>
                           </div>
                         </div>
                         {store.id === currentStore.id && (
@@ -191,6 +193,20 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
                 )}
               </div>
             ))}
+            
+            {/* Create New Store Button */}
+            <div className="border-t border-gray-200 pt-2 mt-1">
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate('/create-store');
+                }}
+                className="w-full px-3 py-2.5 bg-[#00C853] text-white rounded-md font-medium hover:bg-[#00B548] transition-colors flex items-center justify-center gap-2 text-sm"
+              >
+                <span className="text-lg">+</span>
+                <span>Create New Store</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

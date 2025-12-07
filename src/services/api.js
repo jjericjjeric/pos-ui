@@ -471,8 +471,19 @@ export const switchStore = async (storeId) => {
 };
 
 // Helper to add store_id to query params if available
+// Excludes store-management and auth endpoints
+const shouldIncludeStoreId = (url) => {
+  const excludedPaths = [
+    '/stores',      // Store CRUD endpoints
+    '/switch',      // Store switching
+    '/auth/',       // Auth endpoints
+  ];
+  
+  return !excludedPaths.some(path => url.includes(path));
+};
+
 export const addStoreIdToUrl = (url, storeId) => {
-  if (!storeId) return url;
+  if (!storeId || !shouldIncludeStoreId(url)) return url;
   const separator = url.includes('?') ? '&' : '?';
   return `${url}${separator}store_id=${storeId}`;
 };
