@@ -5,9 +5,8 @@ import api, * as apiExports from '../services/api';
 // Store a reference to any ongoing loadProducts call to prevent race conditions
 let loadProductsAbortController = null;
 
-// Simple in-memory cache for products by store (expires after 2 minutes)
+// Simple in-memory cache for products by store
 const productCache = new Map();
-const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
 const useAppStore = create(
   persist(
@@ -30,6 +29,11 @@ const useAppStore = create(
 
       // ============ CART STATE ============
       cart: [],
+
+      // ============ APP SETTINGS STATE ============
+      appSettings: {
+        cacheDuration: 30, // Default: 30 minutes
+      },
 
       // ============ AUTH ACTIONS ============
       login: async (username, password, remember = true) => {
@@ -264,8 +268,10 @@ const useAppStore = create(
         // Check cache first (unless force refresh)
         if (!forceRefresh) {
           const cached = productCache.get(currentStore.id);
-          if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-            console.log('Using cached products for store', currentStore.id);
+          const cacheDuration = get().appSettings.cacheDuration * 60 * 1000; // Convert minutes to milliseconds
+          
+          if (cached && (Date.now() - cached.timestamp < cacheDuration)) {
+            console.log(`Using cached products for store ${currentStore.id} (cache valid for ${get().appSettings.cacheDuration} min)`);
             set({ products: cached.data, productsLoading: false });
             return;
           }
@@ -498,6 +504,13 @@ const useAppStore = create(
           console.error('Failed to cancel transaction:', error);
           throw error;
         }
+      },
+
+      // ============ APP SETTINGS ACTIONS ============
+      updateAppSettings: (newSettings) => {
+        set((state) => ({
+          appSettings: { ...state.appSettings, ...newSettings },
+        }));
       },
 
       // ============ INITIALIZATION ============
