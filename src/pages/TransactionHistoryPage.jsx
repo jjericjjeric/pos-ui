@@ -13,10 +13,8 @@ const TransactionHistoryPage = () => {
   // Zustand selectors
   const transactions = useAppStore((state) => state.transactions);
   const transactionsLoading = useAppStore((state) => state.transactionsLoading);
-  const transactionStats = useAppStore((state) => state.transactionStats);
   const transactionPagination = useAppStore((state) => state.transactionPagination);
   const loadTransactions = useAppStore((state) => state.loadTransactions);
-  const loadTransactionStats = useAppStore((state) => state.loadTransactionStats);
   const cancelTransaction = useAppStore((state) => state.cancelTransaction);
   const user = useAppStore((state) => state.user);
   const logout = useAppStore((state) => state.logout);
@@ -50,15 +48,11 @@ const TransactionHistoryPage = () => {
   useClickOutside(mobileMenuRef, () => setShowMobileMenu(false), showMobileMenu);
   useClickOutside(desktopMenuRef, () => setShowDesktopMenu(false), showDesktopMenu);
 
-  // Load transactions and stats on mount and when filters change
+  // Load transactions on mount and when filters change
   useEffect(() => {
     const loadData = async () => {
       try {
         await loadTransactions(filters);
-        await loadTransactionStats({
-          start_date: filters.start_date,
-          end_date: filters.end_date,
-        });
       } catch (error) {
         addToast(error.message, 'error');
       }
@@ -225,38 +219,7 @@ const TransactionHistoryPage = () => {
 
       {/* Main Content */}
       <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto">
-        
-        {/* Stats Cards - Compact Grid */}
-        {transactionStats && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-3.5">
-              <p className="text-xs text-gray-600 mb-1">Total Sales</p>
-              <p className="text-lg sm:text-xl font-bold text-gray-900">
-                {formatCurrency(transactionStats.total_sales || 0)}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-3.5">
-              <p className="text-xs text-gray-600 mb-1">Transactions</p>
-              <p className="text-lg sm:text-xl font-bold text-gray-900">
-                {transactionStats.total_transactions || 0}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-3.5">
-              <p className="text-xs text-gray-600 mb-1">Average</p>
-              <p className="text-lg sm:text-xl font-bold text-gray-900">
-                {formatCurrency(transactionStats.average_transaction || 0)}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-3.5">
-              <p className="text-xs text-gray-600 mb-1">Cash</p>
-              <p className="text-lg sm:text-xl font-bold text-gray-900">
-                {formatCurrency(transactionStats.total_cash || 0)}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Compact Filter Bar */}
+        {/* Compact Filter Bar */
         <div className="bg-white rounded-lg border border-gray-200 mb-3 sm:mb-4">
           {/* Filter Toggle Button */}
           <button

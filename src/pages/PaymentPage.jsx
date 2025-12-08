@@ -138,15 +138,20 @@ const PaymentPage = () => {
             )}
           </div>
           
-          <div className="flex justify-between items-center text-lg mb-3 sm:mb-4 pt-2 border-t border-gray-200">
-            <span className="font-semibold text-gray-700">Total</span>
-            <span className="text-xl font-bold text-gray-900">₱{totalPrice.toFixed(2)}</span>
+          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-4">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-gray-700 text-base sm:text-lg">Total Amount to Pay</span>
+              <span className="text-2xl sm:text-3xl font-bold text-[#00C853]">₱{totalPrice.toFixed(2)}</span>
+            </div>
           </div>
         </div>
 
         <div className="mb-4 sm:mb-5">
           <div className="mb-3 sm:mb-4">
-            <label htmlFor="amountPaid" className="block mb-2 font-semibold text-gray-800 text-sm sm:text-base">Amount Paid:</label>
+            <label htmlFor="amountPaid" className="mb-2 font-bold text-gray-800 text-base sm:text-lg flex items-center gap-2">
+              <span className="text-xl">💵</span>
+              Enter Amount Paid:
+            </label>
             <input
               id="amountPaid"
               type="number"
@@ -157,8 +162,15 @@ const PaymentPage = () => {
               placeholder="0.00"
               className={`w-full px-3 py-3 text-lg sm:text-xl border ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg transition-colors focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20`}
               inputMode="decimal"
+              autoFocus
             />
-            {error && <span className="block text-red-500 text-sm mt-2">{error}</span>}
+            {!amountPaid && !error && (
+              <div className="mt-2 text-sm text-gray-500 flex items-center gap-1">
+                <span>👆</span>
+                <span>Please enter the amount received from customer</span>
+              </div>
+            )}
+            {error && <span className="block text-red-500 text-sm mt-2 font-semibold">{error}</span>}
           </div>
           
           {amountPaid && change >= 0 && (
