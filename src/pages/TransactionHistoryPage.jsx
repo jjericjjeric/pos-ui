@@ -58,7 +58,9 @@ const TransactionHistoryPage = () => {
       }
     };
     loadData();
-  }, [filters.start_date, filters.end_date, filters.status, filters.payment_method, filters.page]);  // Date preset handlers
+  }, [filters.start_date, filters.end_date, filters.status, filters.payment_method, filters.page]);
+
+  // Date preset handlers
   const applyDatePreset = (preset) => {
     setDatePreset(preset);
     const today = new Date();
@@ -320,6 +322,7 @@ const TransactionHistoryPage = () => {
             </div>
           )}
         </div>
+        }
 
         {/* Transactions List */}
         {transactionsLoading ? (

@@ -18,7 +18,7 @@ describe('ProductTile Component', () => {
     
     expect(screen.getByText('Coffee')).toBeInTheDocument();
     expect(screen.getByText('₱15.99')).toBeInTheDocument();
-    expect(screen.getByText(/Stock: 50/)).toBeInTheDocument();
+    expect(screen.getByText('50')).toBeInTheDocument(); // Stock badge shows just the number
     expect(screen.getByText('Beverages')).toBeInTheDocument(); // Not uppercase
   });
 
@@ -47,9 +47,9 @@ describe('ProductTile Component', () => {
     
     render(<ProductTile product={lowStockProduct} onAddToCart={mockOnAdd} />);
     
-    const stockBadge = screen.getByText(/Stock: 5/);
+    const stockBadge = screen.getByText('5');
     expect(stockBadge).toBeInTheDocument();
-    expect(stockBadge.className).toContain('bg-yellow-100'); // Low stock styling
+    expect(stockBadge.className).toContain('bg-yellow-50'); // Low stock warning
   });
 
   it('should disable click when out of stock', () => {

@@ -426,9 +426,9 @@ describe('POSPage', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Stock: 100')).toBeInTheDocument();
-    expect(screen.getByText('Stock: 50')).toBeInTheDocument();
-    expect(screen.getByText('Stock: 80')).toBeInTheDocument();
+    expect(screen.getByText('100')).toBeInTheDocument();
+    expect(screen.getByText('50')).toBeInTheDocument();
+    expect(screen.getByText('80')).toBeInTheDocument();
   });
 
   it('shows out of stock badge for products with no stock', () => {

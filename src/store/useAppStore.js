@@ -294,32 +294,39 @@ const useAppStore = create(
         try {
           set({ productsLoading: true, productsError: null });
           const products = await apiExports.fetchProducts();
-          
+
           // Only update if this request wasn't aborted
           if (currentController && !currentController.signal.aborted) {
             // Cache the products
             productCache.set(currentStore.id, {
               data: products,
-              timestamp: Date.now()
+              timestamp: Date.now(),
             });
-            
-            set({ products, productsLoading: false });
-          }
-        } catch (error) {
-          // Ignore abort errors
-          if (error.name === 'AbortError') {
-            console.log('Product load was cancelled');
+
+            set({ products, productsLoading: false, productsError: null });
+            return products;
+          } else {
+            // If aborted, ensure loading flag is cleared
+            set({ productsLoading: false });
             return;
           }
-          
+        } catch (error) {
+          // Ignore abort errors but clear loading state
+          if (error && error.name === 'AbortError') {
+            console.log('Product load was cancelled');
+            set({ productsLoading: false });
+            return;
+          }
+
           console.error('Failed to load products:', error);
           if (currentController && !currentController.signal.aborted) {
-            set({
-              productsError: error.message,
-              productsLoading: false,
-              products: [],
-            });
+            set({ productsError: error.message || String(error), productsLoading: false, products: [] });
+          } else {
+            set({ productsLoading: false });
           }
+
+          // Re-throw so callers/tests can observe the failure if they await loadProducts
+          throw error;
         } finally {
           if (loadProductsAbortController === currentController) {
             loadProductsAbortController = null;

@@ -113,7 +113,7 @@ describe('TransactionHistoryPage', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Transaction History')).toBeInTheDocument();
+    expect(screen.getByText(/Transaction History/)).toBeInTheDocument();
   });
 
   it('displays stats cards', () => {
@@ -123,10 +123,9 @@ describe('TransactionHistoryPage', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Total Sales')).toBeInTheDocument();
-    expect(screen.getByText('Transactions')).toBeInTheDocument();
-    expect(screen.getByText('Average')).toBeInTheDocument();
-    expect(screen.getByText('Cash')).toBeInTheDocument();
+    // Stats section removed from Transaction History page
+    expect(screen.queryByText('Total Sales')).not.toBeInTheDocument();
+    // Stats cards no longer exist in Transaction History
   });
 
   it('displays transactions list', () => {
@@ -469,7 +468,7 @@ describe('TransactionHistoryPage', () => {
 
     await waitFor(() => {
       expect(mockLoadTransactions).toHaveBeenCalled();
-      expect(mockLoadTransactionStats).toHaveBeenCalled();
+      // loadTransactionStats is no longer called from TransactionHistoryPage
     });
   });
 });

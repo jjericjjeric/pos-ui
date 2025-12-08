@@ -85,7 +85,7 @@ describe('Cart Component', () => {
   it('should show empty cart message when cart is empty', () => {
     renderCart([]);
     
-    expect(screen.getByText(/No items in cart/i)).toBeInTheDocument();
+    expect(screen.getByText(/No items/i)).toBeInTheDocument();
   });
 
   it('should disable checkout button when cart is empty', () => {

@@ -80,7 +80,8 @@ describe('PaymentPage', () => {
     );
 
     // Total should be 2 * 100 + 1 * 50 = 250
-    expect(screen.getByText('Total: ₱250.00')).toBeInTheDocument();
+    expect(screen.getByText(/Total Amount to Pay/i)).toBeInTheDocument();
+    expect(screen.getByText('₱250.00')).toBeInTheDocument();
   });
 
   it('displays quantity and price for each item', () => {
@@ -92,8 +93,9 @@ describe('PaymentPage', () => {
 
     expect(screen.getByText('Qty: 2')).toBeInTheDocument();
     expect(screen.getByText('Qty: 1')).toBeInTheDocument();
-    expect(screen.getByText('Total: ₱200.00')).toBeInTheDocument(); // 2 * 100
-    expect(screen.getByText('Total: ₱50.00')).toBeInTheDocument(); // 1 * 50
+    // Subtotals are shown in the cart items (may appear multiple times)
+    expect(screen.getAllByText('₱200.00').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('₱50.00').length).toBeGreaterThan(0);
   });
 
   it('calculates change correctly', async () => {
@@ -103,11 +105,11 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     await waitFor(() => {
-      expect(screen.getByText('Change:')).toBeInTheDocument();
+      expect(screen.getByText('Change')).toBeInTheDocument();
     });
     
     const fiftyAmounts = screen.getAllByText('₱50.00');
@@ -121,7 +123,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '100' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -149,7 +151,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '100' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -163,7 +165,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -186,7 +188,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -230,7 +232,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -253,7 +255,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -271,7 +273,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -293,7 +295,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '400' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -319,7 +321,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -348,7 +350,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -383,7 +385,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '300' } });
 
     const completeButton = screen.getByText('Complete Purchase');
@@ -404,7 +406,7 @@ describe('PaymentPage', () => {
       </BrowserRouter>
     );
 
-    const amountInput = screen.getByLabelText('Amount Paid:');
+    const amountInput = screen.getByRole('spinbutton', { name: /Amount Paid:/i });
     fireEvent.change(amountInput, { target: { value: '250.50' } });
 
     expect(amountInput.value).toBe('250.50');

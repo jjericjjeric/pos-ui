@@ -150,7 +150,7 @@ const PaymentPage = () => {
           <div className="mb-3 sm:mb-4">
             <label htmlFor="amountPaid" className="mb-2 font-bold text-gray-800 text-base sm:text-lg flex items-center gap-2">
               <span className="text-xl">💵</span>
-              Enter Amount Paid:
+              Amount Paid:
             </label>
             <input
               id="amountPaid"

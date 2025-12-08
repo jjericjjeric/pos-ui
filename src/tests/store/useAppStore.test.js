@@ -176,7 +176,7 @@ describe('useAppStore', () => {
       useAppStore.setState({ currentStore: { id: 1, name: 'Test Store' } });
       api.fetchProducts.mockResolvedValue(mockProducts);
 
-      await useAppStore.getState().loadProducts();
+      await useAppStore.getState().loadProducts(true); // Force refresh to bypass cache
 
       expect(useAppStore.getState().products).toEqual(mockProducts);
       expect(useAppStore.getState().productsLoading).toBe(false);
@@ -195,7 +195,12 @@ describe('useAppStore', () => {
       useAppStore.setState({ currentStore: { id: 1, name: 'Test Store' } });
       api.fetchProducts.mockRejectedValue(new Error('Network error'));
 
-      await useAppStore.getState().loadProducts();
+      // loadProducts now re-throws errors, so we need to catch them
+      try {
+        await useAppStore.getState().loadProducts(true); // Force refresh
+      } catch (error) {
+        // Expected to throw
+      }
 
       expect(useAppStore.getState().products).toEqual([]);
       expect(useAppStore.getState().productsError).toBe('Network error');
