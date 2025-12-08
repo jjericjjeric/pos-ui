@@ -289,13 +289,14 @@ const useAppStore = create(
 
         // Create new abort controller for this request
         loadProductsAbortController = new AbortController();
+        const currentController = loadProductsAbortController;
 
         try {
           set({ productsLoading: true, productsError: null });
           const products = await apiExports.fetchProducts();
           
           // Only update if this request wasn't aborted
-          if (!loadProductsAbortController.signal.aborted) {
+          if (currentController && !currentController.signal.aborted) {
             // Cache the products
             productCache.set(currentStore.id, {
               data: products,
@@ -312,7 +313,7 @@ const useAppStore = create(
           }
           
           console.error('Failed to load products:', error);
-          if (!loadProductsAbortController.signal.aborted) {
+          if (currentController && !currentController.signal.aborted) {
             set({
               productsError: error.message,
               productsLoading: false,
@@ -320,7 +321,9 @@ const useAppStore = create(
             });
           }
         } finally {
-          loadProductsAbortController = null;
+          if (loadProductsAbortController === currentController) {
+            loadProductsAbortController = null;
+          }
         }
       },
 

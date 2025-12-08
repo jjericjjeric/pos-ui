@@ -74,12 +74,14 @@ const AnalyticsPage = () => {
   if (analyticsLoading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-linear-to-r from-purple-600 to-purple-800 text-white p-6 shadow-lg">
-          <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
-          <p className="text-purple-100 text-sm mt-1">Loading insights...</p>
+        <div className="bg-white shadow-sm">
+          <div className="px-4 sm:px-6 py-4 sm:py-6">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">📊 Analytics</h1>
+            <p className="text-gray-600 text-sm mt-1">Loading insights...</p>
+          </div>
         </div>
         <div className="p-6 flex justify-center items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
         </div>
       </div>
     );
@@ -88,27 +90,29 @@ const AnalyticsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <div className="bg-linear-to-r from-purple-600 to-purple-800 text-white p-6 shadow-lg">
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-4 text-white hover:text-purple-200 transition-colors"
-        >
-          ← Back
-        </button>
-        <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
-        <p className="text-purple-100 text-sm mt-1">Sales insights and performance metrics</p>
+      <div className="bg-white shadow-sm">
+        <div className="px-4 sm:px-6 py-4 sm:py-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="mb-3 text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base"
+          >
+            ← Back
+          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">📊 Analytics Dashboard</h1>
+          <p className="text-gray-600 text-sm mt-1">Sales insights and performance metrics</p>
+        </div>
       </div>
 
       {/* Date Range Selector */}
-      <div className="p-4 bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+      <div className="p-3 sm:p-4 bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="flex gap-2 overflow-x-auto pb-2">
           {['today', 'yesterday', 'last7days', 'last30days', 'thisMonth', 'lastMonth', 'custom'].map((range) => (
             <button
               key={range}
               onClick={() => setDateRange(range)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors min-h-11 ${
                 dateRange === range
-                  ? 'bg-purple-600 text-white'
+                  ? 'bg-green-600 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -124,19 +128,19 @@ const AnalyticsPage = () => {
         </div>
         
         {dateRange === 'custom' && (
-          <div className="flex gap-2 mt-3">
+          <div className="flex flex-col sm:flex-row gap-2 mt-3">
             <input
               type="date"
               value={customStartDate}
               onChange={(e) => setCustomStartDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-11"
             />
-            <span className="text-gray-500 flex items-center">to</span>
+            <span className="text-gray-500 flex items-center justify-center sm:justify-start text-sm">to</span>
             <input
               type="date"
               value={customEndDate}
               onChange={(e) => setCustomEndDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-11"
             />
           </div>
         )}
@@ -149,33 +153,33 @@ const AnalyticsPage = () => {
       )}
 
       {analyticsData && (
-        <div className="p-4 space-y-6">
+        <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
           {/* KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-green-500">
-              <div className="text-gray-500 text-sm font-medium">Total Revenue</div>
-              <div className="text-2xl font-bold text-gray-900 mt-1">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-green-600">
+              <div className="text-gray-500 text-xs sm:text-sm font-medium">Total Revenue</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
                 {formatCurrency(analyticsData.stats?.total_sales)}
               </div>
             </div>
             
-            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
-              <div className="text-gray-500 text-sm font-medium">Transactions</div>
-              <div className="text-2xl font-bold text-gray-900 mt-1">
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-blue-600">
+              <div className="text-gray-500 text-xs sm:text-sm font-medium">Transactions</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1">
                 {analyticsData.stats?.total_transactions || 0}
               </div>
             </div>
             
-            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-purple-500">
-              <div className="text-gray-500 text-sm font-medium">Average Sale</div>
-              <div className="text-2xl font-bold text-gray-900 mt-1">
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-purple-600">
+              <div className="text-gray-500 text-xs sm:text-sm font-medium">Average Sale</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
                 {formatCurrency(analyticsData.stats?.average_transaction)}
               </div>
             </div>
             
-            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-orange-500">
-              <div className="text-gray-500 text-sm font-medium">Cash Sales</div>
-              <div className="text-2xl font-bold text-gray-900 mt-1">
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-orange-600">
+              <div className="text-gray-500 text-xs sm:text-sm font-medium">Cash Sales</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
                 {formatCurrency(analyticsData.stats?.total_cash)}
               </div>
             </div>
@@ -183,49 +187,60 @@ const AnalyticsPage = () => {
 
           {/* Revenue Trend Chart */}
           {analyticsData.dailyRevenue && analyticsData.dailyRevenue.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Revenue Trend</h2>
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+              <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">📈 Revenue Trend</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={analyticsData.dailyRevenue}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#6b7280" />
+                  <YAxis tick={{ fontSize: 11 }} stroke="#6b7280" />
                   <Tooltip 
                     formatter={(value) => formatCurrency(value)}
-                    labelStyle={{ color: '#374151' }}
+                    contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                    labelStyle={{ color: '#374151', fontWeight: 'bold' }}
                   />
-                  <Legend />
+                  <Legend wrapperStyle={{ fontSize: '14px' }} />
                   <Line 
                     type="monotone" 
                     dataKey="revenue" 
-                    stroke="#667eea" 
-                    strokeWidth={2}
+                    stroke="#00C853" 
+                    strokeWidth={3}
                     name="Revenue"
+                    dot={{ fill: '#00C853', r: 4 }}
+                    activeDot={{ r: 6 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Top Products Chart */}
             {analyticsData.topProducts && analyticsData.topProducts.length > 0 && (
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">Top Selling Products</h2>
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+                <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">🏆 Top Selling Products</h2>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={analyticsData.topProducts.slice(0, 5)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="product_name" tick={{ fontSize: 11 }} angle={-15} textAnchor="end" height={80} />
-                    <YAxis tick={{ fontSize: 12 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis 
+                      dataKey="product_name" 
+                      tick={{ fontSize: 10 }} 
+                      angle={-15} 
+                      textAnchor="end" 
+                      height={80}
+                      stroke="#6b7280"
+                    />
+                    <YAxis tick={{ fontSize: 11 }} stroke="#6b7280" />
                     <Tooltip 
                       formatter={(value, name) => [
                         name === 'revenue' ? formatCurrency(value) : value,
                         name === 'revenue' ? 'Revenue' : 'Quantity'
                       ]}
-                      labelStyle={{ color: '#374151' }}
+                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                      labelStyle={{ color: '#374151', fontWeight: 'bold' }}
                     />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="#00C853" name="Revenue" />
+                    <Legend wrapperStyle={{ fontSize: '14px' }} />
+                    <Bar dataKey="revenue" fill="#00C853" name="Revenue" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -233,8 +248,8 @@ const AnalyticsPage = () => {
 
             {/* Payment Methods Chart */}
             {getPaymentMethodData().length > 0 && (
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">Payment Methods</h2>
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+                <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">💳 Payment Methods</h2>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -251,17 +266,20 @@ const AnalyticsPage = () => {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(value)} />
+                    <Tooltip 
+                      formatter={(value) => formatCurrency(value)}
+                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="mt-4 space-y-2">
                   {getPaymentMethodData().map((method) => (
-                    <div key={method.name} className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="w-4 h-4 rounded-full mr-2" style={{ backgroundColor: method.color }}></div>
-                        <span className="text-sm text-gray-700">{method.name}</span>
+                    <div key={method.name} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: method.color }}></div>
+                        <span className="text-xs sm:text-sm text-gray-700 font-medium">{method.name}</span>
                       </div>
-                      <span className="text-sm font-medium text-gray-900">{formatCurrency(method.value)}</span>
+                      <span className="text-xs sm:text-sm font-semibold text-gray-900">{formatCurrency(method.value)}</span>
                     </div>
                   ))}
                 </div>
@@ -271,10 +289,10 @@ const AnalyticsPage = () => {
 
           {/* Empty State */}
           {(!analyticsData.dailyRevenue || analyticsData.dailyRevenue.length === 0) && (
-            <div className="bg-white p-12 rounded-lg shadow-md text-center">
-              <div className="text-6xl mb-4">📊</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No Data Available</h3>
-              <p className="text-gray-500">
+            <div className="bg-white p-8 sm:p-12 rounded-lg shadow-sm text-center">
+              <div className="text-5xl sm:text-6xl mb-4">📊</div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">No Data Available</h3>
+              <p className="text-sm sm:text-base text-gray-500">
                 No transactions found for the selected date range.
               </p>
             </div>
