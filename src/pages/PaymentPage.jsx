@@ -72,6 +72,7 @@ const PaymentPage = () => {
       }));
 
       const transactionData = {
+        store_id: currentStore.id,
         items: transactionItems,
         total_amount: totalPrice,
         amount_paid: paid,
