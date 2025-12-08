@@ -35,6 +35,11 @@ const useAppStore = create(
         cacheDuration: 30, // Default: 30 minutes
       },
 
+      // ============ ANALYTICS STATE ============
+      analyticsData: null,
+      analyticsLoading: false,
+      analyticsError: null,
+
       // ============ AUTH ACTIONS ============
       login: async (username, password, remember = true) => {
         try {
@@ -487,9 +492,23 @@ const useAppStore = create(
       loadTransactionStats: async (dateRange = {}) => {
         try {
           const data = await apiExports.getTransactionStats(dateRange);
-          set({ transactionStats: data.stats });
+          set({ 
+            transactionStats: data.stats,
+            analyticsData: {
+              stats: data.stats,
+              dailyRevenue: data.daily_revenue || [],
+              topProducts: data.top_products || [],
+              dateRange: {
+                start: data.start_date,
+                end: data.end_date,
+              },
+            },
+            analyticsLoading: false,
+          });
+          return data;
         } catch (error) {
           console.error('Failed to load transaction stats:', error);
+          set({ analyticsLoading: false, analyticsError: error.message });
           throw error;
         }
       },

@@ -1,0 +1,288 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAppStore from '../store/useAppStore';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+const AnalyticsPage = () => {
+  const navigate = useNavigate();
+  const { analyticsData, analyticsLoading, analyticsError, loadTransactionStats } = useAppStore();
+  
+  const [dateRange, setDateRange] = useState('today');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
+
+  // Calculate date range based on selection
+  const getDateRange = () => {
+    const today = new Date();
+    const formatDate = (date) => date.toISOString().split('T')[0];
+
+    switch (dateRange) {
+      case 'today':
+        return { start_date: formatDate(today), end_date: formatDate(today) };
+      case 'yesterday':
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        return { start_date: formatDate(yesterday), end_date: formatDate(yesterday) };
+      case 'last7days':
+        const last7 = new Date(today);
+        last7.setDate(last7.getDate() - 7);
+        return { start_date: formatDate(last7), end_date: formatDate(today) };
+      case 'last30days':
+        const last30 = new Date(today);
+        last30.setDate(last30.getDate() - 30);
+        return { start_date: formatDate(last30), end_date: formatDate(today) };
+      case 'thisMonth':
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        return { start_date: formatDate(firstDay), end_date: formatDate(today) };
+      case 'lastMonth':
+        const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+        return { start_date: formatDate(lastMonthStart), end_date: formatDate(lastMonthEnd) };
+      case 'custom':
+        return { start_date: customStartDate, end_date: customEndDate };
+      default:
+        return { start_date: formatDate(today), end_date: formatDate(today) };
+    }
+  };
+
+  useEffect(() => {
+    const range = getDateRange();
+    if (range.start_date && range.end_date) {
+      loadTransactionStats(range);
+    }
+  }, [dateRange, customStartDate, customEndDate]);
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-PH', {
+      style: 'currency',
+      currency: 'PHP',
+    }).format(value || 0);
+  };
+
+  // Prepare payment method data for pie chart
+  const getPaymentMethodData = () => {
+    if (!analyticsData?.stats) return [];
+    
+    const { total_cash, total_card, total_online } = analyticsData.stats;
+    return [
+      { name: 'Cash', value: total_cash || 0, color: '#00C853' },
+      { name: 'Card', value: total_card || 0, color: '#667eea' },
+      { name: 'Online', value: total_online || 0, color: '#f97316' },
+    ].filter(item => item.value > 0);
+  };
+
+  if (analyticsLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="bg-linear-to-r from-purple-600 to-purple-800 text-white p-6 shadow-lg">
+          <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
+          <p className="text-purple-100 text-sm mt-1">Loading insights...</p>
+        </div>
+        <div className="p-6 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Header */}
+      <div className="bg-linear-to-r from-purple-600 to-purple-800 text-white p-6 shadow-lg">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 text-white hover:text-purple-200 transition-colors"
+        >
+          ← Back
+        </button>
+        <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
+        <p className="text-purple-100 text-sm mt-1">Sales insights and performance metrics</p>
+      </div>
+
+      {/* Date Range Selector */}
+      <div className="p-4 bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {['today', 'yesterday', 'last7days', 'last30days', 'thisMonth', 'lastMonth', 'custom'].map((range) => (
+            <button
+              key={range}
+              onClick={() => setDateRange(range)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                dateRange === range
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {range === 'today' && 'Today'}
+              {range === 'yesterday' && 'Yesterday'}
+              {range === 'last7days' && 'Last 7 Days'}
+              {range === 'last30days' && 'Last 30 Days'}
+              {range === 'thisMonth' && 'This Month'}
+              {range === 'lastMonth' && 'Last Month'}
+              {range === 'custom' && 'Custom Range'}
+            </button>
+          ))}
+        </div>
+        
+        {dateRange === 'custom' && (
+          <div className="flex gap-2 mt-3">
+            <input
+              type="date"
+              value={customStartDate}
+              onChange={(e) => setCustomStartDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            />
+            <span className="text-gray-500 flex items-center">to</span>
+            <input
+              type="date"
+              value={customEndDate}
+              onChange={(e) => setCustomEndDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            />
+          </div>
+        )}
+      </div>
+
+      {analyticsError && (
+        <div className="m-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          {analyticsError}
+        </div>
+      )}
+
+      {analyticsData && (
+        <div className="p-4 space-y-6">
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-green-500">
+              <div className="text-gray-500 text-sm font-medium">Total Revenue</div>
+              <div className="text-2xl font-bold text-gray-900 mt-1">
+                {formatCurrency(analyticsData.stats?.total_sales)}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
+              <div className="text-gray-500 text-sm font-medium">Transactions</div>
+              <div className="text-2xl font-bold text-gray-900 mt-1">
+                {analyticsData.stats?.total_transactions || 0}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-purple-500">
+              <div className="text-gray-500 text-sm font-medium">Average Sale</div>
+              <div className="text-2xl font-bold text-gray-900 mt-1">
+                {formatCurrency(analyticsData.stats?.average_transaction)}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-orange-500">
+              <div className="text-gray-500 text-sm font-medium">Cash Sales</div>
+              <div className="text-2xl font-bold text-gray-900 mt-1">
+                {formatCurrency(analyticsData.stats?.total_cash)}
+              </div>
+            </div>
+          </div>
+
+          {/* Revenue Trend Chart */}
+          {analyticsData.dailyRevenue && analyticsData.dailyRevenue.length > 0 && (
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">Revenue Trend</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={analyticsData.dailyRevenue}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(value)}
+                    labelStyle={{ color: '#374151' }}
+                  />
+                  <Legend />
+                  <Line 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#667eea" 
+                    strokeWidth={2}
+                    name="Revenue"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Top Products Chart */}
+            {analyticsData.topProducts && analyticsData.topProducts.length > 0 && (
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Top Selling Products</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={analyticsData.topProducts.slice(0, 5)}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="product_name" tick={{ fontSize: 11 }} angle={-15} textAnchor="end" height={80} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip 
+                      formatter={(value, name) => [
+                        name === 'revenue' ? formatCurrency(value) : value,
+                        name === 'revenue' ? 'Revenue' : 'Quantity'
+                      ]}
+                      labelStyle={{ color: '#374151' }}
+                    />
+                    <Legend />
+                    <Bar dataKey="revenue" fill="#00C853" name="Revenue" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Payment Methods Chart */}
+            {getPaymentMethodData().length > 0 && (
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Payment Methods</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={getPaymentMethodData()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {getPaymentMethodData().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => formatCurrency(value)} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="mt-4 space-y-2">
+                  {getPaymentMethodData().map((method) => (
+                    <div key={method.name} className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-4 h-4 rounded-full mr-2" style={{ backgroundColor: method.color }}></div>
+                        <span className="text-sm text-gray-700">{method.name}</span>
+                      </div>
+                      <span className="text-sm font-medium text-gray-900">{formatCurrency(method.value)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Empty State */}
+          {(!analyticsData.dailyRevenue || analyticsData.dailyRevenue.length === 0) && (
+            <div className="bg-white p-12 rounded-lg shadow-md text-center">
+              <div className="text-6xl mb-4">📊</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No Data Available</h3>
+              <p className="text-gray-500">
+                No transactions found for the selected date range.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AnalyticsPage;

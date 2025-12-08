@@ -8,6 +8,7 @@ import ProductsManagementPage from './pages/ProductsManagementPage';
 import StoreSettingsPage from './pages/StoreSettingsPage';
 import CreateStorePage from './pages/CreateStorePage';
 import AppSettingsPage from './pages/AppSettingsPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -45,6 +46,7 @@ function App() {
           <Route path="/store-settings" element={<RequireAuth><StoreSettingsPage /></RequireAuth>} />
           <Route path="/create-store" element={<RequireAuth><CreateStorePage /></RequireAuth>} />
           <Route path="/app-settings" element={<RequireAuth><AppSettingsPage /></RequireAuth>} />
+          <Route path="/analytics" element={<RequireAuth><AnalyticsPage /></RequireAuth>} />
           <Route path="/transaction-history" element={<RequireAuth><TransactionHistoryPage /></RequireAuth>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
