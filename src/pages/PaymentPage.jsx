@@ -113,7 +113,7 @@ const PaymentPage = () => {
 
   return (
     <>
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-2 sm:p-3 md:p-4">
+    <div className="min-h-screen w-full flex items-start md:items-center justify-center bg-gray-50 p-2 sm:p-3 md:p-4 pb-[50vh] md:pb-4">
       <div className="bg-white rounded-lg p-4 sm:p-5 md:p-6 max-w-[600px] w-full border border-gray-200 max-h-[95vh] overflow-y-auto">
         <h1 className="m-0 mb-3 sm:mb-4 text-gray-800 text-xl sm:text-2xl font-bold">Payment</h1>
         
@@ -161,9 +161,10 @@ const PaymentPage = () => {
               value={amountPaid}
               onChange={handleAmountChange}
               placeholder="0.00"
-              className={`w-full px-3 py-3 text-lg sm:text-xl border ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg transition-colors focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20`}
+              className={`w-full px-3 py-3 text-base sm:text-lg md:text-xl border ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg transition-colors focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20`}
               inputMode="decimal"
               autoFocus
+              style={{ fontSize: '16px' }}
             />
             {!amountPaid && !error && (
               <div className="mt-2 text-sm text-gray-500 flex items-center gap-1">

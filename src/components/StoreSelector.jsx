@@ -28,9 +28,11 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
       return;
     }
 
+    // Close dropdown immediately for better UX
+    setIsOpen(false);
+
     try {
       await switchStore(storeId);
-      setIsOpen(false);
     } catch (error) {
       console.error('Failed to switch store:', error);
       alert('Failed to switch store. Please try again.');
@@ -105,7 +107,7 @@ const StoreSelector = ({ className = '', variant = 'dark' }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 z-[9999] max-h-[calc(100vh-120px)] overflow-y-auto">
+        <div className="fixed md:absolute left-2 md:left-0 top-14 md:top-auto md:mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 z-[9999] max-h-[calc(100vh-120px)] overflow-y-auto">
           <div className="p-2">
             <div className="text-xs font-semibold text-gray-500 uppercase px-2 py-1 mb-1">
               Your Stores ({userStores.length})

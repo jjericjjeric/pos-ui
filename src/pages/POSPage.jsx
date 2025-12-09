@@ -246,7 +246,10 @@ const POSPage = () => {
           {/* Scrollable Products Grid */}
           <div className="flex-1 overflow-y-auto px-2 sm:px-3 py-2 sm:py-3">
             {loading && (
-              <div className="text-center p-6 text-gray-600 text-base sm:text-lg">Loading products...</div>
+              <div className="flex flex-col items-center justify-center p-12 text-gray-600">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#00C853] mb-4"></div>
+                <p className="text-base sm:text-lg font-medium">Loading products...</p>
+              </div>
             )}
             {!loading && (
               <>
