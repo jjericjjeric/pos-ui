@@ -1,6 +1,6 @@
 # Feature Status Tracking
 
-**Last Updated:** December 7, 2025  
+**Last Updated:** December 9, 2025  
 **Version:** 2.2.0
 
 This document tracks the implementation status of all features across the pos-workspace monorepo.
@@ -42,7 +42,6 @@ This document tracks the implementation status of all features across the pos-wo
 | Feature | Status | Backend | Frontend | Notes |
 |---------|--------|---------|----------|-------|
 | Create Store | ✅ | ✅ | ✅ | Auto-created on registration |
-| Create Additional Store | ✅ | ✅ | ✅ | UI with form, appears in Store Selector |
 | Update Store | ✅ | ✅ | ✅ | With success indicator |
 | Delete Store | ✅ | ✅ | ✅ | Owner only, confirmation dialog |
 | List User Stores | ✅ | ✅ | ✅ | With role info |
@@ -75,7 +74,8 @@ This document tracks the implementation status of all features across the pos-wo
 |---------|--------|---------|----------|-------|
 | Add Product | ✅ | ✅ | ✅ | With image upload |
 | Edit Product | ✅ | ✅ | ✅ | Modal + page |
-| Delete Product | ✅ | ✅ | ✅ | With confirmation |
+| Delete Product | ✅ | ✅ | ✅ | With confirmation, prevents deletion if sold |
+| Archive Product | 📋 | 📋 | 📋 | Soft delete for products with transactions |
 | View Product Details | ✅ | ✅ | ✅ | Modal view |
 | List Products | ✅ | ✅ | ✅ | Store-scoped |
 | Search Products | ✅ | ✅ | ✅ | By name/ID |
@@ -86,7 +86,7 @@ This document tracks the implementation status of all features across the pos-wo
 | Product Images | ✅ | ✅ | ✅ | Base64 storage |
 | Image Optimization | ✅ | ✅ | ✅ | Lazy load, cache, compress |
 | Progressive Image Loading | ✅ | ✅ | ✅ | Separate endpoint |
-| Low Stock Alerts | 📋 | 📋 | 📋 | Phase 3 |
+| Low Stock Alerts | ✅ | ✅ | ✅ | Banner + modal with restock actions |
 | Barcode Scanning | 📋 | 📋 | 📋 | Phase 5 |
 | Product Variants | 📋 | 📋 | 📋 | Future feature |
 
@@ -127,6 +127,49 @@ This document tracks the implementation status of all features across the pos-wo
 
 ---
 
+### Analytics & Reporting
+
+| Feature | Status | Backend | Frontend | Notes |
+|---------|--------|---------|----------|-------|
+| **Basic Analytics Dashboard** | ✅ | ✅ | ✅ | **Phase 3 - Completed Dec 2025** |
+| Revenue Trend Chart (Daily) | ✅ | ✅ | ✅ | Line chart with date range filters |
+| Top Selling Products | ✅ | ✅ | ✅ | Bar chart, top 5 by revenue |
+| Payment Method Distribution | ✅ | ✅ | ✅ | Pie chart (Cash/Card/Online) |
+| KPI Cards (Revenue, Transactions, Avg) | ✅ | ✅ | ✅ | Real-time metrics |
+| Date Range Filters | ✅ | ✅ | ✅ | Presets + custom range |
+| **Segmented Analytics Dashboard** | 📋 | 📋 | 📋 | **Phase 4 - Planned** |
+| Sales Analytics Tab | 📋 | 📋 | 📋 | Revenue, transactions, payment methods |
+| Products Analytics Tab | 📋 | 📋 | 📋 | Top products, stock alerts, turnover |
+| Employee Analytics Tab | 📋 | 📋 | 📋 | Staff performance, revenue by staff |
+| Store Analytics Tab | 📋 | 📋 | 📋 | Multi-store comparison, rankings |
+| **Advanced Analytics** | 📋 | 📋 | 📋 | **Phase 4 - Planned** |
+| Product Cost Tracking | 📋 | 📋 | 📋 | Cost per unit, COGS |
+| Profit Calculation | 📋 | 📋 | 📋 | Revenue - COGS per product/transaction |
+| Profit Margin Analysis | 📋 | 📋 | 📋 | Gross margin %, net margin % |
+| Profit Trend Charts | 📋 | 📋 | 📋 | Daily/weekly/monthly profit trends |
+| **Low Stock Alerts** | ✅ | ✅ | ✅ | **Phase 3 - Completed Dec 2025** |
+| Low Stock Banner | ✅ | ✅ | ✅ | Attention-grabbing alerts (amber/red) |
+| Low Stock Modal | ✅ | ✅ | ✅ | Detailed view with sort & quick actions |
+| Product Tile Indicators | ✅ | ✅ | ✅ | Visual warnings on product cards |
+| Low Stock KPI | ✅ | ✅ | ✅ | Alert count in analytics dashboard |
+| Stock Movement Report | 📋 | 📋 | 📋 | Inventory turnover, days to sell |
+| Product Performance Metrics | 📋 | 📋 | 📋 | Sales velocity, contribution margin |
+| Staff Performance Dashboard | 📋 | 📋 | 📋 | Sales per staff member |
+| Staff Sales Leaderboard | 📋 | 📋 | 📋 | Top performers by period |
+| Staff Transaction Count | 📋 | 📋 | 📋 | Transactions processed per staff |
+| Staff Revenue Contribution | 📋 | 📋 | 📋 | Revenue generated per staff |
+| Multi-Store Performance | 📋 | 📋 | 📋 | Compare stores side-by-side |
+| Store Ranking | 📋 | 📋 | 📋 | Best performing stores |
+| Store-wise Profit Comparison | 📋 | 📋 | 📋 | Profit by location |
+| Category Performance | 📋 | 📋 | 📋 | Revenue/profit by category |
+| Hour-of-Day Analysis | 📋 | 📋 | 📋 | Peak sales hours heatmap |
+| Day-of-Week Analysis | 📋 | 📋 | 📋 | Sales patterns by weekday |
+| Seasonal Trends | 📋 | 📋 | 📋 | Monthly/quarterly comparisons |
+| Export Analytics Reports | 📋 | 📋 | 📋 | PDF/Excel exports |
+| Scheduled Reports | 📋 | 📋 | 📋 | Email daily/weekly summaries |
+
+---
+
 ### Staff Management
 
 | Feature | Status | Backend | Frontend | Notes |
@@ -157,13 +200,10 @@ This document tracks the implementation status of all features across the pos-wo
 | Keyboard Shortcuts | ✅ | N/A | ✅ | Ctrl+F, Delete, Alt+E |
 | Mobile-First Design | ✅ | N/A | ✅ | 320px to 1920px |
 | Touch-Friendly Targets | ✅ | N/A | ✅ | Minimum 44×44px |
-| Modern Minimalist Design | ✅ | N/A | ✅ | App-wide rollout complete |
-| Compact Space Optimization | ✅ | N/A | ✅ | Reduced padding, margins app-wide |
-| WhatsApp-Inspired CTAs | ✅ | N/A | ✅ | Green checkout buttons (#00C853) |
-| Clean Card Design | ✅ | N/A | ✅ | Border-based instead of heavy shadows |
-| Bottom Navigation Bar | ✅ | N/A | ✅ | Sticky mobile nav with icons |
 | Dark Mode | 📋 | N/A | 📋 | Future feature |
 | Accessibility (WCAG AA) | 🚧 | N/A | 🚧 | Ongoing improvement |
+| New User Setup Guide | 📋 | N/A | 📋 | Onboarding wizard for first-time users |
+| Interactive Tutorial | 📋 | N/A | 📋 | Feature highlights & tooltips |
 
 ---
 
@@ -187,7 +227,6 @@ This document tracks the implementation status of all features across the pos-wo
 | ProgressiveImage | ✅ | Component | Lazy-loaded images |
 | MenuDropdown | ✅ | Component | Action menus with guest upgrade |
 | UpgradeGuestModal | ✅ | Component | 3-step guest upgrade flow |
-| BottomNav | ✅ | Component | Mobile sticky navigation bar |
 
 ---
 
@@ -269,43 +308,43 @@ This document tracks the implementation status of all features across the pos-wo
 - ✅ Store settings UI with CRUD
 - ✅ FAB for quick product add
 
-### ✅ Phase 3: Enhanced Features (In Progress)
-- ✅ Transaction history UI (completed)
-- ✅ Modern minimalist Cart design (completed)
-- ✅ App-wide design system refresh (completed - v2.2.0)
-  - ✅ Compact spacing and margins
-  - ✅ Clean borders instead of heavy shadows
-  - ✅ WhatsApp-inspired green CTAs (#00C853)
-  - ✅ Minimalist card designs
-  - ✅ Optimized information density
-  - ✅ Gray-50 backgrounds (no gradients)
-  - ✅ Purple navigation/secondary (#667eea)
-  - ✅ Consistent focus states
-- ✅ Bottom Navigation Bar (completed - v2.3.0)
-  - ✅ Mobile-first sticky navigation
-  - ✅ Icon-based menu (Home, Inventory, History)
-  - ✅ Active state indicators with green accent
-  - ✅ Cart badge on Home icon
-  - ✅ Safe area support for notched devices
-- ✅ Create Additional Stores UI (completed - v2.3.0)
-  - ✅ Add new store interface with form
-  - ✅ Form with store name, description, location
-  - ✅ Automatic owner role assignment
-  - ✅ Store appears in Store Selector dropdown
-  - ✅ Seamless switching between owned stores
-  - ✅ Success modal with store details
-- 📋 OTP SMS integration
-- 📋 Inventory alerts
-- 📋 Sales analytics dashboard
-- 📋 Receipt generation
-- 📋 Multi-payment methods
-- 📋 Customer management
-
+### 🚧 Phase 3: Enhanced Features (In Progress)
+- ✅ Transaction history UI (completed Dec 2025)
+- ✅ Basic analytics dashboard (completed Dec 2025)
+  - Revenue trends, top products, payment methods
+  - Date range filtering, KPI cards
+- ✅ Cart & Payment UX improvements (completed Dec 2025)
+- ✅ Low stock alerts (completed Dec 2025)
+  - Attention-grabbing banners (amber/red)
+  - Detailed modal with sort & filter
+  - Quick restock actions
+  - Product tile indicators
+- OTP SMS integration
+- Receipt generation
+- New user setup guide
+- Segmented analytics dashboard
 ### 📋 Phase 4: Business Intelligence (Planned)
-- Supplier management
-- Purchase orders
-- Expense tracking
-- Profit/loss reports
+- **Advanced Analytics & Reporting**
+  - Segmented analytics dashboard (Sales, Products, Employee, Store tabs)
+  - Product costing & profit calculation
+  - Profit margin analysis with trends
+  - Low stock alerts dashboard
+  - Stock movement & inventory turnover
+  - Staff performance metrics & leaderboards
+  - Multi-store performance comparison
+  - Category & time-based analysis
+  - Scheduled reports & exports
+- **Financial Management**
+  - Supplier management
+  - Purchase orders
+  - Expense tracking
+  - Profit/loss statements
+  - Tax calculations
+  - Break-even analysis
+- **Operations**
+  - Multi-location support
+  - Inventory reordering automation
+  - Supplier performance tracking
 - Tax calculations
 - Staff performance metrics
 - Multi-location support
@@ -343,21 +382,21 @@ To request a new feature:
 |---------|----------------|--------|
 | Email Verification | Nov 10, 2025 | Using mobile OTP instead |
 | React 19 | Nov 10, 2025 | Reverted to React 18.3.1 LTS |
-**Total Features Tracked:** 142  
-**Completed:** ~112 (78.9%)  
-**In Progress:** ~0 (0%)  
-**Planned:** ~30 (21.1%)
-
-**Backend Completion:** ~95%  
-**Frontend Completion:** ~95%  
-**Testing Coverage:** >80% (backend), >85% (frontend - 164 tests passing)
-**Planned:** ~35 (25%)
-
-**Backend Completion:** ~95%  
-**Frontend Completion:** ~90%  
-**Testing Coverage:** >80% (backend), >85% (frontend - 164 tests passing)
 
 ---
 
-**Last Updated:** December 7, 2025  
-**Next Review:** January 1, 2026
+## Statistics
+
+**Total Features Tracked:** 180+  
+**Completed:** ~115 (64%)  
+**In Progress:** ~1 (0.5%)  
+**Planned:** ~64 (35.5%)
+
+**Backend Completion:** ~95%  
+**Frontend Completion:** ~93%  
+**Testing Coverage:** >80% (backend), >85% (frontend - 178 tests passing)
+
+---
+
+**Last Updated:** December 9, 2025  
+**Next Review:** January 15, 2026
