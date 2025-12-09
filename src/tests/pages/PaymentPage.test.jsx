@@ -216,6 +216,7 @@ describe('PaymentPage', () => {
         amount_paid: 300.0,
         payment_method: 'cash',
         notes: '',
+        store_id: 1, // Added store_id field
       });
     });
   });

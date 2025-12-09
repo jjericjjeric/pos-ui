@@ -165,12 +165,19 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
       <div className="w-full space-y-0.5">
         <h3 className="text-xs font-semibold text-gray-800 line-clamp-2">{product.name}</h3>
         <p className="text-sm font-bold text-gray-900">₱{product.price.toFixed(2)}</p>
-        <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium ${
-          product.stock === 0 ? 'bg-red-50 text-red-700 border border-red-200' :
-          product.stock < 10 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
-          'bg-green-50 text-green-700 border border-green-200'
-        }`}>
-          {product.stock}
+        
+        {/* Stock Badge - Enhanced with visual indicators */}
+        <div className="flex items-center gap-1">
+          {product.stock < 10 && product.stock > 0 && (
+            <span className="text-xs animate-pulse" title="Low stock">⚠️</span>
+          )}
+          <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium ${
+            product.stock === 0 ? 'bg-red-50 text-red-700 border border-red-200' :
+            product.stock < 10 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
+            'bg-green-50 text-green-700 border border-green-200'
+          }`}>
+            {product.stock}
+          </div>
         </div>
       </div>
       {isOutOfStock && (

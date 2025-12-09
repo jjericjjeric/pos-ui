@@ -13,6 +13,8 @@ import StoreSelector from '../components/StoreSelector';
 import ProgressiveImage from '../components/ProgressiveImage';
 import SearchBar from '../components/SearchBar';
 import CategoryFilter from '../components/CategoryFilter';
+import LowStockBanner from '../components/LowStockBanner';
+import LowStockAlerts from '../components/LowStockAlerts';
 import { ToastContainer } from '../components/Toast';
 
 const POSPage = () => {
@@ -41,6 +43,7 @@ const POSPage = () => {
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
   const [deletedProductBackup, setDeletedProductBackup] = useState(null);
+  const [showLowStockModal, setShowLowStockModal] = useState(false);
   const mobileMenuRef = useRef(null);
   const desktopMenuRef = useRef(null);
 
@@ -169,6 +172,12 @@ const POSPage = () => {
 
   return (
     <div className="h-dvh w-full flex flex-col bg-gray-50 overflow-hidden pb-nav">
+      {/* Low Stock Banner - Attention-grabbing alerts */}
+      <LowStockBanner 
+        threshold={10} 
+        onViewDetails={() => setShowLowStockModal(true)} 
+      />
+
       {/* Guest Warning Banner */}
       {user && user.role === 'GUEST' && (
         <div className="bg-yellow-500 text-white px-3 py-2 text-center text-xs sm:text-sm font-medium flex-shrink-0 shadow-md">
@@ -442,6 +451,13 @@ const POSPage = () => {
           </div>
         )}
       </Modal>
+
+      {/* Low Stock Alerts Modal */}
+      <LowStockAlerts 
+        isOpen={showLowStockModal}
+        onClose={() => setShowLowStockModal(false)}
+        threshold={10}
+      />
 
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />

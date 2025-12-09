@@ -1,15 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
+import LowStockBanner from '../components/LowStockBanner';
+import LowStockAlerts from '../components/LowStockAlerts';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const AnalyticsPage = () => {
   const navigate = useNavigate();
-  const { analyticsData, analyticsLoading, analyticsError, loadTransactionStats } = useAppStore();
+  const { analyticsData, analyticsLoading, analyticsError, loadTransactionStats, products } = useAppStore();
   
   const [dateRange, setDateRange] = useState('today');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const [showLowStockModal, setShowLowStockModal] = useState(false);
+
+  // Calculate low stock metrics
+  const lowStockThreshold = 10;
+  const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= lowStockThreshold);
+  const outOfStockProducts = products.filter(p => p.stock === 0);
+  const totalLowStockAlerts = lowStockProducts.length + outOfStockProducts.length;
 
   // Calculate date range based on selection
   const getDateRange = () => {
@@ -89,6 +98,12 @@ const AnalyticsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Low Stock Banner - Attention-grabbing alerts */}
+      <LowStockBanner 
+        threshold={lowStockThreshold} 
+        onViewDetails={() => setShowLowStockModal(true)} 
+      />
+
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="px-4 sm:px-6 py-4 sm:py-6">
@@ -177,11 +192,41 @@ const AnalyticsPage = () => {
               </div>
             </div>
             
-            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-orange-600">
-              <div className="text-gray-500 text-xs sm:text-sm font-medium">Cash Sales</div>
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
-                {formatCurrency(analyticsData.stats?.total_cash)}
+            {/* Low Stock Alert KPI - Click to view details */}
+            <div 
+              className={`bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 cursor-pointer transition-all hover:shadow-md ${
+                outOfStockProducts.length > 0 
+                  ? 'border-red-600 hover:border-red-700' 
+                  : totalLowStockAlerts > 0 
+                  ? 'border-amber-500 hover:border-amber-600' 
+                  : 'border-green-600'
+              }`}
+              onClick={() => totalLowStockAlerts > 0 && setShowLowStockModal(true)}
+              role={totalLowStockAlerts > 0 ? "button" : undefined}
+              aria-label={totalLowStockAlerts > 0 ? "View low stock alerts" : undefined}
+            >
+              <div className="text-gray-500 text-xs sm:text-sm font-medium flex items-center gap-1">
+                Inventory Alerts
+                {totalLowStockAlerts > 0 && (
+                  <span className="animate-pulse text-base" aria-hidden="true">⚠️</span>
+                )}
               </div>
+              <div className={`text-lg sm:text-xl md:text-2xl font-bold mt-1 ${
+                outOfStockProducts.length > 0 
+                  ? 'text-red-600' 
+                  : totalLowStockAlerts > 0 
+                  ? 'text-amber-600' 
+                  : 'text-green-600'
+              }`}>
+                {totalLowStockAlerts > 0 ? totalLowStockAlerts : '✓'}
+              </div>
+              {totalLowStockAlerts > 0 && (
+                <div className="text-xs text-gray-500 mt-1">
+                  {outOfStockProducts.length > 0 && `${outOfStockProducts.length} out of stock`}
+                  {outOfStockProducts.length > 0 && lowStockProducts.length > 0 && ', '}
+                  {lowStockProducts.length > 0 && `${lowStockProducts.length} low`}
+                </div>
+              )}
             </div>
           </div>
 
@@ -299,6 +344,13 @@ const AnalyticsPage = () => {
           )}
         </div>
       )}
+
+      {/* Low Stock Alerts Modal */}
+      <LowStockAlerts 
+        isOpen={showLowStockModal}
+        onClose={() => setShowLowStockModal(false)}
+        threshold={lowStockThreshold}
+      />
     </div>
   );
 };
