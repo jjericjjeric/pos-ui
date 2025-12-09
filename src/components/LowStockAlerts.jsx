@@ -15,18 +15,19 @@ import Modal from './Modal';
  * - Mobile-optimized card layout
  * - Smooth animations and transitions
  */
-const LowStockAlerts = ({ isOpen, onClose, threshold = 10 }) => {
+const LowStockAlerts = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const products = useAppStore((state) => state.products);
+  const lowStockThreshold = useAppStore((state) => state.appSettings.lowStockThreshold || 10);
   const [sortBy, setSortBy] = useState('stock'); // 'stock' | 'name'
 
-  // Filter and categorize products
+  // Filter and categorize products using dynamic threshold
   const outOfStockProducts = products
     .filter(p => p.stock === 0)
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const lowStockProducts = products
-    .filter(p => p.stock > 0 && p.stock <= threshold)
+    .filter(p => p.stock > 0 && p.stock <= lowStockThreshold)
     .sort((a, b) => {
       if (sortBy === 'stock') {
         return a.stock - b.stock; // Lowest stock first
@@ -153,7 +154,7 @@ const LowStockAlerts = ({ isOpen, onClose, threshold = 10 }) => {
                         key={product.id}
                         product={product}
                         severity="warning"
-                        threshold={threshold}
+                        threshold={lowStockThreshold}
                         onEdit={handleEditProduct}
                         onRestock={handleRestock}
                         onView={handleViewProduct}

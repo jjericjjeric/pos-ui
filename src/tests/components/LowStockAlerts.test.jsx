@@ -25,6 +25,7 @@ describe('LowStockAlerts', () => {
 
   it('should render empty state when no alerts', () => {
     useAppStore.mockImplementation((selector) => selector({
+      appSettings: { lowStockThreshold: 10 },
       products: [
         { id: 1, name: 'Product 1', stock: 50, price: 100 },
       ],
@@ -32,7 +33,7 @@ describe('LowStockAlerts', () => {
 
     render(
       <BrowserRouter>
-        <LowStockAlerts isOpen={true} onClose={vi.fn()} threshold={10} />
+        <LowStockAlerts isOpen={true} onClose={vi.fn()} />
       </BrowserRouter>
     );
     
@@ -41,6 +42,7 @@ describe('LowStockAlerts', () => {
 
   it('should render low stock products', () => {
     useAppStore.mockImplementation((selector) => selector({
+      appSettings: { lowStockThreshold: 10 },
       products: [
         { id: 1, name: 'Low Stock Product', stock: 5, price: 100 },
       ],
@@ -48,7 +50,7 @@ describe('LowStockAlerts', () => {
 
     render(
       <BrowserRouter>
-        <LowStockAlerts isOpen={true} onClose={vi.fn()} threshold={10} />
+        <LowStockAlerts isOpen={true} onClose={vi.fn()} />
       </BrowserRouter>
     );
     
@@ -58,6 +60,7 @@ describe('LowStockAlerts', () => {
 
   it('should render out of stock products', () => {
     useAppStore.mockImplementation((selector) => selector({
+      appSettings: { lowStockThreshold: 10 },
       products: [
         { id: 1, name: 'Out of Stock', stock: 0, price: 100 },
       ],
@@ -65,7 +68,7 @@ describe('LowStockAlerts', () => {
 
     render(
       <BrowserRouter>
-        <LowStockAlerts isOpen={true} onClose={vi.fn()} threshold={10} />
+        <LowStockAlerts isOpen={true} onClose={vi.fn()} />
       </BrowserRouter>
     );
     
@@ -76,6 +79,7 @@ describe('LowStockAlerts', () => {
     const onClose = vi.fn();
     
     useAppStore.mockImplementation((selector) => selector({
+      appSettings: { lowStockThreshold: 10 },
       products: [
         { id: 1, name: 'Low Stock', stock: 5, price: 100 },
       ],
@@ -83,7 +87,7 @@ describe('LowStockAlerts', () => {
 
     render(
       <BrowserRouter>
-        <LowStockAlerts isOpen={true} onClose={onClose} threshold={10} />
+        <LowStockAlerts isOpen={true} onClose={onClose} />
       </BrowserRouter>
     );
     

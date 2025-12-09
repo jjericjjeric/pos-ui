@@ -7,15 +7,15 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 
 const AnalyticsPage = () => {
   const navigate = useNavigate();
-  const { analyticsData, analyticsLoading, analyticsError, loadTransactionStats, products } = useAppStore();
+  const { analyticsData, analyticsLoading, analyticsError, loadTransactionStats, products, appSettings } = useAppStore();
   
   const [dateRange, setDateRange] = useState('today');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
   const [showLowStockModal, setShowLowStockModal] = useState(false);
 
-  // Calculate low stock metrics
-  const lowStockThreshold = 10;
+  // Calculate low stock metrics using dynamic threshold from settings
+  const lowStockThreshold = appSettings.lowStockThreshold || 10;
   const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= lowStockThreshold);
   const outOfStockProducts = products.filter(p => p.stock === 0);
   const totalLowStockAlerts = lowStockProducts.length + outOfStockProducts.length;
@@ -100,7 +100,6 @@ const AnalyticsPage = () => {
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Low Stock Banner - Attention-grabbing alerts */}
       <LowStockBanner 
-        threshold={lowStockThreshold} 
         onViewDetails={() => setShowLowStockModal(true)} 
       />
 
@@ -349,7 +348,6 @@ const AnalyticsPage = () => {
       <LowStockAlerts 
         isOpen={showLowStockModal}
         onClose={() => setShowLowStockModal(false)}
-        threshold={lowStockThreshold}
       />
     </div>
   );

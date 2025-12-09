@@ -13,12 +13,13 @@ import useAppStore from '../store/useAppStore';
  * - Dismissible but persists across sessions
  * - Mobile-first responsive design
  */
-const LowStockBanner = ({ threshold = 10, onViewDetails }) => {
+const LowStockBanner = ({ onViewDetails }) => {
   const products = useAppStore((state) => state.products);
+  const lowStockThreshold = useAppStore((state) => state.appSettings.lowStockThreshold || 10);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Calculate low stock products
-  const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= threshold);
+  // Calculate low stock products using dynamic threshold
+  const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= lowStockThreshold);
   const outOfStockProducts = products.filter(p => p.stock === 0);
   const totalAlerts = lowStockProducts.length + outOfStockProducts.length;
 

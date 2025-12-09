@@ -10,7 +10,7 @@ const BottomNav = () => {
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   // Don't show bottom nav on login/register pages
-  if (location.pathname === '/' || location.pathname === '/register') {
+  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/register') {
     return null;
   }
 

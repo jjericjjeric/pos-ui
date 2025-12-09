@@ -138,7 +138,9 @@ const LoginPage = () => {
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔒</span>
                 <input
                   id="pin"
-                  type="password"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={pin}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, '');

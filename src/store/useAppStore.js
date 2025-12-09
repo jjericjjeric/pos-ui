@@ -33,6 +33,7 @@ const useAppStore = create(
       // ============ APP SETTINGS STATE ============
       appSettings: {
         cacheDuration: 30, // Default: 30 minutes
+        lowStockThreshold: 10, // Default: 10 units
       },
 
       // ============ ANALYTICS STATE ============

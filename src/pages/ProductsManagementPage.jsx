@@ -312,6 +312,7 @@ const ProductsManagementPage = () => {
               {/* Category Filter - 40% */}
               <div className="relative w-[40%]" ref={categoryMenuRef}>
                 <button
+                  type="button"
                   onClick={() => setShowCategoryMenu(!showCategoryMenu)}
                   className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-[#00C853] transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
                 >
@@ -326,8 +327,10 @@ const ProductsManagementPage = () => {
                   <div className="absolute left-0 right-0 sm:left-0 sm:right-auto mt-2 w-full sm:min-w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 max-h-64 overflow-y-auto">
                     {categories.map(cat => (
                       <button
+                        type="button"
                         key={cat}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setSelectedCategory(cat);
                           setShowCategoryMenu(false);
                         }}
@@ -346,6 +349,7 @@ const ProductsManagementPage = () => {
               {/* Sort By - 40% */}
               <div className="relative w-[40%]" ref={sortMenuRef}>
                 <button
+                  type="button"
                   onClick={() => setShowSortMenu(!showSortMenu)}
                   className="w-full px-2 sm:px-3 md:px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-[#00C853] transition-all text-xs sm:text-sm md:text-base min-h-11 flex items-center justify-between gap-1 sm:gap-2"
                 >
@@ -370,8 +374,11 @@ const ProductsManagementPage = () => {
                       { value: 'category', label: 'Category', icon: '🏷️' }
                     ].map(option => (
                       <button
+                        type="button"
                         key={option.value}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                           setSortBy(option.value);
                           setShowSortMenu(false);
                         }}
@@ -390,6 +397,7 @@ const ProductsManagementPage = () => {
 
               {/* Sort Order - 20% */}
               <button
+                type="button"
                 onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
                 className="w-[20%] px-1 sm:px-2 md:px-3 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-[#00C853] transition-all text-xs sm:text-sm md:text-base min-h-11 flex flex-col sm:flex-row items-center justify-center font-bold gap-0 sm:gap-1"
                 title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}

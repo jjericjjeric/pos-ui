@@ -94,6 +94,12 @@ export const useLazyLoad = (items = [], options = {}) => {
   const hasMoreRef = useRef(true);
   const isLoadingMoreRef = useRef(false);
   const prevItemsLengthRef = useRef(items.length);
+  const prevItemsHashRef = useRef('');
+
+  // Create a hash of the items to detect changes in content/order
+  const itemsHash = items.length > 0 
+    ? `${items.length}-${items.slice(0, 3).map(item => item?.id || '').join('-')}`
+    : '0';
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -109,14 +115,15 @@ export const useLazyLoad = (items = [], options = {}) => {
     isLoadingMoreRef.current = isLoadingMore;
   }, [isLoadingMore]);
 
-  // Reset when items change (e.g., filter, search, or initial load)
-  // Only reset if the array length or content actually changed
+  // Reset when items change (e.g., filter, search, sort, or initial load)
+  // Use hash to detect changes in content/order without causing infinite loops
   useEffect(() => {
-    // Skip if it's the same array reference or same length and we already have items displayed
-    if (prevItemsLengthRef.current === items.length && displayedItems.length > 0) {
+    // Skip if hash hasn't changed (same items in same order)
+    if (prevItemsHashRef.current === itemsHash && displayedItems.length > 0) {
       return;
     }
     
+    prevItemsHashRef.current = itemsHash;
     prevItemsLengthRef.current = items.length;
     
     const itemsToLoad = Math.min(initialLoad, items.length);
@@ -124,7 +131,7 @@ export const useLazyLoad = (items = [], options = {}) => {
     currentIndexRef.current = itemsToLoad;
     setHasMore(itemsToLoad < items.length);
     setIsLoadingMore(false);
-  }, [items.length, initialLoad]); // Changed from [items, initialLoad] to [items.length, initialLoad]
+  }, [itemsHash, initialLoad, items, displayedItems.length]); // Depend on hash to detect changes
 
   // Load more items - use refs to avoid stale closures
   const loadMoreItems = useCallback(() => {

@@ -12,6 +12,7 @@ const AppSettingsPage = () => {
   const updateAppSettings = useAppStore((state) => state.updateAppSettings);
   
   const [cacheDuration, setCacheDuration] = useState(appSettings.cacheDuration || 30);
+  const [lowStockThreshold, setLowStockThreshold] = useState(appSettings.lowStockThreshold || 10);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const cacheOptions = [
@@ -23,7 +24,7 @@ const AppSettingsPage = () => {
   ];
 
   const handleSave = () => {
-    updateAppSettings({ cacheDuration });
+    updateAppSettings({ cacheDuration, lowStockThreshold });
     setSaveSuccess(true);
     addToast('Settings saved successfully', 'success');
     
@@ -120,6 +121,94 @@ const AppSettingsPage = () => {
                         <li>Add, edit, or delete products</li>
                         <li>Use "Refresh" or pull-to-refresh</li>
                         <li>Logout and login again</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Inventory Settings Card */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-gray-200 bg-gray-50">
+              <h2 className="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
+                <span>📦</span>
+                <span>Inventory Settings</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                Configure inventory alerts and thresholds
+              </p>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-4">
+              {/* Low Stock Threshold */}
+              <div>
+                <label htmlFor="lowStockThreshold" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Low Stock Alert Threshold
+                </label>
+                <p className="text-xs text-gray-500 mb-3">
+                  You'll receive alerts when product stock falls below this level. Set it based on your typical sales velocity.
+                </p>
+                
+                <div className="flex items-center gap-3">
+                  <input
+                    id="lowStockThreshold"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={lowStockThreshold}
+                    onChange={(e) => setLowStockThreshold(parseInt(e.target.value) || 10)}
+                    className="w-24 px-4 py-3 border-2 border-gray-200 rounded-lg text-center text-lg font-bold focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
+                  />
+                  <span className="text-sm text-gray-600">units or less</span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setLowStockThreshold(5)}
+                    className={`px-3 py-2 text-xs font-medium rounded-lg transition-all ${
+                      lowStockThreshold === 5
+                        ? 'bg-[#00C853] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    5 (Low)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLowStockThreshold(10)}
+                    className={`px-3 py-2 text-xs font-medium rounded-lg transition-all ${
+                      lowStockThreshold === 10
+                        ? 'bg-[#00C853] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    10 (Default)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLowStockThreshold(20)}
+                    className={`px-3 py-2 text-xs font-medium rounded-lg transition-all ${
+                      lowStockThreshold === 20
+                        ? 'bg-[#00C853] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    20 (High)
+                  </button>
+                </div>
+
+                <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <span className="text-amber-600 shrink-0">⚠️</span>
+                    <div className="text-xs text-amber-800">
+                      <p className="font-semibold mb-1">Low stock alerts will trigger when:</p>
+                      <ul className="list-disc list-inside space-y-0.5 ml-2">
+                        <li>Product stock ≤ {lowStockThreshold} units (warning banner)</li>
+                        <li>Product stock = 0 units (critical alert)</li>
+                        <li>Shown on POS page and Analytics dashboard</li>
                       </ul>
                     </div>
                   </div>

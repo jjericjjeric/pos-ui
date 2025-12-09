@@ -174,7 +174,6 @@ const POSPage = () => {
     <div className="h-dvh w-full flex flex-col bg-gray-50 overflow-hidden pb-nav">
       {/* Low Stock Banner - Attention-grabbing alerts */}
       <LowStockBanner 
-        threshold={10} 
         onViewDetails={() => setShowLowStockModal(true)} 
       />
 
@@ -456,7 +455,6 @@ const POSPage = () => {
       <LowStockAlerts 
         isOpen={showLowStockModal}
         onClose={() => setShowLowStockModal(false)}
-        threshold={10}
       />
 
       {/* Toast Notifications */}
