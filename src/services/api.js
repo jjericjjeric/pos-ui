@@ -582,6 +582,13 @@ const api = {
         logout();
         throw new Error('Authentication required. Please login again.');
       }
+      
+      // For 409 Conflict, try to get the error message from response body
+      if (response.status === 409) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Conflict: Cannot delete this resource');
+      }
+      
       throw new Error(`Request failed: ${response.statusText}`);
     }
     
