@@ -119,7 +119,7 @@ export const useLazyLoad = (items = [], options = {}) => {
   // Use hash to detect changes in content/order without causing infinite loops
   useEffect(() => {
     // Skip if hash hasn't changed (same items in same order)
-    if (prevItemsHashRef.current === itemsHash && displayedItems.length > 0) {
+    if (prevItemsHashRef.current === itemsHash) {
       return;
     }
     
@@ -131,7 +131,7 @@ export const useLazyLoad = (items = [], options = {}) => {
     currentIndexRef.current = itemsToLoad;
     setHasMore(itemsToLoad < items.length);
     setIsLoadingMore(false);
-  }, [itemsHash, initialLoad, items, displayedItems.length]); // Depend on hash to detect changes
+  }, [itemsHash, initialLoad, items]); // Depend on hash to detect changes
 
   // Load more items - use refs to avoid stale closures
   const loadMoreItems = useCallback(() => {

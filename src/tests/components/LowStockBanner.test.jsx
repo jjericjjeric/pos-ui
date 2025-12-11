@@ -17,7 +17,7 @@ describe('LowStockBanner', () => {
       products: [
         { id: 1, name: 'Product 1', stock: 50 },
         { id: 2, name: 'Product 2', stock: 20 },
-      appSettings: { lowStockThreshold: 10 },
+      ],
     }));
 
     const { container } = render(<LowStockBanner />);
@@ -30,7 +30,7 @@ describe('LowStockBanner', () => {
       products: [
         { id: 1, name: 'Low Stock Product', stock: 5 },
         { id: 2, name: 'Normal Product', stock: 50 },
-      appSettings: { lowStockThreshold: 10 },
+      ],
     }));
 
     render(<LowStockBanner />);
@@ -45,3 +45,12 @@ describe('LowStockBanner', () => {
       products: [
         { id: 1, name: 'Out of Stock', stock: 0 },
         { id: 2, name: 'Another Out of Stock', stock: 0 },
+      ],
+    }));
+
+    render(<LowStockBanner />);
+    
+    expect(screen.getByText(/2 products out of stock/i)).toBeInTheDocument();
+    expect(screen.getByText(/Out of Stock, Another Out of Stock/i)).toBeInTheDocument();
+  });
+});

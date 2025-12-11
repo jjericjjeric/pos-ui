@@ -71,6 +71,7 @@ describe('POSPage', () => {
     userStores: [{ id: 1, name: 'Test Store', is_active: true }],
     storesLoading: false,
     user: { id: 1, name: 'Test User', role: 'Owner' },
+    appSettings: { lowStockThreshold: 10 },
   };
 
   beforeEach(() => {
