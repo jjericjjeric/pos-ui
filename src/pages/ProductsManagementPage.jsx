@@ -461,96 +461,224 @@ const ProductsManagementPage = () => {
 
           {/* Products View */}
           {viewMode === 'table' ? (
-            // Table View (Desktop)
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-gray-100 border-b-2 border-gray-300">
-                    <th className="p-3 text-left">
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts.length === displayedProducts.length && displayedProducts.length > 0}
-                        onChange={handleSelectAll}
-                        className="w-5 h-5 cursor-pointer"
-                        title="Select all displayed products"
-                      />
-                    </th>
-                    <th className="p-3 text-left font-semibold text-gray-700">Image</th>
-                    <th className="p-3 text-left font-semibold text-gray-700">Name</th>
-                    <th className="p-3 text-left font-semibold text-gray-700">Price</th>
-                    <th className="p-3 text-left font-semibold text-gray-700">Stock</th>
-                    <th className="p-3 text-left font-semibold text-gray-700">Category</th>
-                    <th className="p-3 text-left font-semibold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedProducts.map((product) => (
-                    <tr
-                      key={product.id}
-                      className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${
-                        selectedProducts.includes(product.id) ? 'bg-blue-50' : ''
-                      }`}
-                    >
-                      <td className="p-3">
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100 border-b-2 border-gray-300">
+                      <th className="p-3 text-left">
                         <input
                           type="checkbox"
-                          checked={selectedProducts.includes(product.id)}
-                          onChange={() => handleSelectProduct(product.id)}
+                          checked={selectedProducts.length === displayedProducts.length && displayedProducts.length > 0}
+                          onChange={handleSelectAll}
                           className="w-5 h-5 cursor-pointer"
+                          title="Select all displayed products"
                         />
-                      </td>
-                      <td className="p-3">
+                      </th>
+                      <th className="p-3 text-left font-semibold text-gray-700">Image</th>
+                      <th className="p-3 text-left font-semibold text-gray-700">Name</th>
+                      <th className="p-3 text-left font-semibold text-gray-700">Price</th>
+                      <th className="p-3 text-left font-semibold text-gray-700">Stock</th>
+                      <th className="p-3 text-left font-semibold text-gray-700">Category</th>
+                      <th className="p-3 text-left font-semibold text-gray-700">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayedProducts.map((product) => (
+                      <tr
+                        key={product.id}
+                        className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${
+                          selectedProducts.includes(product.id) ? 'bg-blue-50' : ''
+                        }`}
+                      >
+                        <td className="p-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedProducts.includes(product.id)}
+                            onChange={() => handleSelectProduct(product.id)}
+                            className="w-5 h-5 cursor-pointer"
+                          />
+                        </td>
+                        <td className="p-3">
+                          {product.image?.startsWith('data:image') || product.image?.startsWith('http') ? (
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-12 h-12 object-cover rounded-lg"
+                            />
+                          ) : (
+                            <span className="text-3xl">{product.image || '🛍️'}</span>
+                          )}
+                        </td>
+                        <td className="p-3 font-semibold text-gray-800">{product.name}</td>
+                        <td className="p-3 text-gray-700">₱{product.price.toFixed(2)}</td>
+                        <td className="p-3">
+                          <span className={`px-2 py-1 rounded-full text-sm font-semibold ${
+                            product.stock === 0 ? 'bg-red-100 text-red-700' :
+                            product.stock < 10 ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            {product.stock}
+                          </span>
+                        </td>
+                        <td className="p-3 text-gray-600">{product.category || 'Uncategorized'}</td>
+                        <td className="p-3">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleViewDetails(product)}
+                              className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors min-h-[44px]"
+                              title="View Details"
+                            >
+                              👁️
+                            </button>
+                            <button
+                              onClick={() => handleEditProduct(product)}
+                              className="px-3 py-1.5 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors min-h-[44px]"
+                              title="Edit Product (Alt+E)"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(product)}
+                              className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors min-h-[44px]"
+                              title="Delete Product (Delete key)"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile/Tablet List View (Gmail-inspired) */}
+              <div className="md:hidden space-y-2">
+                {/* Select All Header for Mobile */}
+                <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between border border-gray-200">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.length === displayedProducts.length && displayedProducts.length > 0}
+                      onChange={handleSelectAll}
+                      className="w-5 h-5 cursor-pointer"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      {selectedProducts.length > 0 
+                        ? `${selectedProducts.length} selected` 
+                        : 'Select all'}
+                    </span>
+                  </label>
+                  {selectedProducts.length > 0 && (
+                    <button
+                      onClick={() => setShowBulkDeleteConfirm(true)}
+                      className="text-red-600 text-sm font-semibold hover:text-red-700"
+                    >
+                      Delete Selected
+                    </button>
+                  )}
+                </div>
+
+                {/* Product List Items */}
+                {displayedProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className={`bg-white rounded-lg border transition-all ${
+                      selectedProducts.includes(product.id)
+                        ? 'border-[#00C853] bg-green-50/30 shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    {/* Main Row - Always Visible */}
+                    <div className="p-3 flex items-center gap-3">
+                      {/* Checkbox */}
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product.id)}
+                        onChange={() => handleSelectProduct(product.id)}
+                        className="w-5 h-5 cursor-pointer flex-shrink-0"
+                      />
+
+                      {/* Product Image */}
+                      <div className="flex-shrink-0">
                         {product.image?.startsWith('data:image') || product.image?.startsWith('http') ? (
                           <img
                             src={product.image}
                             alt={product.name}
-                            className="w-12 h-12 object-cover rounded-lg"
+                            className="w-14 h-14 object-cover rounded-lg"
                           />
                         ) : (
-                          <span className="text-3xl">{product.image || '🛍️'}</span>
+                          <div className="w-14 h-14 flex items-center justify-center text-3xl bg-gray-100 rounded-lg">
+                            {product.image || '🛍️'}
+                          </div>
                         )}
-                      </td>
-                      <td className="p-3 font-semibold text-gray-800">{product.name}</td>
-                      <td className="p-3 text-gray-700">₱{product.price.toFixed(2)}</td>
-                      <td className="p-3">
-                        <span className={`px-2 py-1 rounded-full text-sm font-semibold ${
-                          product.stock === 0 ? 'bg-red-100 text-red-700' :
-                          product.stock < 10 ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-green-100 text-green-700'
-                        }`}>
-                          {product.stock}
-                        </span>
-                      </td>
-                      <td className="p-3 text-gray-600">{product.category || 'Uncategorized'}</td>
-                      <td className="p-3">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleViewDetails(product)}
-                            className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors min-h-[44px]"
-                            title="View Details"
-                          >
-                            👁️
-                          </button>
-                          <button
-                            onClick={() => handleEditProduct(product)}
-                            className="px-3 py-1.5 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors min-h-[44px]"
-                            title="Edit Product (Alt+E)"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product)}
-                            className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors min-h-[44px]"
-                            title="Delete Product (Delete key)"
-                          >
-                            🗑️
-                          </button>
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="flex-1 min-w-0">
+                        {/* Name */}
+                        <h3 className="font-semibold text-gray-900 text-sm truncate">
+                          {product.name}
+                        </h3>
+                        
+                        {/* Price & Stock Row */}
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[#00C853] font-bold text-sm">
+                            ₱{product.price.toFixed(2)}
+                          </span>
+                          <span className="text-gray-300">•</span>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            product.stock === 0 ? 'bg-red-100 text-red-700' :
+                            product.stock < 10 ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            {product.stock} in stock
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+                        {/* Category */}
+                        <div className="flex items-center gap-1 mt-1">
+                          <span className="text-xs text-gray-500">
+                            🏷️ {product.category || 'Uncategorized'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Quick Actions - Vertical Stack */}
+                      <div className="flex flex-col gap-1 flex-shrink-0">
+                        <button
+                          onClick={() => handleViewDetails(product)}
+                          className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
+                          title="View"
+                        >
+                          👁️
+                        </button>
+                        <button
+                          onClick={() => handleEditProduct(product)}
+                          className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
+                          title="Edit"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(product)}
+                          className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
+                          title="Delete"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
+
+          {viewMode === 'table' && (
+            <div>
 
               {/* Loading indicator for table view */}
               {hasMore && (
@@ -583,10 +711,10 @@ const ProductsManagementPage = () => {
                 </div>
               )}
             </div>
-          ) : null}
+          )}
 
-          {/* Card/Grid View (Mobile & Tablet) */}
-          {viewMode === 'grid' || window.innerWidth < 768 ? (
+          {/* Card/Grid View */}
+          {viewMode === 'grid' ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {displayedProducts.map((product) => (

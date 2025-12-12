@@ -95,6 +95,11 @@ describe('LowStockAlerts', () => {
     fireEvent.click(restockButton);
     
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith('/add-product/1', { state: { focusStock: true } });
+    expect(mockNavigate).toHaveBeenCalledWith('/add-product/1', { 
+      state: { 
+        focusStock: true,
+        returnToAlerts: true 
+      } 
+    });
   });
 });

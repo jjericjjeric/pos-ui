@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
 import LowStockBanner from '../components/LowStockBanner';
 import LowStockAlerts from '../components/LowStockAlerts';
@@ -7,12 +7,22 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 
 const AnalyticsPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { analyticsData, analyticsLoading, analyticsError, loadTransactionStats, products, appSettings } = useAppStore();
   
   const [dateRange, setDateRange] = useState('today');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
   const [showLowStockModal, setShowLowStockModal] = useState(false);
+
+  // Auto-open low stock alerts if navigated from restock action
+  useEffect(() => {
+    if (location.state?.openLowStockAlerts) {
+      setShowLowStockModal(true);
+      // Clear the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   // Calculate low stock metrics using dynamic threshold from settings
   const lowStockThreshold = appSettings.lowStockThreshold || 10;

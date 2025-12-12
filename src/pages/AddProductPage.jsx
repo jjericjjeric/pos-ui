@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { useFormValidation } from '../hooks/useFormValidation';
@@ -8,7 +8,12 @@ import FormField from '../components/FormField';
 
 const AddProductPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams(); // Get product ID from URL params
+  
+  // Check if we should return to alerts modal
+  const returnToAlerts = location.state?.returnToAlerts || false;
+  const focusStock = location.state?.focusStock || false;
   
   // Zustand store selectors
   const products = useAppStore((state) => state.products);
@@ -181,7 +186,11 @@ const AddProductPage = () => {
   };
 
   const handleCancel = () => {
-    navigate('/pos');
+    if (returnToAlerts) {
+      navigate('/analytics', { state: { openLowStockAlerts: true } });
+    } else {
+      navigate('/pos');
+    }
   };
 
   // Show loading state while products are being fetched in edit mode
@@ -449,7 +458,11 @@ const AddProductPage = () => {
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[1000] p-4"
           onClick={() => {
             setShowSuccessModal(false);
-            navigate('/pos');
+            if (returnToAlerts) {
+              navigate('/analytics', { state: { openLowStockAlerts: true } });
+            } else {
+              navigate('/pos');
+            }
           }}
         >
           <div 
@@ -505,11 +518,15 @@ const AddProductPage = () => {
               <button
                 onClick={() => {
                   setShowSuccessModal(false);
-                  navigate('/pos');
+                  if (returnToAlerts) {
+                    navigate('/analytics', { state: { openLowStockAlerts: true } });
+                  } else {
+                    navigate('/pos');
+                  }
                 }}
                 className="w-full px-6 py-3.5 bg-[#00C853] text-white rounded-lg text-base font-bold transition-all hover:bg-[#00B548] active:bg-[#009E42] border border-[#00C853]"
               >
-                Back to POS
+                {returnToAlerts ? 'Back to Alerts' : 'Back to POS'}
               </button>
             </div>
           </div>

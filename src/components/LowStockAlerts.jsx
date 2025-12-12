@@ -49,8 +49,8 @@ const LowStockAlerts = ({ isOpen, onClose }) => {
   };
 
   const handleRestock = (product) => {
-    onClose();
-    navigate(`/add-product/${product.id}`, { state: { focusStock: true } });
+    onClose(); // Close modal before navigating
+    navigate(`/add-product/${product.id}`, { state: { focusStock: true, returnToAlerts: true } });
   };
 
   return (
@@ -259,13 +259,6 @@ const ProductAlertCard = ({ product, severity, threshold, onEdit, onRestock, onV
             aria-label={`Restock ${product.name}`}
           >
             Restock
-          </button>
-          <button
-            onClick={() => onEdit(product)}
-            className="px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 rounded-lg text-xs font-medium transition-colors whitespace-nowrap"
-            aria-label={`Edit ${product.name}`}
-          >
-            Edit
           </button>
         </div>
       </div>
