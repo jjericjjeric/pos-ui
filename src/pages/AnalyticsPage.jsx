@@ -8,7 +8,18 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 const AnalyticsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { analyticsData, analyticsLoading, analyticsError, loadTransactionStats, products, appSettings } = useAppStore();
+  const { 
+    analyticsData, 
+    analyticsLoading, 
+    analyticsError, 
+    loadTransactionStats, 
+    profitData,
+    profitLoading,
+    profitError,
+    loadProfitAnalytics,
+    products, 
+    appSettings 
+  } = useAppStore();
   
   const [dateRange, setDateRange] = useState('today');
   const [customStartDate, setCustomStartDate] = useState('');
@@ -68,6 +79,7 @@ const AnalyticsPage = () => {
     const range = getDateRange();
     if (range.start_date && range.end_date) {
       loadTransactionStats(range);
+      loadProfitAnalytics(range);
     }
   }, [dateRange, customStartDate, customEndDate]);
 
@@ -179,7 +191,7 @@ const AnalyticsPage = () => {
       {analyticsData && (
         <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
           {/* KPI Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-green-600">
               <div className="text-gray-500 text-xs sm:text-sm font-medium">Total Revenue</div>
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
@@ -198,6 +210,24 @@ const AnalyticsPage = () => {
               <div className="text-gray-500 text-xs sm:text-sm font-medium">Average Sale</div>
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
                 {formatCurrency(analyticsData.stats?.average_transaction)}
+              </div>
+            </div>
+            
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-amber-600">
+              <div className="text-gray-500 text-xs sm:text-sm font-medium">Total Profit</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
+                {profitData?.stats?.total_profit !== undefined 
+                  ? formatCurrency(profitData.stats.total_profit)
+                  : '—'}
+              </div>
+            </div>
+            
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-teal-600">
+              <div className="text-gray-500 text-xs sm:text-sm font-medium">Gross Margin</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1">
+                {profitData?.stats?.gross_margin !== undefined 
+                  ? `${profitData.stats.gross_margin.toFixed(1)}%`
+                  : '—'}
               </div>
             </div>
             
@@ -268,6 +298,52 @@ const AnalyticsPage = () => {
             </div>
           )}
 
+          {/* Profit Trend Chart */}
+          {profitData?.dailyProfit && profitData.dailyProfit.length > 0 && (
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+              <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">💰 Profit Trend</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={profitData.dailyProfit}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#6b7280" />
+                  <YAxis yAxisId="left" tick={{ fontSize: 11 }} stroke="#6b7280" />
+                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} stroke="#6b7280" />
+                  <Tooltip 
+                    formatter={(value, name) => {
+                      if (name === 'Profit' || name === 'Revenue' || name === 'Cost') {
+                        return formatCurrency(value);
+                      }
+                      return `${value.toFixed(1)}%`;
+                    }}
+                    contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                    labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '14px' }} />
+                  <Line 
+                    yAxisId="left"
+                    type="monotone" 
+                    dataKey="profit" 
+                    stroke="#f59e0b" 
+                    strokeWidth={3}
+                    name="Profit"
+                    dot={{ fill: '#f59e0b', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line 
+                    yAxisId="right"
+                    type="monotone" 
+                    dataKey="margin" 
+                    stroke="#14b8a6" 
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    name="Margin %"
+                    dot={{ fill: '#14b8a6', r: 3 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Top Products Chart */}
             {analyticsData.topProducts && analyticsData.topProducts.length > 0 && (
@@ -295,6 +371,37 @@ const AnalyticsPage = () => {
                     />
                     <Legend wrapperStyle={{ fontSize: '14px' }} />
                     <Bar dataKey="revenue" fill="#00C853" name="Revenue" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Most Profitable Products Chart */}
+            {profitData?.profitPerProduct && profitData.profitPerProduct.length > 0 && (
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+                <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">💎 Most Profitable Products</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={profitData.profitPerProduct.slice(0, 10)}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis 
+                      dataKey="product_name" 
+                      tick={{ fontSize: 10 }} 
+                      angle={-15} 
+                      textAnchor="end" 
+                      height={80}
+                      stroke="#6b7280"
+                    />
+                    <YAxis tick={{ fontSize: 11 }} stroke="#6b7280" />
+                    <Tooltip 
+                      formatter={(value, name) => [
+                        formatCurrency(value),
+                        name === 'profit' ? 'Profit' : 'Revenue'
+                      ]}
+                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                      labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '14px' }} />
+                    <Bar dataKey="profit" fill="#f59e0b" name="Profit" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

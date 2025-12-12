@@ -135,16 +135,25 @@ const POSPage = () => {
       // Backup product for undo
       setDeletedProductBackup(deletingProduct);
       
-      await deleteProduct(deletingProduct.id);
+      const result = await deleteProduct(deletingProduct.id);
       
-      // Show success toast with undo option (5 seconds)
-      addToast(
-        `"${deletingProduct.name}" deleted`,
-        'success',
-        5000,
-        handleUndoDelete,
-        'Undo'
-      );
+      // Check if product was archived or deleted
+      if (result && result.archived) {
+        addToast(
+          `"${deletingProduct.name}" archived (has sales history)`,
+          'info',
+          6000
+        );
+      } else {
+        // Show success toast with undo option (5 seconds)
+        addToast(
+          `"${deletingProduct.name}" deleted`,
+          'success',
+          5000,
+          handleUndoDelete,
+          'Undo'
+        );
+      }
       
       setDeletingProduct(null);
     } catch (error) {

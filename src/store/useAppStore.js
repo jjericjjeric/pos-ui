@@ -40,6 +40,9 @@ const useAppStore = create(
       analyticsData: null,
       analyticsLoading: false,
       analyticsError: null,
+      profitData: null,
+      profitLoading: false,
+      profitError: null,
 
       // ============ AUTH ACTIONS ============
       login: async (username, password, remember = true) => {
@@ -383,7 +386,7 @@ const useAppStore = create(
 
       deleteProduct: async (productId) => {
         try {
-          await apiExports.deleteProduct(productId);
+          const result = await apiExports.deleteProduct(productId);
           
           // Invalidate cache for current store
           const currentStore = get().currentStore;
@@ -394,6 +397,9 @@ const useAppStore = create(
           set((state) => ({
             products: state.products.filter((p) => p.id !== productId),
           }));
+
+          // Return result to indicate if product was archived or deleted
+          return result;
         } catch (error) {
           console.error('Failed to delete product:', error);
           throw error;
@@ -520,6 +526,26 @@ const useAppStore = create(
         } catch (error) {
           console.error('Failed to load transaction stats:', error);
           set({ analyticsLoading: false, analyticsError: error.message });
+          throw error;
+        }
+      },
+
+      loadProfitAnalytics: async (dateRange = {}) => {
+        try {
+          set({ profitLoading: true, profitError: null });
+          const data = await apiExports.getProfitAnalytics(dateRange);
+          set({ 
+            profitData: {
+              stats: data.profit_stats || {},
+              dailyProfit: data.daily_profit || [],
+              profitPerProduct: data.profit_per_product || [],
+            },
+            profitLoading: false,
+          });
+          return data;
+        } catch (error) {
+          console.error('Failed to load profit analytics:', error);
+          set({ profitLoading: false, profitError: error.message });
           throw error;
         }
       },

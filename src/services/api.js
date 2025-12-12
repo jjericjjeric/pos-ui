@@ -700,6 +700,23 @@ export const getTransactionStats = async (dateRange = {}) => {
 };
 
 /**
+ * Get profit analytics
+ * @param {Object} dateRange - { start_date, end_date }
+ * @returns {Promise<Object>} - Profit analytics with stats, trends, and per-product data
+ */
+export const getProfitAnalytics = async (dateRange = {}) => {
+  const params = new URLSearchParams();
+  
+  if (dateRange.start_date) params.append('start_date', dateRange.start_date);
+  if (dateRange.end_date) params.append('end_date', dateRange.end_date);
+  
+  const queryString = params.toString();
+  const url = queryString ? `/transactions/profit?${queryString}` : '/transactions/profit';
+  
+  return api.get(url);
+};
+
+/**
  * Cancel a transaction and restore inventory
  * @param {number} id - Transaction ID
  * @returns {Promise<Object>} - Cancellation response

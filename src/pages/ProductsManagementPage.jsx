@@ -115,30 +115,30 @@ const ProductsManagementPage = () => {
     setDeletingProduct(null);
     
     try {
-      await deleteProduct(productToDelete.id);
-      addToast(
-        `Deleted "${productToDelete.name}"`,
-        'success',
-        5000,
-        handleUndoDelete,
-        'Undo'
-      );
+      const result = await deleteProduct(productToDelete.id);
+      
+      // Check if product was archived or deleted
+      if (result && result.archived) {
+        addToast(
+          `"${productToDelete.name}" has been archived (product has sales history)`,
+          'info',
+          7000
+        );
+      } else {
+        addToast(
+          `Deleted "${productToDelete.name}"`,
+          'success',
+          5000,
+          handleUndoDelete,
+          'Undo'
+        );
+      }
     } catch (err) {
       console.log('Delete error:', err);
       console.log('Error message:', err.message);
       
       const errorMessage = err.message || 'Failed to delete product';
-      
-      // Check if it's a conflict error (product referenced in transactions)
-      if (errorMessage.includes('referenced in') || errorMessage.includes('transaction')) {
-        addToast(
-          `Cannot delete "${productToDelete.name}": It has been sold in transactions`,
-          'error',
-          8000
-        );
-      } else {
-        addToast(errorMessage, 'error');
-      }
+      addToast(errorMessage, 'error');
       setDeletedProductBackup(null);
     }
   };
