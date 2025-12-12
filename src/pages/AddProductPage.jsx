@@ -51,6 +51,7 @@ const AddProductPage = () => {
     {
       name: '',
       price: '',
+      cost_price: '',
       stock: '',
       category: '',
       image: ''
@@ -64,6 +65,14 @@ const AddProductPage = () => {
       
       if (!values.price || parseFloat(values.price) < 0) {
         newErrors.price = 'Price must be a valid number (0 or greater)';
+      }
+      
+      if (values.cost_price && parseFloat(values.cost_price) < 0) {
+        newErrors.cost_price = 'Cost must be a valid number (0 or greater)';
+      }
+      
+      if (values.cost_price && values.price && parseFloat(values.cost_price) > parseFloat(values.price)) {
+        newErrors.cost_price = 'Cost should not exceed selling price';
       }
       
       if (!values.stock || parseInt(values.stock) < 0) {
@@ -87,6 +96,7 @@ const AddProductPage = () => {
       setFormValues({
         name: existingProduct.name || '',
         price: existingProduct.price?.toString() || '',
+        cost_price: existingProduct.cost_price?.toString() || '',
         stock: existingProduct.stock?.toString() || '',
         category: existingProduct.category || '',
         image: existingProduct.image || ''
@@ -159,6 +169,7 @@ const AddProductPage = () => {
       const productData = {
         name: formData.name.trim(),
         price: parseFloat(formData.price),
+        cost_price: formData.cost_price ? parseFloat(formData.cost_price) : 0,
         stock: parseInt(formData.stock),
         category: formData.category || 'Uncategorized',
         image: formData.image || '🛍️'
@@ -262,11 +273,11 @@ const AddProductPage = () => {
                 placeholder="e.g., Apple Juice 1L"
               />
 
-              {/* Price and Stock Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {/* Price, Cost, and Stock Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 {/* Price */}
                 <FormField
-                  label="Price (₱)"
+                  label="Selling Price (₱)"
                   name="price"
                   type="number"
                   value={formData.price}
@@ -277,6 +288,21 @@ const AddProductPage = () => {
                   placeholder="0.00"
                   icon="₱"
                   inputProps={{ step: '0.01', min: '0' }}
+                />
+
+                {/* Cost Price */}
+                <FormField
+                  label="Cost Price (₱)"
+                  name="cost_price"
+                  type="number"
+                  value={formData.cost_price}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.cost_price}
+                  placeholder="0.00"
+                  icon="💰"
+                  inputProps={{ step: '0.01', min: '0' }}
+                  helpText="Your cost per unit (optional)"
                 />
 
                 {/* Stock */}
