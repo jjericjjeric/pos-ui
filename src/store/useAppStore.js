@@ -545,8 +545,17 @@ const useAppStore = create(
           return data;
         } catch (error) {
           console.error('Failed to load profit analytics:', error);
-          set({ profitLoading: false, profitError: error.message });
-          throw error;
+          // Set empty data instead of error to avoid breaking UI
+          set({ 
+            profitData: {
+              stats: {},
+              dailyProfit: [],
+              profitPerProduct: [],
+            },
+            profitLoading: false, 
+            profitError: error.message 
+          });
+          // Don't throw - just log the error
         }
       },
 
