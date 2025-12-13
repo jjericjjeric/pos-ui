@@ -6,6 +6,26 @@
   NODE_VERSION = "20"
   VITE_API_BASE_URL = "https://pinoypos-api.netlify.app/api"
 
+# PWA Service Worker Headers
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+# PWA Manifest Headers
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+    Cache-Control = "public, max-age=3600"
+
+# Static Assets Caching
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 # Proxy all /api/* calls to the deployed API
 [[redirects]]
   from = "/api/*"

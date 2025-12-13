@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate PWA Icons</title>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    // This generates temporary placeholder icons
+    // Replace with professional icons before production!
+    
+    const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    sizes.forEach(size => {
+      canvas.width = size;
+      canvas.height = size;
+      
+      // Green background
+      ctx.fillStyle = '#00C853';
+      ctx.fillRect(0, 0, size, size);
+      
+      // White "P" text
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `bold ${size * 0.6}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('P', size / 2, size / 2);
+      
+      // Download
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon-${size}x${size}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    });
+    
+    alert('Icons generated! Check your Downloads folder.');
+  </script>
+</body>
+</html>

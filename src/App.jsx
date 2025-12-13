@@ -13,6 +13,7 @@ import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import BottomNav from './components/BottomNav';
+import InstallPrompt from './components/InstallPrompt';
 
 // Simple auth guard component
 const RequireAuth = ({ children }) => {
@@ -51,6 +52,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <BottomNav />
+        <InstallPrompt />
       </Router>
     </div>
   );
