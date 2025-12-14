@@ -1,45 +1,104 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Generate PWA Icons</title>
+  <title>Generate PWA Icons - PinoyPOS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    canvas {
+      border: 2px solid #00C853;
+      margin: 20px;
+    }
+    .instructions {
+      background: #f0f0f0;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    button {
+      background: #00C853;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button:hover {
+      background: #00A844;
+    }
+  </style>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
+  <h1>PinoyPOS PWA Icon Generator</h1>
+  
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ol>
+      <li>Click "Generate Icons" button below</li>
+      <li>Two PNG files will download automatically</li>
+      <li>Move the downloaded files to the <code>pos-ui/public/</code> folder</li>
+      <li>Commit and deploy to Netlify</li>
+    </ol>
+    <p><strong>Note:</strong> These are placeholder icons with a green background and white "P". Replace with professional icons before production!</p>
+  </div>
+
+  <button onclick="generateIcons()">Generate Icons</button>
+  
+  <div id="preview"></div>
+
   <script>
-    // This generates temporary placeholder icons
-    // Replace with professional icons before production!
-    
-    const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    sizes.forEach(size => {
-      canvas.width = size;
-      canvas.height = size;
+    function generateIcons() {
+      const sizes = [192, 512];
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '<h3>Generated Icons:</h3>';
       
-      // Green background
-      ctx.fillStyle = '#00C853';
-      ctx.fillRect(0, 0, size, size);
-      
-      // White "P" text
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = `bold ${size * 0.6}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('P', size / 2, size / 2);
-      
-      // Download
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `icon-${size}x${size}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
+      sizes.forEach(size => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        
+        // Green background (#00C853 - Material Design Green)
+        ctx.fillStyle = '#00C853';
+        ctx.fillRect(0, 0, size, size);
+        
+        // White "P" text
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `bold ${size * 0.6}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('P', size / 2, size / 2);
+        
+        // Add to preview
+        canvas.style.width = '150px';
+        canvas.style.height = '150px';
+        preview.appendChild(canvas);
+        
+        // Download
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `icon-${size}x${size}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
       });
-    });
-    
-    alert('Icons generated! Check your Downloads folder.');
+      
+      setTimeout(() => {
+        alert('✅ Icons generated!\n\n📁 Check your Downloads folder for:\n- icon-192x192.png\n- icon-512x512.png\n\n📋 Move them to pos-ui/public/ folder');
+      }, 500);
+    }
   </script>
 </body>
 </html>
