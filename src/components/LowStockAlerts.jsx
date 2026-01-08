@@ -105,8 +105,8 @@ const LowStockAlerts = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Content - Scrollable */}
-        <div className="max-h-[60vh] sm:max-h-[70vh] overflow-y-auto px-4 py-4 sm:px-6">
+        {/* Content - Scrollable with bottom padding to prevent overlap */}
+        <div className="max-h-[50vh] sm:max-h-[60vh] overflow-y-auto px-4 py-4 sm:px-6 pb-4">
           {totalAlerts === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">✅</div>
@@ -114,7 +114,7 @@ const LowStockAlerts = ({ isOpen, onClose }) => {
               <p className="text-gray-600">No low stock alerts at this time.</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-6 pb-2">
               {/* Critical: Out of Stock Section */}
               {outOfStockProducts.length > 0 && (
                 <div>
