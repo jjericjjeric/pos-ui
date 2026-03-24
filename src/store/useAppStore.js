@@ -533,7 +533,9 @@ const useAppStore = create(
       loadProfitAnalytics: async (dateRange = {}) => {
         try {
           set({ profitLoading: true, profitError: null });
+          console.log('[Profit Analytics] Calling API with date range:', dateRange);
           const data = await apiExports.getProfitAnalytics(dateRange);
+          console.log('[Profit Analytics] API response:', data);
           set({ 
             profitData: {
               stats: data.profit_stats || {},
@@ -544,7 +546,8 @@ const useAppStore = create(
           });
           return data;
         } catch (error) {
-          console.error('Failed to load profit analytics:', error);
+          console.error('[Profit Analytics] Failed to load profit analytics:', error);
+          console.error('[Profit Analytics] Error details:', error.message);
           // Set empty data instead of error to avoid breaking UI
           set({ 
             profitData: {

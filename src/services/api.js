@@ -493,6 +493,9 @@ const api = {
     const storeId = localStorage.getItem('currentStoreId');
     const fullUrl = storeId ? addStoreIdToUrl(`${API_BASE_URL}${url}`, storeId) : `${API_BASE_URL}${url}`;
     
+    console.log('[API] GET request:', fullUrl);
+    console.log('[API] Store ID:', storeId);
+    
     const response = await fetch(fullUrl, {
       ...options,
       headers: {
@@ -502,11 +505,19 @@ const api = {
     });
     
     if (!response.ok) {
+      console.error('[API] Request failed:', response.status, response.statusText);
       if (response.status === 401) {
         logout();
         throw new Error('Authentication required. Please login again.');
       }
-      throw new Error(`Request failed: ${response.statusText}`);
+      // Try to parse error message from response
+      try {
+        const errorText = await response.text();
+        console.error('[API] Error response body:', errorText);
+        throw new Error(errorText || `Request failed: ${response.statusText}`);
+      } catch (e) {
+        throw new Error(`Request failed: ${response.statusText}`);
+      }
     }
     
     return response.json();
@@ -712,6 +723,9 @@ export const getProfitAnalytics = async (dateRange = {}) => {
   
   const queryString = params.toString();
   const url = queryString ? `/transactions/profit?${queryString}` : '/transactions/profit';
+  
+  console.log('[API] Calling profit analytics:', url);
+  console.log('[API] Date range:', dateRange);
   
   return api.get(url);
 };

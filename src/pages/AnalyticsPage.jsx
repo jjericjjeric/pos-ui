@@ -184,7 +184,13 @@ const AnalyticsPage = () => {
 
       {analyticsError && (
         <div className="m-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-          {analyticsError}
+          <strong>Analytics Error:</strong> {analyticsError}
+        </div>
+      )}
+
+      {profitError && (
+        <div className="m-4 p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-700">
+          <strong>Profit Analytics Error:</strong> {profitError}
         </div>
       )}
 
@@ -216,19 +222,29 @@ const AnalyticsPage = () => {
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-amber-600">
               <div className="text-gray-500 text-xs sm:text-sm font-medium">Total Profit</div>
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1 truncate">
-                {profitData?.stats?.total_profit !== undefined 
+                {profitData?.stats && typeof profitData.stats.total_profit === 'number'
                   ? formatCurrency(profitData.stats.total_profit)
-                  : '—'}
+                  : profitError
+                  ? '—'
+                  : formatCurrency(0)}
               </div>
+              {profitError && (
+                <div className="text-xs text-red-600 mt-1">Check error below</div>
+              )}
             </div>
             
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border-l-4 border-teal-600">
               <div className="text-gray-500 text-xs sm:text-sm font-medium">Gross Margin</div>
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-1">
-                {profitData?.stats?.gross_margin !== undefined 
+                {profitData?.stats && typeof profitData.stats.gross_margin === 'number'
                   ? `${profitData.stats.gross_margin.toFixed(1)}%`
-                  : '—'}
+                  : profitError 
+                  ? '—'  
+                  : '0.0%'}
               </div>
+              {profitError && (
+                <div className="text-xs text-red-600 mt-1">Check error below</div>
+              )}
             </div>
             
             {/* Low Stock Alert KPI - Click to view details */}
