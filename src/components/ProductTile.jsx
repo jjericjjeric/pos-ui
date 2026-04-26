@@ -123,6 +123,14 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
               }`}
             >
               <button
+                onClick={handleViewDetails}
+                className="w-full text-left px-3 py-2 sm:px-2.5 sm:py-1.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm flex items-center gap-1.5 font-medium"
+                aria-label="View product details"
+              >
+                <span className="text-base sm:text-sm">👁️</span> Details
+              </button>
+              <div className="border-t border-gray-100"></div>
+              <button
                 onClick={handleEdit}
                 className="w-full text-left px-3 py-2 sm:px-2.5 sm:py-1.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm flex items-center gap-1.5 font-medium"
                 aria-label="Edit product"
@@ -136,14 +144,6 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
                 aria-label="Delete product"
               >
                 <span className="text-base sm:text-sm">🗑️</span> Delete
-              </button>
-              <div className="border-t border-gray-100"></div>
-              <button
-                onClick={handleViewDetails}
-                className="w-full text-left px-3 py-2 sm:px-2.5 sm:py-1.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 border-none bg-transparent cursor-pointer text-sm flex items-center gap-1.5 font-medium"
-                aria-label="View product details"
-              >
-                <span className="text-base sm:text-sm">👁️</span> Details
               </button>
             </div>
           )}

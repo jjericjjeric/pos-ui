@@ -38,7 +38,7 @@ const POSPage = () => {
   const [showCartModal, setShowCartModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDesktopMenu, setShowDesktopMenu] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('All categories');
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [viewDetailsProduct, setViewDetailsProduct] = useState(null);
@@ -57,11 +57,11 @@ const POSPage = () => {
   }, [cart]);
 
   // Get unique categories from products
-  const categories = ['All', ...new Set(products.map(p => p.category || 'Uncategorized'))];
+  const categories = ['All categories', ...new Set(products.map(p => p.category || 'Uncategorized'))];
   
   // Filter products by category and search query
   const filteredProducts = products.filter(p => {
-    const matchesCategory = selectedCategory === 'All' || (p.category || 'Uncategorized') === selectedCategory;
+    const matchesCategory = selectedCategory === 'All categories' || (p.category || 'Uncategorized') === selectedCategory;
     const matchesSearch = searchQuery === '' || 
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
