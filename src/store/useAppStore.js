@@ -50,13 +50,18 @@ const useAppStore = create(
       profitError: null,
 
       // ============ AUTH ACTIONS ============
-      login: async (username, password, remember = true) => {
+      login: async (email, password, remember = true) => {
         try {
-          const data = await apiExports.login(username, password, remember);
+          const data = await apiExports.login(email, password, remember);
           
           set({
             isAuthenticated: true,
-            user: { username: data.username, role: data.role },
+            user: { 
+              username: data.user.email, 
+              email: data.user.email,
+              nickname: data.user.nickname || null,
+              role: data.user.role 
+            },
             token: data.token,
           });
 
@@ -88,13 +93,18 @@ const useAppStore = create(
         }
       },
 
-      upgradeGuestAccount: async (mobileNumber, otp, pin) => {
+      upgradeGuestAccount: async (email, otp, pin) => {
         try {
-          const data = await apiExports.upgradeGuestAccount(mobileNumber, otp, pin);
+          const data = await apiExports.upgradeGuestAccount(email, otp, pin);
           
           set({
             isAuthenticated: true,
-            user: { username: data.user.username, role: data.user.role },
+            user: { 
+              username: data.user.email, 
+              email: data.user.email,
+              nickname: data.user.nickname || null,
+              role: data.user.role 
+            },
             token: data.token,
           });
 
@@ -107,18 +117,18 @@ const useAppStore = create(
         }
       },
 
-      sendOTP: async (mobileNumber) => {
+      sendOTP: async (email) => {
         try {
-          const data = await apiExports.sendOTP(mobileNumber);
+          const data = await apiExports.sendOTP(email);
           return { success: true, data };
         } catch (error) {
           return { success: false, error: error.message };
         }
       },
 
-      verifyOTP: async (mobileNumber, otp) => {
+      verifyOTP: async (email, otp) => {
         try {
-          const data = await apiExports.verifyOTP(mobileNumber, otp);
+          const data = await apiExports.verifyOTP(email, otp);
           return { success: true, data };
         } catch (error) {
           return { success: false, error: error.message };

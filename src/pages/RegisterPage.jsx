@@ -1,50 +1,35 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register, sendOTP } from '../services/api';
+import { sendOTP, register } from '../services/api';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
 
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [nickname, setNickname] = useState('');
   const [otp, setOtp] = useState('');
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
-  const [step, setStep] = useState(1); // 1: Enter mobile, 2: Enter OTP, 3: Set PIN
+  const [step, setStep] = useState(1); // 1: Enter email, 2: Enter OTP, 3: Set PIN
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [generatedOTP, setGeneratedOTP] = useState(''); // For demo purposes
   const [otpVerified, setOtpVerified] = useState(false);
 
-  // Format mobile number as user types (e.g., 09XX-XXX-XXXX)
-  const formatMobileNumber = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 4) return numbers;
-    if (numbers.length <= 7) return `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
-    return `${numbers.slice(0, 4)}-${numbers.slice(4, 7)}-${numbers.slice(7, 11)}`;
-  };
-
-  const handleMobileChange = (e) => {
-    const formatted = formatMobileNumber(e.target.value);
-    if (formatted.replace(/\D/g, '').length <= 11) {
-      setMobileNumber(formatted);
-    }
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
   };
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setError('');
 
-    const cleanMobile = mobileNumber.replace(/\D/g, '');
-    
-    // Validate Philippine mobile number
-    if (cleanMobile.length !== 11) {
-      setError('Please enter a valid 11-digit mobile number');
-      return;
-    }
-
-    if (!cleanMobile.startsWith('09')) {
-      setError('Mobile number must start with 09');
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
@@ -52,8 +37,8 @@ const RegisterPage = () => {
 
     try {
       // Call API to send OTP
-      const result = await sendOTP(cleanMobile);
-      setGeneratedOTP(result.otp); // Store for display (in production, this would be sent via SMS)
+      const result = await sendOTP(email);
+      setGeneratedOTP(result.otp);
       setOtpSent(true);
       setStep(2);
     } catch (err) {
@@ -75,14 +60,12 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const cleanMobile = mobileNumber.replace(/\D/g, '');
-      
       // Verify OTP with backend
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          mobile_number: cleanMobile,
+          email: email,
           otp: otp 
         }),
       });
@@ -119,16 +102,14 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const cleanMobile = mobileNumber.replace(/\D/g, '');
-      
-      // Register user with mobile number and PIN as password
-      await register(cleanMobile, pin);
+      // Register user with email, OTP, PIN, and optional nickname
+      await register(email, otp, pin, nickname || null);
       
       // Show success and redirect to login
       navigate('/login', { 
         state: { 
-          message: 'Registration successful! You can now sign in with your mobile number and PIN.',
-          mobile: cleanMobile 
+          message: 'Registration successful! You can now sign in with your email address and PIN.',
+          email: email 
         } 
       });
     } catch (err) {
@@ -143,11 +124,9 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const cleanMobile = mobileNumber.replace(/\D/g, '');
-      const result = await sendOTP(cleanMobile);
+      const result = await sendOTP(email);
       setGeneratedOTP(result.otp);
       setOtpSent(true);
-      // Show success message briefly
       setError('');
     } catch (err) {
       setError(err.message || 'Failed to resend OTP');
@@ -155,11 +134,9 @@ const RegisterPage = () => {
       setLoading(false);
     }
   };
-
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
-      <div className="bg-white rounded-lg border border-gray-200 w-full max-w-md overflow-hidden">
-        {/* Header Section */}
+    <div className="min-h-screen h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6 overflow-y-auto">
+      <div className="bg-white rounded-lg border border-gray-200 w-full max-w-md my-auto">
         <div className="bg-white p-6 sm:p-8 text-center relative border-b border-gray-200">
           <button
             onClick={() => navigate('/login')}
@@ -173,10 +150,9 @@ const RegisterPage = () => {
             <span className="text-5xl">🎉</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold m-0 mb-2 text-gray-900">Register Your Account</h1>
-          <p className="text-gray-600 m-0 text-sm sm:text-base">Enter your mobile number to get started</p>
+          <p className="text-gray-600 m-0 text-sm sm:text-base">Enter your email address to get started</p>
         </div>
 
-        {/* Form Section */}
         <div className="p-6 sm:p-8">
           {/* Step Indicator */}
           <div className="mb-6">
@@ -204,31 +180,54 @@ const RegisterPage = () => {
               </div>
             </div>
             <p className="text-center text-sm text-gray-600">
-              {step === 1 ? 'Enter your mobile number' : step === 2 ? 'Verify OTP' : 'Set your PIN'}
+              {step === 1 && 'Enter your email address'}
+              {step === 2 && 'Verify your OTP'}
+              {step === 3 && 'Set your 4-digit PIN'}
             </p>
           </div>
 
-          {/* Step 1: Mobile Number */}
+          {/* Step 1: Email Input */}
           {step === 1 && (
             <form onSubmit={handleSendOTP} className="space-y-5">
               <div className="space-y-2">
-                <label htmlFor="mobile" className="block text-sm font-semibold text-gray-700">
-                  Mobile Number
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
+                  Email Address
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">📱</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">📧</span>
                   <input
-                    id="mobile"
-                    type="tel"
-                    value={mobileNumber}
-                    onChange={handleMobileChange}
-                    placeholder="09XX-XXX-XXXX"
-                    autoComplete="tel"
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    placeholder="your.email@example.com"
+                    autoComplete="email"
                     className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  We'll send a one-time password (OTP) to this number
+                  We'll send a one-time password (OTP) to this email
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="nickname" className="block text-sm font-semibold text-gray-700">
+                  Nickname (Optional)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">👤</span>
+                  <input
+                    id="nickname"
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    placeholder="What should we call you?"
+                    maxLength="50"
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  This will be displayed in the header. Leave blank to use your email.
                 </p>
               </div>
 
@@ -243,7 +242,7 @@ const RegisterPage = () => {
 
               <button
                 type="submit"
-                disabled={loading || mobileNumber.replace(/\D/g, '').length !== 11}
+                disabled={!email || loading}
                 className="w-full px-6 py-3.5 text-base font-semibold text-white bg-[#667eea] rounded-lg transition-all hover:bg-[#5568d3] active:bg-[#4557b8] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
@@ -264,18 +263,13 @@ const RegisterPage = () => {
           {/* Step 2: OTP Verification */}
           {step === 2 && (
             <form onSubmit={handleVerifyAndRegister} className="space-y-5">
-              {/* Demo OTP Display - Remove in production */}
               {generatedOTP && (
                 <div className="bg-blue-50 border border-blue-200 px-4 py-3 rounded-lg">
                   <div className="flex items-start gap-3">
                     <span className="text-blue-500 text-xl mt-0.5">📋</span>
                     <div className="flex-1">
-                      <p className="text-blue-800 text-sm font-medium m-0 mb-1">Next steps:</p>
-                      <ul className="text-blue-700 text-xs m-0 space-y-1 list-disc list-inside">
-                        <li>We'll send an OTP to verify your number</li>
-                        <li>Set a 4-digit PIN for secure login</li>
-                        <li>All your products and data will be preserved</li>
-                      </ul>
+                      <p className="text-blue-800 text-sm font-medium m-0 mb-1">OTP Sent!</p>
+                      <p className="text-blue-700 text-xs m-0">Check your email for the 6-digit verification code</p>
                     </div>
                   </div>
                 </div>
@@ -301,7 +295,7 @@ const RegisterPage = () => {
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  Sent to {mobileNumber}
+                  Enter the 6-digit code sent to {email}
                 </p>
               </div>
 
@@ -316,7 +310,7 @@ const RegisterPage = () => {
 
               <button
                 type="submit"
-                disabled={loading || otp.length !== 6}
+                disabled={otp.length !== 6 || loading}
                 className="w-full px-6 py-3.5 text-base font-semibold text-white bg-[#667eea] rounded-lg transition-all hover:bg-[#5568d3] active:bg-[#4557b8] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
@@ -353,20 +347,20 @@ const RegisterPage = () => {
                   }}
                   className="text-gray-600 hover:text-gray-800 font-medium text-sm transition-colors"
                 >
-                  ← Change mobile number
+                  ← Change email address
                 </button>
               </div>
             </form>
           )}
 
-          {/* Step 3: Set PIN */}
+          {/* Step 3: PIN Setup */}
           {step === 3 && (
             <form onSubmit={handleSetPinAndRegister} className="space-y-5">
-              <div className="bg-green-50 border border-green-200 px-4 py-3 rounded-lg mb-5">
+              <div className="bg-green-50 border border-green-200 px-4 py-3 rounded-lg">
                 <div className="flex items-start gap-3">
                   <span className="text-green-500 text-xl mt-0.5">✓</span>
                   <div className="flex-1">
-                    <p className="text-green-800 text-sm font-medium m-0">Mobile number verified!</p>
+                    <p className="text-green-800 text-sm font-medium m-0">Email verified!</p>
                     <p className="text-green-700 text-xs mt-1 m-0">Now set up your 4-digit PIN</p>
                   </div>
                 </div>
@@ -380,7 +374,7 @@ const RegisterPage = () => {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔒</span>
                   <input
                     id="pin"
-                    type="tel"
+                    type="password"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     value={pin}
@@ -406,7 +400,7 @@ const RegisterPage = () => {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔒</span>
                   <input
                     id="confirmPin"
-                    type="tel"
+                    type="password"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     value={confirmPin}
@@ -432,7 +426,7 @@ const RegisterPage = () => {
 
               <button
                 type="submit"
-                disabled={loading || pin.length !== 4 || confirmPin.length !== 4}
+                disabled={pin.length !== 4 || confirmPin.length !== 4 || loading}
                 className="w-full px-6 py-3.5 text-base font-semibold text-white bg-[#667eea] rounded-lg transition-all hover:bg-[#5568d3] active:bg-[#4557b8] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
@@ -450,7 +444,6 @@ const RegisterPage = () => {
             </form>
           )}
 
-          {/* Footer */}
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}

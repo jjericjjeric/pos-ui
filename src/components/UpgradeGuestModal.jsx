@@ -5,13 +5,13 @@ import useAppStore from '../store/useAppStore';
 
 /**
  * UpgradeGuestModal - Allows guest users to convert their account to a registered account
- * Follows the same registration flow: Mobile Number → OTP → PIN
+ * Follows the same registration flow: Email Address → OTP → PIN
  * Preserves all existing products, transactions, and store data
  */
 const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
-  const [step, setStep] = useState(1); // 1: Mobile, 2: OTP, 3: PIN
+  const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: PIN
   const [formData, setFormData] = useState({
-    mobileNumber: '',
+    email: '',
     otp: '',
     pin: '',
     confirmPin: '',
@@ -27,25 +27,17 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
   const sendOTP = useAppStore(state => state.sendOTP);
   const verifyOTP = useAppStore(state => state.verifyOTP);
 
-  const formatMobileNumber = (value) => {
-    // Remove non-digits
-    let cleaned = value.replace(/\D/g, '');
-    // Limit to 11 digits
-    if (cleaned.length > 11) {
-      cleaned = cleaned.slice(0, 11);
-    }
-    return cleaned;
-  };
 
   const validateStep1 = () => {
     const newErrors = {};
     
-    if (!formData.mobileNumber) {
-      newErrors.mobileNumber = 'Mobile number is required';
-    } else if (formData.mobileNumber.length !== 11) {
-      newErrors.mobileNumber = 'Mobile number must be 11 digits';
-    } else if (!formData.mobileNumber.startsWith('09')) {
-      newErrors.mobileNumber = 'Mobile number must start with 09';
+    if (!formData.email) {
+      newErrors.email = 'Email address is required';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'Please enter a valid email address';
+      }
     }
 
     setErrors(newErrors);
@@ -90,9 +82,9 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
     const { name, value } = e.target;
     let newValue = value;
 
-    // Format mobile number
-    if (name === 'mobileNumber') {
-      newValue = formatMobileNumber(value);
+    // Format email address
+    if (name === 'email') {
+      newValue = value;
     }
     // Format OTP (6 digits)
     else if (name === 'otp') {
@@ -123,7 +115,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      const result = await sendOTP(formData.mobileNumber);
+      const result = await sendOTP(formData.email);
       
       if (result.success) {
         setOtpSent(true);
@@ -153,7 +145,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      const result = await verifyOTP(formData.mobileNumber, formData.otp);
+      const result = await verifyOTP(formData.email, formData.otp);
       
       if (result.success) {
         setStep(3);
@@ -179,15 +171,15 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
 
     try {
       const result = await upgradeGuestAccount(
-        formData.mobileNumber,
+        formData.email,
         formData.otp,
         formData.pin
       );
 
       if (result.success) {
         onSuccess?.({
-          mobileNumber: formData.mobileNumber,
-          message: 'Account upgraded successfully! You can now login with your mobile number and PIN.',
+          email: formData.email,
+          message: 'Account upgraded successfully! You can now login with your email address and PIN.',
         });
         onClose();
       } else {
@@ -203,7 +195,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
   const handleClose = () => {
     if (!loading) {
       setStep(1);
-      setFormData({ mobileNumber: '', otp: '', pin: '', confirmPin: '' });
+      setFormData({ email: '', otp: '', pin: '', confirmPin: '' });
       setErrors({});
       setServerError('');
       setOtpSent(false);
@@ -231,8 +223,8 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
             🎉 Register Your Account
           </h2>
           <p className="text-sm sm:text-base text-gray-600">
-            {step === 1 && 'Enter your mobile number to get started'}
-            {step === 2 && 'Enter the OTP sent to your mobile number'}
+            {step === 1 && 'Enter your email address to get started'}
+            {step === 2 && 'Enter the OTP sent to your email address'}
             {step === 3 && 'Set your 4-digit PIN'}
           </p>
           
@@ -251,18 +243,18 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
         )}
 
-        {/* Step 1: Mobile Number */}
+        {/* Step 1: Email Address */}
         {step === 1 && (
           <form onSubmit={handleSendOTP} className="space-y-4">
             <FormField
-              label="Mobile Number"
-              name="mobileNumber"
-              type="tel"
-              value={formData.mobileNumber}
+              label="Email Address"
+              name="email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
-              error={errors.mobileNumber}
+              error={errors.email}
               placeholder="09XXXXXXXXX"
-              autoComplete="tel"
+              autoComplete="email"
               disabled={loading}
               required
             />
@@ -313,7 +305,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
           <form onSubmit={handleVerifyOTP} className="space-y-4">
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-green-800">
-                ✅ OTP sent to <strong>{formData.mobileNumber}</strong>
+                ✅ OTP sent to <strong>{formData.email}</strong>
               </p>
             </div>
 
@@ -417,7 +409,7 @@ const UpgradeGuestModal = ({ isOpen, onClose, onSuccess }) => {
               </p>
               <ul className="text-xs sm:text-sm text-blue-700 mt-2 ml-4 space-y-1 list-disc">
                 <li>Your account will be upgraded to a registered account</li>
-                <li>Login with: <strong>{formData.mobileNumber}</strong> + your PIN</li>
+                <li>Login with: <strong>{formData.email}</strong> + your PIN</li>
                 <li>All products and store data will be preserved</li>
               </ul>
             </div>

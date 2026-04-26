@@ -156,7 +156,7 @@ const TransactionHistoryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
       {/* Header - Matches POSPage style */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
         <div className="flex items-center justify-between px-2 sm:px-3 py-2.5 sm:py-3">
@@ -220,7 +220,8 @@ const TransactionHistoryPage = () => {
       </header>
 
       {/* Main Content */}
-      <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+        <div className="max-w-7xl mx-auto">
         {/* Compact Filter Bar */
         <div className="bg-white rounded-lg border border-gray-200 mb-3 sm:mb-4">
           {/* Filter Toggle Button */}
@@ -502,6 +503,7 @@ const TransactionHistoryPage = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
 
       {/* Cancel Confirmation Dialog */}

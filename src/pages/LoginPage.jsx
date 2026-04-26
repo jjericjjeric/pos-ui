@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
-import { getLastUsername, clearLastUsername } from '../services/api';
+import { getLastEmail, clearLastEmail } from '../services/api';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -9,20 +9,20 @@ const LoginPage = () => {
   const { login, loginAsGuest } = useAppStore();
   const pinInputRef = useRef(null);
 
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [pin, setPin] = useState('');
   const [localError, setLocalError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [hasLastUsername, setHasLastUsername] = useState(false);
+  const [hasLastEmail, setHasLastEmail] = useState(false);
 
   useEffect(() => {
-    // Load last username for quick login
-    const lastUsername = getLastUsername();
-    if (lastUsername) {
-      setMobileNumber(formatMobileNumber(lastUsername));
-      setHasLastUsername(true);
+    // Load last email for quick login
+    const lastEmail = getLastEmail();
+    if (lastEmail) {
+      setEmail(lastEmail);
+      setHasLastEmail(true);
       // Auto-focus PIN field after a short delay
       setTimeout(() => {
         pinInputRef.current?.focus();
@@ -32,35 +32,24 @@ const LoginPage = () => {
     // Check for registration success message
     if (location.state?.message) {
       setSuccessMessage(location.state.message);
-      if (location.state?.mobile) {
-        setMobileNumber(location.state.mobile);
+      if (location.state?.email) {
+        setEmail(location.state.email);
       }
       // Clear the state
       window.history.replaceState({}, document.title);
     }
   }, [location]);
 
-  // Format mobile number as user types
-  const formatMobileNumber = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 4) return numbers;
-    if (numbers.length <= 7) return `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
-    return `${numbers.slice(0, 4)}-${numbers.slice(4, 7)}-${numbers.slice(7, 11)}`;
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setHasLastEmail(false); // User is changing the email
   };
 
-  const handleMobileChange = (e) => {
-    const formatted = formatMobileNumber(e.target.value);
-    if (formatted.replace(/\D/g, '').length <= 11) {
-      setMobileNumber(formatted);
-      setHasLastUsername(false); // User is changing the number
-    }
-  };
-
-  const handleClearUsername = () => {
-    setMobileNumber('');
+  const handleClearEmail = () => {
+    setEmail('');
     setPin('');
-    setHasLastUsername(false);
-    clearLastUsername();
+    setHasLastEmail(false);
+    clearLastEmail();
     setLocalError('');
   };
 
@@ -68,15 +57,10 @@ const LoginPage = () => {
     e.preventDefault();
     setLocalError('');
 
-    const cleanMobile = mobileNumber.replace(/\D/g, '');
-
-    if (!cleanMobile || cleanMobile.length !== 11) {
-      setLocalError('Please enter a valid 11-digit mobile number');
-      return;
-    }
-
-    if (!cleanMobile.startsWith('09')) {
-      setLocalError('Mobile number must start with 09');
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      setLocalError('Please enter a valid email address');
       return;
     }
 
@@ -86,13 +70,13 @@ const LoginPage = () => {
     }
 
     setLoading(true);
-    const result = await login(cleanMobile, pin, rememberMe);
+    const result = await login(email, pin, rememberMe);
     setLoading(false);
     
     if (result.success) {
       navigate('/pos');
     } else {
-      setLocalError(result.error || 'Login failed. Please check your mobile number and PIN.');
+      setLocalError(result.error || 'Login failed. Please check your email and PIN.');
     }
   };
 
@@ -111,10 +95,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
-      <div className="bg-white rounded-lg border border-gray-200 w-full max-w-md overflow-hidden">
+    <div className="min-h-screen h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6 overflow-y-auto">
+      <div className="bg-white rounded-lg border border-gray-200 w-full max-w-md my-auto">
         {/* Header Section */}
-        <div className="bg-white p-6 sm:p-8 text-center border-b border-gray-200">
+        <div className="bg-white p-6 sm:p-8 text-center border-b border-gray-200 flex-shrink-0">
           <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
             <span className="text-5xl">🛒</span>
           </div>
@@ -130,16 +114,16 @@ const LoginPage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Mobile Number Field */}
+            {/* Email Address Field */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label htmlFor="mobile" className="block text-sm font-semibold text-gray-700">
-                  Mobile Number
+                  Email Address
                 </label>
-                {hasLastUsername && (
+                {hasLastEmail && (
                   <button
                     type="button"
-                    onClick={handleClearUsername}
+                    onClick={handleClearEmail}
                     className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
                   >
                     Not you?
@@ -147,20 +131,20 @@ const LoginPage = () => {
                 )}
               </div>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">�</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">📧</span>
                 <input
-                  id="mobile"
-                  type="tel"
-                  value={mobileNumber}
-                  onChange={handleMobileChange}
-                  placeholder="09XX-XXX-XXXX"
-                  autoComplete="tel"
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  placeholder="your.email@example.com"
+                  autoComplete="email"
                   className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
                 />
               </div>
-              {!hasLastUsername && (
+              {!hasLastEmail && (
                 <p className="text-xs text-gray-500 mt-2">
-                  Enter the mobile number you registered with
+                  Enter the email address you registered with
                 </p>
               )}
             </div>
@@ -175,8 +159,7 @@ const LoginPage = () => {
                 <input
                   id="pin"
                   ref={pinInputRef}
-                  ref={pinInputRef}
-                  type="tel"
+                  type="password"
                   inputMode="numeric"
                   pattern="[0-9]*"
                   value={pin}
@@ -232,7 +215,7 @@ const LoginPage = () => {
             {/* Login Button */}
             <button
               type="submit"
-              disabled={!mobileNumber || mobileNumber.replace(/\D/g, '').length !== 11 || pin.length !== 4 || loading}
+              disabled={!email || pin.length !== 4 || loading}
               className="w-full px-6 py-3.5 text-base font-bold text-white bg-[#00C853] rounded-lg transition-all hover:bg-[#00B548] active:bg-[#009E42] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
             >
               {loading ? (

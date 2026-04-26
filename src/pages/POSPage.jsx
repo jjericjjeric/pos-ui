@@ -201,7 +201,7 @@ const POSPage = () => {
         <StoreSelector className="flex-shrink-0" variant="light" />
         {user && (
           <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate max-w-[100px]">
-            <strong>{user.username}</strong>
+            <strong>{user.nickname || user.email || user.username}</strong>
           </span>
         )}
         <div className="flex items-center gap-2 ml-auto">

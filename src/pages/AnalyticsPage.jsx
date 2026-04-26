@@ -104,7 +104,7 @@ const AnalyticsPage = () => {
 
   if (analyticsLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="h-screen bg-gray-50 pb-20 overflow-y-auto">
         <div className="bg-white shadow-sm">
           <div className="px-4 sm:px-6 py-4 sm:py-6">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-800">📊 Analytics</h1>
@@ -119,7 +119,7 @@ const AnalyticsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="h-screen bg-gray-50 pb-20 overflow-y-auto">
       {/* Low Stock Banner - Attention-grabbing alerts */}
       <LowStockBanner 
         onViewDetails={() => setShowLowStockModal(true)} 

@@ -242,9 +242,9 @@ const ProductsManagementPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Compact Header */}
-      <div className="bg-white px-2 sm:px-3 py-2.5 sm:py-3 border-b border-gray-200 z-50 flex items-center gap-2">
+      <div className="bg-white px-2 sm:px-3 py-2.5 sm:py-3 border-b border-gray-200 z-50 flex items-center gap-2 flex-shrink-0">
         {/* Back Button - Leftmost */}
         <button
           onClick={() => navigate('/pos')}
@@ -263,7 +263,7 @@ const ProductsManagementPage = () => {
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {user && (
             <span className="hidden sm:inline text-xs text-gray-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 whitespace-nowrap truncate">
-              <strong>{user.username}</strong>
+              <strong>{user.nickname || user.email || user.username}</strong>
             </span>
           )}
           {/* Menu Button */}

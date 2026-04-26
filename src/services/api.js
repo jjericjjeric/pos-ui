@@ -3,7 +3,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 // Storage keys
 const TOKEN_KEY = 'jwt_token';
 const USER_KEY = 'jwt_user';
-const LAST_USERNAME_KEY = 'last_username';
+const LAST_EMAIL_KEY = 'last_email'; // Changed from LAST_USERNAME_KEY
 
 // Base64url decode helper
 const base64UrlDecode = (str) => {
@@ -52,9 +52,9 @@ export const setAuth = ({ token, username, role }, remember) => {
   storage.setItem(TOKEN_KEY, token);
   storage.setItem(USER_KEY, JSON.stringify({ username, role }));
   
-  // Always save last username in localStorage for quick login (unless guest)
+  // Always save last email in localStorage for quick login (unless guest)
   if (username !== 'Guest') {
-    localStorage.setItem(LAST_USERNAME_KEY, username);
+    localStorage.setItem(LAST_EMAIL_KEY, username); // Store email
   }
 };
 
@@ -67,14 +67,14 @@ export const clearAuth = () => {
   // Keep last username for quick login - don't clear it
 };
 
-// Get last username for quick login
-export const getLastUsername = () => {
-  return localStorage.getItem(LAST_USERNAME_KEY) || '';
+// Get last email for quick login
+export const getLastEmail = () => {
+  return localStorage.getItem(LAST_EMAIL_KEY) || '';
 };
 
-// Clear last username (for privacy/security)
-export const clearLastUsername = () => {
-  localStorage.removeItem(LAST_USERNAME_KEY);
+// Clear last email (for privacy/security)
+export const clearLastEmail = () => {
+  localStorage.removeItem(LAST_EMAIL_KEY);
 };
 
 export const getTokenExpiry = () => {
@@ -146,21 +146,21 @@ const normalizeProducts = (products) => {
 /**
  * Login and get JWT token
  */
-export const login = async (username, password, remember = true) => {
+export const login = async (email, password, remember = true) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
     if (!response.ok) {
-      throw new Error('Invalid username or password');
+      throw new Error('Invalid email or password');
     }
     const data = await response.json();
-    // Store auth based on remember flag
-    setAuth({ token: data.token, username: data.username, role: data.role }, remember);
+    // Store auth based on remember flag (username field contains email)
+    setAuth({ token: data.token, username: data.user.email, role: data.user.role }, remember);
     return data;
   } catch (error) {
     console.error('Error logging in:', error);
@@ -196,10 +196,10 @@ export const loginAsGuest = async (storeName = 'My Store') => {
 
 /**
  * Upgrade guest account to registered account
- * Follows the same flow as registration: Mobile Number → OTP → PIN
+ * Follows the same flow as registration: Email → OTP → PIN
  * Preserves all existing products and store data
  */
-export const upgradeGuestAccount = async (mobileNumber, otp, pin) => {
+export const upgradeGuestAccount = async (email, otp, pin) => {
   try {
     const token = getToken();
     if (!token) {
@@ -213,7 +213,7 @@ export const upgradeGuestAccount = async (mobileNumber, otp, pin) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        mobile_number: mobileNumber,
+        email: email,
         otp: otp,
         pin: pin,
       }),
@@ -227,7 +227,7 @@ export const upgradeGuestAccount = async (mobileNumber, otp, pin) => {
     const data = await response.json();
     
     // Update auth with new token and user info
-    setAuth({ token: data.token, username: data.user.username, role: data.user.role }, true);
+    setAuth({ token: data.token, username: data.user.email, role: data.user.role }, true);
     
     return data;
   } catch (error) {
@@ -237,16 +237,16 @@ export const upgradeGuestAccount = async (mobileNumber, otp, pin) => {
 };
 
 /**
- * Send OTP to mobile number
+ * Send OTP to email
  */
-export const sendOTP = async (mobileNumber) => {
+export const sendOTP = async (email) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ mobile_number: mobileNumber }),
+      body: JSON.stringify({ email }),
     });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -262,7 +262,7 @@ export const sendOTP = async (mobileNumber) => {
 /**
  * Verify OTP
  */
-export const verifyOTP = async (mobileNumber, otp) => {
+export const verifyOTP = async (email, otp) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
       method: 'POST',
@@ -270,8 +270,8 @@ export const verifyOTP = async (mobileNumber, otp) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ 
-        mobile_number: mobileNumber,
-        otp: otp
+        email,
+        otp
       }),
     });
     if (!response.ok) {
@@ -286,9 +286,9 @@ export const verifyOTP = async (mobileNumber, otp) => {
 };
 
 /**
- * Register a new user with mobile number and PIN
+ * Register a new user with email, OTP, and PIN
  */
-export const register = async (mobileNumber, pin) => {
+export const register = async (email, otp, pin, nickname = null, storeName = null) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
@@ -296,16 +296,21 @@ export const register = async (mobileNumber, pin) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ 
-        username: mobileNumber,
-        password: pin,
-        role: 'USER'
+        email,
+        otp,
+        pin,
+        nickname,
+        store_name: storeName
       }),
     });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || 'Registration failed');
     }
-    return await response.json();
+    const data = await response.json();
+    // Auto-login after registration
+    setAuth({ token: data.token, username: data.user.email, role: data.user.role }, true);
+    return data;
   } catch (error) {
     console.error('Error registering:', error);
     throw error;

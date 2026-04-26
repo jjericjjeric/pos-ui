@@ -207,7 +207,7 @@ const AddProductPage = () => {
   // Show loading state while products are being fetched in edit mode
   if (isEditMode && loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="h-screen bg-gray-50 flex items-center justify-center overflow-hidden">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#00C853] mx-auto mb-4"></div>
           <p className="text-xl font-semibold text-gray-700">Loading product...</p>
@@ -219,7 +219,7 @@ const AddProductPage = () => {
   // Show not found if in edit mode but product doesn't exist
   if (isEditMode && !existingProduct && !loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="h-screen bg-gray-50 flex items-center justify-center p-4 overflow-hidden">
         <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-6 sm:p-8 max-w-md text-center">
           <div className="text-6xl mb-4">⚠️</div>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Product Not Found</h2>
@@ -236,9 +236,9 @@ const AddProductPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Compact Header */}
-      <div className="bg-white px-2 sm:px-3 py-2.5 sm:py-3 border-b border-gray-200 z-50">
+      <div className="bg-white px-2 sm:px-3 py-2.5 sm:py-3 border-b border-gray-200 z-50 flex-shrink-0">
         <div className="flex items-center gap-2">
           <button
             onClick={handleCancel}

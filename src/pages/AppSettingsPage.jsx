@@ -36,9 +36,9 @@ const AppSettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-20">
+    <div className="h-screen bg-gray-50 flex flex-col pb-20 overflow-hidden">
       {/* Header */}
-      <div className="bg-white px-2 sm:px-3 py-2.5 sm:py-3 border-b border-gray-200 z-50">
+      <div className="bg-white px-2 sm:px-3 py-2.5 sm:py-3 border-b border-gray-200 z-50 flex-shrink-0">
         <div className="flex items-center gap-2">
           <button
             onClick={handleCancel}
