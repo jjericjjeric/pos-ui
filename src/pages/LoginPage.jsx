@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
+import { getLastUsername, clearLastUsername } from '../services/api';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, loginAsGuest } = useAppStore();
+  const pinInputRef = useRef(null);
 
   const [mobileNumber, setMobileNumber] = useState('');
   const [pin, setPin] = useState('');
@@ -13,8 +15,20 @@ const LoginPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [hasLastUsername, setHasLastUsername] = useState(false);
 
   useEffect(() => {
+    // Load last username for quick login
+    const lastUsername = getLastUsername();
+    if (lastUsername) {
+      setMobileNumber(formatMobileNumber(lastUsername));
+      setHasLastUsername(true);
+      // Auto-focus PIN field after a short delay
+      setTimeout(() => {
+        pinInputRef.current?.focus();
+      }, 100);
+    }
+
     // Check for registration success message
     if (location.state?.message) {
       setSuccessMessage(location.state.message);
@@ -38,7 +52,16 @@ const LoginPage = () => {
     const formatted = formatMobileNumber(e.target.value);
     if (formatted.replace(/\D/g, '').length <= 11) {
       setMobileNumber(formatted);
+      setHasLastUsername(false); // User is changing the number
     }
+  };
+
+  const handleClearUsername = () => {
+    setMobileNumber('');
+    setPin('');
+    setHasLastUsername(false);
+    clearLastUsername();
+    setLocalError('');
   };
 
   const handleSubmit = async (e) => {
@@ -109,9 +132,20 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Mobile Number Field */}
             <div className="space-y-2">
-              <label htmlFor="mobile" className="block text-sm font-semibold text-gray-700">
-                Mobile Number
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="mobile" className="block text-sm font-semibold text-gray-700">
+                  Mobile Number
+                </label>
+                {hasLastUsername && (
+                  <button
+                    type="button"
+                    onClick={handleClearUsername}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                  >
+                    Not you?
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">�</span>
                 <input
@@ -124,9 +158,11 @@ const LoginPage = () => {
                   className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-base transition-all focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/20"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Enter the mobile number you registered with
-              </p>
+              {!hasLastUsername && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Enter the mobile number you registered with
+                </p>
+              )}
             </div>
 
             {/* PIN Field */}
@@ -138,6 +174,8 @@ const LoginPage = () => {
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔒</span>
                 <input
                   id="pin"
+                  ref={pinInputRef}
+                  ref={pinInputRef}
                   type="tel"
                   inputMode="numeric"
                   pattern="[0-9]*"

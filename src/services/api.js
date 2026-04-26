@@ -3,6 +3,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 // Storage keys
 const TOKEN_KEY = 'jwt_token';
 const USER_KEY = 'jwt_user';
+const LAST_USERNAME_KEY = 'last_username';
 
 // Base64url decode helper
 const base64UrlDecode = (str) => {
@@ -50,6 +51,11 @@ export const setAuth = ({ token, username, role }, remember) => {
   const storage = remember ? localStorage : sessionStorage;
   storage.setItem(TOKEN_KEY, token);
   storage.setItem(USER_KEY, JSON.stringify({ username, role }));
+  
+  // Always save last username in localStorage for quick login (unless guest)
+  if (username !== 'Guest') {
+    localStorage.setItem(LAST_USERNAME_KEY, username);
+  }
 };
 
 export const clearAuth = () => {
@@ -58,6 +64,17 @@ export const clearAuth = () => {
   localStorage.removeItem('currentStoreId'); // Clear store context on logout
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(USER_KEY);
+  // Keep last username for quick login - don't clear it
+};
+
+// Get last username for quick login
+export const getLastUsername = () => {
+  return localStorage.getItem(LAST_USERNAME_KEY) || '';
+};
+
+// Clear last username (for privacy/security)
+export const clearLastUsername = () => {
+  localStorage.removeItem(LAST_USERNAME_KEY);
 };
 
 export const getTokenExpiry = () => {

@@ -660,9 +660,12 @@ const useAppStore = create(
     {
       name: 'pos-app-storage',
       partialize: (state) => ({
-        // Persist cart and app settings
+        // Persist cart, app settings, and auth state
         cart: state.cart,
         appSettings: state.appSettings,
+        isAuthenticated: state.isAuthenticated,
+        user: state.user,
+        token: state.token,
       }),
     }
   )
