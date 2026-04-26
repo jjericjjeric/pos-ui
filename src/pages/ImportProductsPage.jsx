@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
+import ImportResultsModal from '../components/ImportResultsModal';
 import { downloadProductTemplate, downloadBlankTemplate } from '../utils/excelTemplateGenerator';
 import {
   parseExcelFile,
@@ -25,6 +26,8 @@ const ImportProductsPage = () => {
   const [importErrors, setImportErrors] = useState([]);
   const [step, setStep] = useState(1); // 1: Upload, 2: Map Columns, 3: Preview & Validate, 4: Import
   const [dragActive, setDragActive] = useState(false);
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const [importResult, setImportResult] = useState(null);
 
   // Handle file selection
   const handleFileSelect = async (selectedFile) => {
@@ -117,12 +120,20 @@ const ImportProductsPage = () => {
     
     const result = await bulkImportProducts(validationResult.validProducts);
     
-    if (result.success) {
-      alert(`Successfully imported ${result.imported} products!`);
-      navigate('/products-management');
-    } else {
-      setImportErrors(result.errors || []);
-      alert('Import completed with errors. Please review the error list.');
+    // Store result and show modal with detailed information
+    setImportResult(result);
+    setShowResultsModal(true);
+    
+    // Update error list in case user closes modal and wants to review
+    setImportErrors(result.errors || []);
+  };
+  
+  // Close results modal
+  const handleCloseResultsModal = () => {
+    setShowResultsModal(false);
+    // If import was successful or partially successful, optionally reset
+    if (importResult && importResult.imported > 0) {
+      // Don't auto-navigate, let user click "View Products" button
     }
   };
 
@@ -504,6 +515,13 @@ const ImportProductsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Import Results Modal */}
+      <ImportResultsModal
+        isOpen={showResultsModal}
+        onClose={handleCloseResultsModal}
+        result={importResult}
+      />
     </div>
   );
 };

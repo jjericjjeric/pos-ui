@@ -419,23 +419,48 @@ const useAppStore = create(
             products: products
           });
           
-          set({ importLoading: false, importProgress: 100 });
+          const data = response.data || response;
+          const importedCount = data.imported_count || 0;
+          const failedCount = data.failed_count || 0;
+          const errors = data.errors || [];
           
-          // Invalidate cache and reload products after successful import
+          set({ 
+            importLoading: false, 
+            importProgress: 100,
+            importErrors: errors 
+          });
+          
+          // Invalidate cache and reload products after import (even partial success)
           const currentStore = get().currentStore;
-          if (currentStore) {
+          if (currentStore && importedCount > 0) {
             productCache.delete(currentStore.id);
+            await get().loadProducts();
           }
-          await get().loadProducts();
           
           return { 
-            success: true, 
-            imported: response.data?.imported_count || response.imported_count || products.length 
+            success: failedCount === 0, // Only true if NO failures
+            imported: importedCount,
+            failed: failedCount,
+            total: products.length,
+            errors: errors,
+            hasPartialSuccess: importedCount > 0 && failedCount > 0
           };
         } catch (error) {
+          // Handle complete failure (network error, 4xx/5xx)
           const errors = error.response?.data?.errors || [];
           set({ importLoading: false, importErrors: errors });
-          return { success: false, errors };
+          return { 
+            success: false, 
+            imported: 0,
+            failed: products.length,
+            total: products.length,
+            errors: errors.length > 0 ? errors : [{ 
+              row_number: 0, 
+              field: 'system', 
+              message: error.message || 'Import failed' 
+            }],
+            hasPartialSuccess: false
+          };
         }
       },
 
