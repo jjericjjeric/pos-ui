@@ -4,6 +4,7 @@ import useAppStore from './store/useAppStore';
 import POSPage from './pages/POSPage';
 import PaymentPage from './pages/PaymentPage';
 import AddProductPage from './pages/AddProductPage';
+import ImportProductsPage from './pages/ImportProductsPage';
 import ProductsManagementPage from './pages/ProductsManagementPage';
 import StoreSettingsPage from './pages/StoreSettingsPage';
 import CreateStorePage from './pages/CreateStorePage';
@@ -43,6 +44,7 @@ function App() {
           <Route path="/payment" element={<RequireAuth><PaymentPage /></RequireAuth>} />
           <Route path="/add-product" element={<RequireAuth><AddProductPage /></RequireAuth>} />
           <Route path="/add-product/:id" element={<RequireAuth><AddProductPage /></RequireAuth>} />
+          <Route path="/import-products" element={<RequireAuth><ImportProductsPage /></RequireAuth>} />
           <Route path="/products-management" element={<RequireAuth><ProductsManagementPage /></RequireAuth>} />
           <Route path="/store-settings" element={<RequireAuth><StoreSettingsPage /></RequireAuth>} />
           <Route path="/create-store" element={<RequireAuth><CreateStorePage /></RequireAuth>} />

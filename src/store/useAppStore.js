@@ -27,6 +27,11 @@ const useAppStore = create(
       productsLoading: false,
       productsError: null,
 
+      // ============ IMPORT STATE ============
+      importProgress: 0,
+      importLoading: false,
+      importErrors: [],
+
       // ============ CART STATE ============
       cart: [],
 
@@ -403,6 +408,34 @@ const useAppStore = create(
         } catch (error) {
           console.error('Failed to delete product:', error);
           throw error;
+        }
+      },
+
+      bulkImportProducts: async (products) => {
+        set({ importLoading: true, importErrors: [], importProgress: 0 });
+        
+        try {
+          const response = await api.post('/products/bulk-import', {
+            products: products
+          });
+          
+          set({ importLoading: false, importProgress: 100 });
+          
+          // Invalidate cache and reload products after successful import
+          const currentStore = get().currentStore;
+          if (currentStore) {
+            productCache.delete(currentStore.id);
+          }
+          await get().loadProducts();
+          
+          return { 
+            success: true, 
+            imported: response.data?.imported_count || response.imported_count || products.length 
+          };
+        } catch (error) {
+          const errors = error.response?.data?.errors || [];
+          set({ importLoading: false, importErrors: errors });
+          return { success: false, errors };
         }
       },
 

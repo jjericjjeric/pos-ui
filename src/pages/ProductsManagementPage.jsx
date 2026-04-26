@@ -423,6 +423,12 @@ const ProductsManagementPage = () => {
 
               {/* Add Product Button */}
               <button
+                onClick={() => navigate('/import-products')}
+                className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all text-sm sm:text-base min-h-[44px] flex items-center justify-center gap-2"
+              >
+                📥 Import
+              </button>
+              <button
                 onClick={() => navigate('/add-product')}
                 className="px-3 sm:px-4 py-2 bg-[#00C853] text-white rounded-lg font-semibold hover:bg-[#00B548] transition-all text-sm sm:text-base min-h-[44px] flex items-center justify-center gap-2"
               >

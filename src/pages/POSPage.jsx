@@ -252,12 +252,12 @@ const POSPage = () => {
               placeholder="Search products..."
             />
             
-            {/* Category Pills */}
+            {/* Category Filter - Compact dropdown with search */}
             <CategoryFilter
               categories={categories}
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
-              mode="pills"
+              mode="dropdown"
             />
           </div>
           {/* Scrollable Products Grid */}
