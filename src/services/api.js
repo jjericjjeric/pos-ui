@@ -248,10 +248,25 @@ export const sendOTP = async (email) => {
       },
       body: JSON.stringify({ email }),
     });
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Failed to send OTP');
+      // Try to parse JSON error response
+      let errorMessage = 'Failed to send OTP';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch (parseError) {
+        // If not JSON, try to get text
+        try {
+          const errorText = await response.text();
+          if (errorText) errorMessage = errorText;
+        } catch {
+          // Keep default message
+        }
+      }
+      throw new Error(errorMessage);
     }
+    
     return await response.json();
   } catch (error) {
     console.error('Error sending OTP:', error);
