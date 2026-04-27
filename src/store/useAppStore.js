@@ -425,49 +425,105 @@ const useAppStore = create(
         set({ importLoading: true, importErrors: [], importProgress: 0 });
         
         try {
-          const response = await api.post('/products/bulk-import', {
-            products: products
-          });
+          // Split products into chunks of 50 for serverless processing
+          // Backend accepts max 100, but 50 is safer and provides better progress feedback
+          const CHUNK_SIZE = 50;
+          const chunks = [];
+          for (let i = 0; i < products.length; i += CHUNK_SIZE) {
+            chunks.push(products.slice(i, i + CHUNK_SIZE));
+          }
           
-          const data = response.data || response;
-          const importedCount = data.imported_count || 0;
-          const failedCount = data.failed_count || 0;
-          const errors = data.errors || [];
+          console.log(`📦 Splitting ${products.length} products into ${chunks.length} chunks of ${CHUNK_SIZE}`);
+          
+          // Process chunks sequentially
+          let totalImported = 0;
+          let totalFailed = 0;
+          let allErrors = [];
+          
+          for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            const chunkNumber = i + 1;
+            
+            console.log(`📤 Uploading chunk ${chunkNumber}/${chunks.length} (${chunk.length} products)...`);
+            
+            try {
+              const response = await api.post('/products/bulk-import', {
+                products: chunk
+              });
+              
+              const data = response.data || response;
+              const chunkImported = data.imported_count || 0;
+              const chunkFailed = data.failed_count || 0;
+              const chunkErrors = data.errors || [];
+              
+              totalImported += chunkImported;
+              totalFailed += chunkFailed;
+              
+              // Adjust row numbers in errors to match original product list
+              const adjustedErrors = chunkErrors.map(err => ({
+                ...err,
+                row_number: err.row_number + (i * CHUNK_SIZE)
+              }));
+              allErrors = allErrors.concat(adjustedErrors);
+              
+              console.log(`✅ Chunk ${chunkNumber}: ${chunkImported} imported, ${chunkFailed} failed`);
+              
+              // Update progress
+              const progress = Math.round((chunkNumber / chunks.length) * 100);
+              set({ importProgress: progress });
+              
+            } catch (chunkError) {
+              // If a chunk fails completely, record errors for all products in that chunk
+              console.error(`❌ Chunk ${chunkNumber} failed:`, chunkError);
+              
+              const chunkErrors = chunk.map((_, idx) => ({
+                row_number: (i * CHUNK_SIZE) + idx + 1,
+                field: 'system',
+                message: chunkError.message || 'Network error or timeout'
+              }));
+              
+              totalFailed += chunk.length;
+              allErrors = allErrors.concat(chunkErrors);
+            }
+          }
           
           set({ 
             importLoading: false, 
             importProgress: 100,
-            importErrors: errors 
+            importErrors: allErrors 
           });
           
           // Invalidate cache and reload products after import (even partial success)
           const currentStore = get().currentStore;
-          if (currentStore && importedCount > 0) {
+          if (currentStore && totalImported > 0) {
             productCache.delete(currentStore.id);
             await get().loadProducts();
           }
           
+          console.log(`🎉 Import complete: ${totalImported} imported, ${totalFailed} failed`);
+          
           return { 
-            success: failedCount === 0, // Only true if NO failures
-            imported: importedCount,
-            failed: failedCount,
+            success: totalFailed === 0,
+            imported: totalImported,
+            failed: totalFailed,
             total: products.length,
-            errors: errors,
-            hasPartialSuccess: importedCount > 0 && failedCount > 0
+            errors: allErrors,
+            hasPartialSuccess: totalImported > 0 && totalFailed > 0
           };
+          
         } catch (error) {
-          // Handle complete failure (network error, 4xx/5xx)
-          const errors = error.response?.data?.errors || [];
-          set({ importLoading: false, importErrors: errors });
+          // Handle catastrophic failure (shouldn't happen with chunking)
+          console.error('❌ Bulk import catastrophic failure:', error);
+          set({ importLoading: false, importErrors: [] });
           return { 
             success: false, 
             imported: 0,
             failed: products.length,
             total: products.length,
-            errors: errors.length > 0 ? errors : [{ 
+            errors: [{ 
               row_number: 0, 
               field: 'system', 
-              message: error.message || 'Import failed' 
+              message: error.message || 'Import failed completely' 
             }],
             hasPartialSuccess: false
           };

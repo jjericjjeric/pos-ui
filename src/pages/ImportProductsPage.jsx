@@ -492,12 +492,14 @@ const ImportProductsPage = () => {
                 <button
                   onClick={() => setStep(2)}
                   className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  disabled={importLoading}
                 >
                   ← Back to Mapping
                 </button>
                 <button
                   onClick={handleReset}
                   className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  disabled={importLoading}
                 >
                   Start Over
                 </button>
@@ -507,10 +509,33 @@ const ImportProductsPage = () => {
                   className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex-1"
                 >
                   {importLoading
-                    ? `Importing... ${importProgress}%`
+                    ? '⏳ Importing...'
                     : `Import ${validationResult.validCount} Products`}
                 </button>
               </div>
+
+              {/* Progress Bar */}
+              {importLoading && (
+                <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-blue-900">
+                      Uploading products in chunks...
+                    </span>
+                    <span className="text-sm font-bold text-blue-600">
+                      {importProgress}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-blue-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className="bg-blue-600 h-full rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${importProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-blue-700 mt-2">
+                    Processing {validationResult.validCount} products in batches of 50...
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
