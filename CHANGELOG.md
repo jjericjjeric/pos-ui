@@ -8,7 +8,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+- **PWA Install Prompt Not Showing**: Fixed service worker icon path mismatch
+  - Service worker was trying to cache `/icons/icon-*.png` but actual path is `/icon-*.png`
+  - This caused SW installation to fail silently, preventing `beforeinstallprompt` event
+  - Updated cache paths to match actual icon locations
+  - Bumped cache version to v1.1 to force refresh
+  - Added debug logging to track PWA installation process
+  - **Impact**: Install prompt now appears correctly after 3 seconds
+  - **Testing**: See PWA_TESTING_GUIDE.md for troubleshooting steps
+
 ### Added
+- **PWA Testing Guide**: Comprehensive guide for testing PWA installation
+  - Browser-specific instructions (Chrome, Edge, Safari, Android)
+  - iOS Safari special handling (no beforeinstallprompt support)
+  - Console log reference for debugging
+  - Troubleshooting checklist for common issues
+  - **Location**: `pos-ui/PWA_TESTING_GUIDE.md`
+
+### Changed
 - **Chunked Bulk Import with Progress Bar**
   - Automatically splits product imports into configurable chunks (default: 20 items)
   - Real-time progress bar with percentage and status updates
