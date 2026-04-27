@@ -318,10 +318,25 @@ export const register = async (email, otp, pin, nickname = null, storeName = nul
         store_name: storeName
       }),
     });
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Registration failed');
+      // Try to parse JSON error response
+      let errorMessage = 'Registration failed';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch (parseError) {
+        // If not JSON, try to get text
+        try {
+          const errorText = await response.text();
+          if (errorText) errorMessage = errorText;
+        } catch {
+          // Keep default message
+        }
+      }
+      throw new Error(errorMessage);
     }
+    
     const data = await response.json();
     // Auto-login after registration
     setAuth({ token: data.token, username: data.user.email, role: data.user.role }, true);
