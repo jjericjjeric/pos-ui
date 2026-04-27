@@ -8,7 +8,83 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed - Critical Security & UI Issues (2024-04-27)
+- **SECURITY: User Role Protection**
+  - **Backend**: Added validation to prevent users from modifying their own role
+  - **Backend**: Added protection against downgrading owner roles
+  - **Frontend**: Enhanced validation to detect owner role modification attempts
+  - **Impact**: Owners can no longer accidentally overwrite their own role to staff/manager/admin
+  - Error messages: "You cannot modify your own role in the store" and "Cannot downgrade the owner role"
+  
+- **UI: Store Settings Page Redesign**
+  - **Visual Hierarchy**: Store information now prominently displayed in gradient card at top
+  - **Card-Based Layout**: Separated sections into distinct cards for better organization
+    - Store Info Card (gradient blue/indigo with large store icon)
+    - Edit Store Information Card
+    - Team Management Card
+    - Store ID & New Store Cards (side-by-side on desktop)
+  - **Improved Spacing**: Increased padding and margins for less cramped appearance
+  - **Better Typography**: Larger headings with emoji icons for visual distinction
+  - **Enhanced Status Badges**: More prominent with better colors and borders
+  - **Mobile Responsive**: Gracefully adapts to small screens with proper stacking
+
+### Fixed - Add Product Page Truncation (2024-04-27)
+- **Add Product Page**: Fixed content getting cut off after uploading images
+  - Changed from flex-based height constraints to natural scrolling
+  - Removed `h-full flex flex-col` from container that was causing truncation
+  - Added `overflow-y-auto` to main content area for proper scrolling
+  - Images now display fully without cutting off bottom content
+  - Affects both create and edit product modes
+
+### Enhanced - User Management Email Search (2024-04-27)
+- **Backend API**: New user search endpoint
+  - `GET /api/users/search?email={email}` - Search users by email address
+  - Returns user info: id, email, nickname, username
+  - Protected by AuthMiddleware (requires authentication)
+  - Added `SearchUserByEmail()` handler in `handlers/auth.go`
+- **Frontend User Management**: Email-based user search
+  - Replaced numeric user ID input with email search
+  - Two-step flow: Search by email → Confirm and assign role
+  - Shows user details (email, nickname, ID) after successful search
+  - Detects if user already exists in store
+  - Better UX with visual confirmation before adding
+  - "Change" button to search for different user
+- **API Service**: Updated `searchUserByEmail()` implementation
+  - Replaced placeholder error with real API call
+  - Validates email input before searching
+  - Returns Promise with user data
+
+### Added - User Management Feature (2024-01-XX)
+- **UserManagementSection Component**: Complete UI for managing store users
+  - View all users in store with their roles (owner, admin, manager, staff)
+  - Add new users to store with role selection
+  - Remove users from store (soft delete, preserves data)
+  - Role-based access control (Owner/Admin only can manage)
+  - Visual role badges with emoji icons (👑 owner, ⚡ admin, 📊 manager, 👤 staff)
+  - Mobile-responsive design with TailwindCSS
+  - Confirmation dialogs for destructive actions
+  - Toast notifications for success/error feedback
+- **API Service Methods** in `services/api.js`:
+  - `getStoreUsers(storeId)` - Fetch all users in a store with roles
+  - `addStoreUser(storeId, userId, role)` - Add user with specified role
+  - `removeStoreUser(storeId, userId)` - Soft delete user from store
+  - `searchUserByEmail(email)` - Placeholder for future email search feature
+- **Store Settings Integration**: 
+  - User management section integrated into Store Settings page
+  - Positioned between store form and store ID reference
+  - Respects existing canEdit permissions (owner/admin)
+  - Shows access restriction warning for staff/manager roles
+
+### Technical Details
+- Leverages existing backend endpoints (no backend API changes needed)
+- Backend uses RequireAdmin middleware for add/remove operations
+- Follows existing component architecture (Modal, ConfirmDialog, Toast)
+- Consistent with Google Material Design elevation and spacing
+- Uses existing hooks (useToast, useAppStore)
+- All changes are frontend-only (pos-ui)
+
 ### Planned
+- User search by email functionality (requires backend endpoint)
 - Transaction history page UI
 - Store settings page
 - Staff management page UI

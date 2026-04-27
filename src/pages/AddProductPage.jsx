@@ -256,11 +256,11 @@ const AddProductPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-2 sm:p-3 overflow-auto">
-        <div className="max-w-2xl mx-auto h-full flex flex-col">
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden flex-1 flex flex-col">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-3">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg">
             {/* Form */}
-            <form onSubmit={handleSubmit} className="p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 flex-1 flex flex-col overflow-y-auto">
+            <form onSubmit={handleSubmit} className="p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4">
               {/* Product Name */}
               <FormField
                 label="Product Name"

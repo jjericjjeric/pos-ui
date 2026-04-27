@@ -4,6 +4,7 @@ import useAppStore from '../store/useAppStore';
 import { useFormValidation } from '../hooks/useFormValidation';
 import { useToast } from '../hooks/useToast';
 import FormField from '../components/FormField';
+import UserManagementSection from '../components/UserManagementSection';
 
 const StoreSettingsPage = () => {
   const navigate = useNavigate();
@@ -141,41 +142,48 @@ const StoreSettingsPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-2 sm:p-3 pb-20 overflow-auto">
-        <div className="max-w-2xl mx-auto h-full flex flex-col">
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden flex-1 flex flex-col">
-            {/* Store Info Header */}
-            <div className="p-4 sm:p-6 border-b border-gray-200">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-3 sm:p-6 pb-24 space-y-4 sm:space-y-6">
+          {/* Store Info Card */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 shadow-lg overflow-hidden">
+            <div className="p-5 sm:p-8">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                    {currentStore.name}
-                  </h2>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-4xl sm:text-5xl">🏪</div>
+                    <div>
+                      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+                        {currentStore.name}
+                      </h2>
+                      <p className="text-sm sm:text-base text-gray-600">
+                        {currentStore.description || 'No description'}
+                      </p>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium border ${
+                    <span className={`px-3 py-1.5 rounded-full text-sm font-semibold border-2 shadow-sm ${
                       currentStore.is_active 
-                        ? 'bg-green-50 text-green-700 border-green-200' 
-                        : 'bg-gray-50 text-gray-700 border-gray-200'
+                        ? 'bg-green-500 text-white border-green-600' 
+                        : 'bg-gray-400 text-white border-gray-500'
                     }`}>
-                      {currentStore.is_active ? '✓ Active' : 'Inactive'}
+                      {currentStore.is_active ? '✓ Active Store' : '⊗ Inactive'}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                      {currentStoreRole ? currentStoreRole.charAt(0).toUpperCase() + currentStoreRole.slice(1) : 'Staff'}
+                    <span className="px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-600 text-white border-2 border-indigo-700 shadow-sm">
+                      👤 {currentStoreRole ? currentStoreRole.charAt(0).toUpperCase() + currentStoreRole.slice(1) : 'Staff'}
                     </span>
                   </div>
                 </div>
-                <div className="text-3xl sm:text-4xl">🏪</div>
               </div>
               
               {!canEdit && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
+                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <span className="text-xl sm:text-2xl">⚠️</span>
+                    <span className="text-2xl">⚠️</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-yellow-800 mb-1 text-sm sm:text-base">
+                      <h3 className="font-bold text-yellow-900 mb-1 text-base">
                         Read-Only Access
                       </h3>
-                      <p className="text-xs sm:text-sm text-yellow-700">
+                      <p className="text-sm text-yellow-800">
                         You need Owner or Admin role to modify store settings. 
                         Contact the store owner to request permission changes.
                       </p>
@@ -184,12 +192,17 @@ const StoreSettingsPage = () => {
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Settings Form */}
-            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6 flex-1 flex flex-col overflow-y-auto">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                Store Information
+          {/* Settings Form Card */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden">
+            <div className="bg-gray-50 px-5 sm:px-6 py-4 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <span>📝</span>
+                <span>Edit Store Information</span>
               </h3>
+            </div>
+            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5">
               
               {/* Store Name */}
               <FormField
@@ -336,31 +349,60 @@ const StoreSettingsPage = () => {
                 </button>
               </div>
             </form>
+          </div>
 
-            {/* Store ID (for reference) */}
-            <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50">
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Store ID</h3>
-              <p className="text-xs font-mono bg-white px-3 py-2 rounded border border-gray-200 break-all">
-                {currentStore.id}
-              </p>
-              <p className="text-xs text-gray-500 mt-2">
-                Use this ID for API integration and technical support
-              </p>
+          {/* User Management Section */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden">
+            <div className="bg-gray-50 px-5 sm:px-6 py-4 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <span>👥</span>
+                <span>Team Management</span>
+              </h3>
+            </div>
+            <div className="p-5 sm:p-6">
+              <UserManagementSection 
+                storeId={currentStore.id} 
+                currentUserRole={currentStoreRole}
+              />
+            </div>
+          </div>
+
+          {/* Store ID & Additional Options */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Store ID Card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden">
+              <div className="bg-gray-50 px-5 sm:px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span>🔑</span>
+                  <span>Store ID</span>
+                </h3>
+              </div>
+              <div className="p-5 sm:p-6">
+                <p className="text-sm font-mono bg-gray-50 px-4 py-3 rounded-lg border border-gray-200 break-all text-gray-700">
+                  {currentStore.id}
+                </p>
+                <p className="text-xs text-gray-500 mt-3">
+                  Use this ID for API integration and technical support
+                </p>
+              </div>
             </div>
 
-            {/* Create New Store Button */}
-            <div className="p-4 sm:p-6 border-t border-gray-200">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-1">Add Another Store</h3>
-                  <p className="text-xs text-gray-500">
-                    Create and manage multiple store locations under your account
-                  </p>
-                </div>
+            {/* Add Another Store Card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden">
+              <div className="bg-gray-50 px-5 sm:px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span>➕</span>
+                  <span>New Store</span>
+                </h3>
+              </div>
+              <div className="p-5 sm:p-6">
+                <p className="text-sm text-gray-600 mb-4">
+                  Create and manage multiple store locations under your account
+                </p>
                 <button
                   type="button"
                   onClick={() => navigate('/create-store')}
-                  className="w-full sm:w-auto px-4 py-2.5 bg-[#00C853] text-white rounded-lg font-semibold hover:bg-[#00B548] transition-all flex items-center justify-center gap-2 text-sm"
+                  className="w-full px-4 py-3 bg-[#00C853] text-white rounded-lg font-semibold hover:bg-[#00B548] transition-all flex items-center justify-center gap-2"
                 >
                   <span>+</span>
                   <span>Create New Store</span>

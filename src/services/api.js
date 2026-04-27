@@ -760,3 +760,52 @@ export const getProfitAnalytics = async (dateRange = {}) => {
 export const cancelTransaction = async (id) => {
   return api.post(`/transactions/${id}/cancel`);
 };
+
+// ============ USER MANAGEMENT API FUNCTIONS ============
+
+/**
+ * Get all users in a store
+ * @param {number} storeId - Store ID
+ * @returns {Promise<Array>} - Array of users with their roles
+ */
+export const getStoreUsers = async (storeId) => {
+  return api.get(`/stores/${storeId}/users`);
+};
+
+/**
+ * Add a user to a store with a specific role
+ * @param {number} storeId - Store ID
+ * @param {number} userId - User ID to add
+ * @param {string} role - Role (owner, admin, manager, staff)
+ * @returns {Promise<Object>} - Created/updated role
+ */
+export const addStoreUser = async (storeId, userId, role) => {
+  return api.post(`/stores/${storeId}/users`, {
+    user_id: userId,
+    role: role
+  });
+};
+
+/**
+ * Remove a user from a store
+ * @param {number} storeId - Store ID
+ * @param {number} userId - User ID to remove
+ * @returns {Promise<Object>} - Removal confirmation
+ */
+export const removeStoreUser = async (storeId, userId) => {
+  return api.delete(`/stores/${storeId}/users/${userId}`);
+};
+
+/**
+ * Search for users by email (for adding to store)
+ * @param {string} email - Email to search for
+ * @returns {Promise<Object>} - User data if found
+ */
+export const searchUserByEmail = async (email) => {
+  if (!email || !email.trim()) {
+    throw new Error('Email is required');
+  }
+  
+  const params = new URLSearchParams({ email: email.trim() });
+  return api.get(`/users/search?${params.toString()}`);
+};
