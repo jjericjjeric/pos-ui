@@ -1,14 +1,14 @@
 // Service Worker for PinoyPOS PWA
-const CACHE_NAME = 'pinoypos-v1';
-const API_CACHE = 'pinoypos-api-v1';
+const CACHE_NAME = 'pinoypos-v1.1';
+const API_CACHE = 'pinoypos-api-v1.1';
 
-// Assets to cache immediately
+// Assets to cache immediately (updated paths to match actual file locations)
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
 ];
 
 // API endpoints to cache

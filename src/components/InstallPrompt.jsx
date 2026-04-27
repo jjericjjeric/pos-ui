@@ -5,16 +5,41 @@ const InstallPrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('✅ PWA is already installed');
+      return;
+    }
+
+    // Check if already dismissed
+    if (sessionStorage.getItem('installPromptDismissed') === 'true') {
+      console.log('ℹ️ Install prompt was dismissed in this session');
+      return;
+    }
+
+    console.log('🔍 Waiting for beforeinstallprompt event...');
+
     const handler = (e) => {
+      console.log('✅ beforeinstallprompt event fired');
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       // Stash the event so it can be triggered later
       setDeferredPrompt(e);
       // Show install prompt after a delay
-      setTimeout(() => setShowPrompt(true), 3000);
+      setTimeout(() => {
+        console.log('📱 Showing install prompt');
+        setShowPrompt(true);
+      }, 3000);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
+
+    // Log when service worker is ready
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(() => {
+        console.log('✅ Service Worker is ready');
+      });
+    }
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
