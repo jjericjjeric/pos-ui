@@ -31,6 +31,7 @@ const useAppStore = create(
       importProgress: 0,
       importLoading: false,
       importErrors: [],
+      CHUNK_SIZE: 20,
 
       // ============ CART STATE ============
       cart: [],
@@ -427,13 +428,12 @@ const useAppStore = create(
         try {
           // Split products into chunks of 50 for serverless processing
           // Backend accepts max 100, but 50 is safer and provides better progress feedback
-          const CHUNK_SIZE = 20;
           const chunks = [];
-          for (let i = 0; i < products.length; i += CHUNK_SIZE) {
-            chunks.push(products.slice(i, i + CHUNK_SIZE));
+          for (let i = 0; i < products.length; i += get().CHUNK_SIZE) {
+            chunks.push(products.slice(i, i + get().CHUNK_SIZE));
           }
           
-          console.log(`📦 Splitting ${products.length} products into ${chunks.length} chunks of ${CHUNK_SIZE}`);
+          console.log(`📦 Splitting ${products.length} products into ${chunks.length} chunks of ${get().CHUNK_SIZE}`);
           
           // Process chunks sequentially
           let totalImported = 0;
@@ -462,7 +462,7 @@ const useAppStore = create(
               // Adjust row numbers in errors to match original product list
               const adjustedErrors = chunkErrors.map(err => ({
                 ...err,
-                row_number: err.row_number + (i * CHUNK_SIZE)
+                row_number: err.row_number + (i * get().CHUNK_SIZE)
               }));
               allErrors = allErrors.concat(adjustedErrors);
               
@@ -477,7 +477,7 @@ const useAppStore = create(
               console.error(`❌ Chunk ${chunkNumber} failed:`, chunkError);
               
               const chunkErrors = chunk.map((_, idx) => ({
-                row_number: (i * CHUNK_SIZE) + idx + 1,
+                row_number: (i * get().CHUNK_SIZE) + idx + 1,
                 field: 'system',
                 message: chunkError.message || 'Network error or timeout'
               }));
