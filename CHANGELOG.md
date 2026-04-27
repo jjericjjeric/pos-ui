@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - **Chunked Bulk Import with Progress Bar**
-  - Automatically splits product imports into chunks of 50 items
+  - Automatically splits product imports into configurable chunks (default: 20 items)
   - Real-time progress bar with percentage and status updates
   - Processes chunks sequentially to prevent serverless timeouts
   - Aggregates results from all chunks (imported count, errors)
@@ -18,6 +18,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Handles chunk failures gracefully with detailed error messages
   - Disables navigation buttons during import to prevent interruption
   - **Impact**: Reliable imports of any size with clear progress feedback
+
+### Changed
+- **Centralized Error Handling**: Refactored bulk import error handling
+  - Single `createChunkErrors()` function for consistent error object creation
+  - Single `handleImportFailure()` function for complete import failure scenarios
+  - Eliminates code duplication and ensures consistent error formatting
+  - Easier to maintain and extend error handling logic
+- **Configurable Chunk Size**: CHUNK_SIZE is now a constant in store state
+  - Easy to adjust chunk size from a single location (currently: 20)
+  - UI dynamically displays current chunk size in progress message
+  - Allows fine-tuning performance vs. progress feedback trade-off
 
 ### Fixed
 - **Bulk Import 504 Gateway Timeout**: Solved by implementing frontend-based chunking

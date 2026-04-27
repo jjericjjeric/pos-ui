@@ -425,15 +425,43 @@ const useAppStore = create(
       bulkImportProducts: async (products) => {
         set({ importLoading: true, importErrors: [], importProgress: 0 });
         
+        // Centralized error handler for creating error objects
+        const createChunkErrors = (chunk, startIndex, errorMessage) => {
+          return chunk.map((_, idx) => ({
+            row_number: startIndex + idx + 1,
+            field: 'system',
+            message: errorMessage || 'Unknown error occurred'
+          }));
+        };
+
+        // Centralized error handler for complete import failure
+        const handleImportFailure = (error, productCount) => {
+          console.error('❌ Bulk import failed:', error);
+          set({ importLoading: false, importErrors: [] });
+          return {
+            success: false,
+            imported: 0,
+            failed: productCount,
+            total: productCount,
+            errors: [{
+              row_number: 0,
+              field: 'system',
+              message: error.message || 'Import failed completely'
+            }],
+            hasPartialSuccess: false
+          };
+        };
+
         try {
-          // Split products into chunks of 50 for serverless processing
-          // Backend accepts max 100, but 50 is safer and provides better progress feedback
+          const CHUNK_SIZE = get().CHUNK_SIZE;
+          
+          // Split products into chunks for serverless processing
           const chunks = [];
-          for (let i = 0; i < products.length; i += get().CHUNK_SIZE) {
-            chunks.push(products.slice(i, i + get().CHUNK_SIZE));
+          for (let i = 0; i < products.length; i += CHUNK_SIZE) {
+            chunks.push(products.slice(i, i + CHUNK_SIZE));
           }
           
-          console.log(`📦 Splitting ${products.length} products into ${chunks.length} chunks of ${get().CHUNK_SIZE}`);
+          console.log(`📦 Splitting ${products.length} products into ${chunks.length} chunks of ${CHUNK_SIZE}`);
           
           // Process chunks sequentially
           let totalImported = 0;
@@ -443,6 +471,7 @@ const useAppStore = create(
           for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
             const chunkNumber = i + 1;
+            const chunkStartIndex = i * CHUNK_SIZE;
             
             console.log(`📤 Uploading chunk ${chunkNumber}/${chunks.length} (${chunk.length} products)...`);
             
@@ -462,29 +491,29 @@ const useAppStore = create(
               // Adjust row numbers in errors to match original product list
               const adjustedErrors = chunkErrors.map(err => ({
                 ...err,
-                row_number: err.row_number + (i * get().CHUNK_SIZE)
+                row_number: err.row_number + chunkStartIndex
               }));
               allErrors = allErrors.concat(adjustedErrors);
               
               console.log(`✅ Chunk ${chunkNumber}: ${chunkImported} imported, ${chunkFailed} failed`);
               
-              // Update progress
-              const progress = Math.round((chunkNumber / chunks.length) * 100);
-              set({ importProgress: progress });
-              
             } catch (chunkError) {
-              // If a chunk fails completely, record errors for all products in that chunk
+              // Handle chunk failure using centralized error handler
               console.error(`❌ Chunk ${chunkNumber} failed:`, chunkError);
               
-              const chunkErrors = chunk.map((_, idx) => ({
-                row_number: (i * get().CHUNK_SIZE) + idx + 1,
-                field: 'system',
-                message: chunkError.message || 'Network error or timeout'
-              }));
+              const chunkErrors = createChunkErrors(
+                chunk,
+                chunkStartIndex,
+                chunkError.message || 'Network error or timeout'
+              );
               
               totalFailed += chunk.length;
               allErrors = allErrors.concat(chunkErrors);
             }
+            
+            // Update progress after each chunk
+            const progress = Math.round((chunkNumber / chunks.length) * 100);
+            set({ importProgress: progress });
           }
           
           set({ 
@@ -512,21 +541,8 @@ const useAppStore = create(
           };
           
         } catch (error) {
-          // Handle catastrophic failure (shouldn't happen with chunking)
-          console.error('❌ Bulk import catastrophic failure:', error);
-          set({ importLoading: false, importErrors: [] });
-          return { 
-            success: false, 
-            imported: 0,
-            failed: products.length,
-            total: products.length,
-            errors: [{ 
-              row_number: 0, 
-              field: 'system', 
-              message: error.message || 'Import failed completely' 
-            }],
-            hasPartialSuccess: false
-          };
+          // Handle catastrophic failure using centralized error handler
+          return handleImportFailure(error, products.length);
         }
       },
 

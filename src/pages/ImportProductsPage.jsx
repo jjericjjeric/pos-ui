@@ -17,6 +17,7 @@ const ImportProductsPage = () => {
   const bulkImportProducts = useAppStore((state) => state.bulkImportProducts);
   const importLoading = useAppStore((state) => state.importLoading);
   const importProgress = useAppStore((state) => state.importProgress);
+  const CHUNK_SIZE = useAppStore((state) => state.CHUNK_SIZE);
   
   const [file, setFile] = useState(null);
   const [excelData, setExcelData] = useState(null);
@@ -532,7 +533,7 @@ const ImportProductsPage = () => {
                     />
                   </div>
                   <p className="text-xs text-blue-700 mt-2">
-                    Processing {validationResult.validCount} products in batches of 50...
+                    Processing {validationResult.validCount} products in batches of {CHUNK_SIZE}...
                   </p>
                 </div>
               )}
