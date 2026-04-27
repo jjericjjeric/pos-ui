@@ -427,7 +427,7 @@ const useAppStore = create(
         try {
           // Split products into chunks of 50 for serverless processing
           // Backend accepts max 100, but 50 is safer and provides better progress feedback
-          const CHUNK_SIZE = 50;
+          const CHUNK_SIZE = 20;
           const chunks = [];
           for (let i = 0; i < products.length; i += CHUNK_SIZE) {
             chunks.push(products.slice(i, i + CHUNK_SIZE));
