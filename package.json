@@ -1,17 +1,21 @@
 {
   "name": "pos-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/generate-version.cjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "version:patch": "npm version patch && node scripts/generate-version.cjs",
+    "version:minor": "npm version minor && node scripts/generate-version.cjs",
+    "version:major": "npm version major && node scripts/generate-version.cjs"
   },
   "dependencies": {
     "react": "^18.3.1",

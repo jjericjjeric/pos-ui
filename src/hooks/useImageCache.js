@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { IMAGE_CACHE_VERSION } from '../version';
 
 /**
  * Custom hook for caching product images in localStorage
@@ -9,13 +10,13 @@ import { useCallback } from 'react';
  * - Max 100 images cached
  * - Auto-cleanup of old/unused images
  * - Handles localStorage quota exceeded
+ * - Version automatically synced from package.json
  */
 
 const IMAGE_CACHE_KEY = 'pos_image_cache';
-const CACHE_VERSION = 'v1'; // Bump version to invalidate all caches
 const CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 const MAX_CACHE_SIZE = 100; // Maximum number of images to cache
-const CACHE_STORAGE_KEY = `${IMAGE_CACHE_KEY}_${CACHE_VERSION}`;
+const CACHE_STORAGE_KEY = `${IMAGE_CACHE_KEY}_${IMAGE_CACHE_VERSION}`;
 
 export const useImageCache = () => {
   /**

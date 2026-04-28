@@ -6,25 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [Unreleased]
+## [1.0.0] - 2026-04-28
+
+### Added
+- **Centralized Version Management System**
+  - Auto-generated `src/version.js` from `package.json` during build
+  - `scripts/generate-version.cjs` creates version constants automatically
+  - Version bump scripts: `npm run version:patch|minor|major`
+  - `VersionDisplay` component for showing app version in UI
+  - Service worker cache names auto-sync with app version
+  - Image cache version auto-sync with app version
+  - Build date tracking for troubleshooting
+  - Feature flags system for gradual rollouts
+  - **Impact**: Single source of truth for versions, automatic cache invalidation
+  - **Usage**: Update `package.json` version, all other versions sync automatically
 
 ### Fixed
 - **PWA Install Prompt Not Showing**: Fixed service worker icon path mismatch
   - Service worker was trying to cache `/icons/icon-*.png` but actual path is `/icon-*.png`
   - This caused SW installation to fail silently, preventing `beforeinstallprompt` event
   - Updated cache paths to match actual icon locations
-  - Bumped cache version to v1.1 to force refresh
+  - Bumped cache version to v1-0-0 to force refresh
   - Added debug logging to track PWA installation process
   - **Impact**: Install prompt now appears correctly after 3 seconds
   - **Testing**: See PWA_TESTING_GUIDE.md for troubleshooting steps
-
-### Added
-- **PWA Testing Guide**: Comprehensive guide for testing PWA installation
-  - Browser-specific instructions (Chrome, Edge, Safari, Android)
-  - iOS Safari special handling (no beforeinstallprompt support)
-  - Console log reference for debugging
-  - Troubleshooting checklist for common issues
-  - **Location**: `pos-ui/PWA_TESTING_GUIDE.md`
 
 ### Changed
 - **Chunked Bulk Import with Progress Bar**
