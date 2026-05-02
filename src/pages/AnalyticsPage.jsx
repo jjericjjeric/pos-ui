@@ -90,15 +90,15 @@ const AnalyticsPage = () => {
     }).format(value || 0);
   };
 
-  // Prepare payment method data for pie chart
+  /** Builds the dataset for the payment-method pie chart from API stats. */
   const getPaymentMethodData = () => {
     if (!analyticsData?.stats) return [];
-    
-    const { total_cash, total_card, total_online } = analyticsData.stats;
+
+    const { total_cash, total_gcash, total_gotyme } = analyticsData.stats;
     return [
-      { name: 'Cash', value: total_cash || 0, color: '#00C853' },
-      { name: 'Card', value: total_card || 0, color: '#667eea' },
-      { name: 'Online', value: total_online || 0, color: '#f97316' },
+      { name: 'Cash',   value: total_cash   || 0, color: '#00C853' },
+      { name: 'GCash',  value: total_gcash  || 0, color: '#2563eb' },
+      { name: 'GoTyme', value: total_gotyme || 0, color: '#7c3aed' },
     ].filter(item => item.value > 0);
   };
 

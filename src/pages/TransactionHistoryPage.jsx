@@ -315,8 +315,8 @@ const TransactionHistoryPage = () => {
                   >
                     <option value="">All</option>
                     <option value="cash">Cash</option>
-                    <option value="card">Card</option>
-                    <option value="online">Online</option>
+                    <option value="gcash">GCash</option>
+                    <option value="gotyme">GoTyme</option>
                   </select>
                 </div>
               </div>
@@ -367,8 +367,20 @@ const TransactionHistoryPage = () => {
                         >
                           {transaction.status}
                         </span>
-                        <span className="px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 rounded-full uppercase">
-                          {transaction.payment_method}
+                        <span
+                          className={`px-2 py-0.5 text-xs font-semibold rounded-full border uppercase ${
+                            transaction.payment_method === 'cash'
+                              ? 'bg-green-50 text-green-700 border-green-200'
+                              : transaction.payment_method === 'gcash'
+                              ? 'bg-blue-50 text-blue-700 border-blue-200'
+                              : 'bg-purple-50 text-purple-700 border-purple-200'
+                          }`}
+                        >
+                          {transaction.payment_method === 'cash' && '💵 Cash'}
+                          {transaction.payment_method === 'gcash' && '📱 GCash'}
+                          {transaction.payment_method === 'gotyme' && '🏦 GoTyme'}
+                          {/* Fallback for legacy values */}
+                          {!['cash','gcash','gotyme'].includes(transaction.payment_method) && transaction.payment_method}
                         </span>
                       </div>
                       <p className="text-xs text-gray-500 truncate">
@@ -425,6 +437,15 @@ const TransactionHistoryPage = () => {
                     {/* Payment Summary */}
                     <div className="space-y-1 mb-4 text-sm">
                       <div className="flex justify-between">
+                        <span className="text-gray-600">Payment Method:</span>
+                        <span className="font-medium capitalize">
+                          {transaction.payment_method === 'cash' && '💵 Cash'}
+                          {transaction.payment_method === 'gcash' && '📱 GCash'}
+                          {transaction.payment_method === 'gotyme' && '🏦 GoTyme'}
+                          {!['cash','gcash','gotyme'].includes(transaction.payment_method) && transaction.payment_method}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
                         <span className="text-gray-600">Subtotal:</span>
                         <span className="font-medium">{formatCurrency(transaction.total_amount)}</span>
                       </div>
@@ -432,10 +453,12 @@ const TransactionHistoryPage = () => {
                         <span className="text-gray-600">Paid:</span>
                         <span className="font-medium">{formatCurrency(transaction.amount_paid)}</span>
                       </div>
-                      <div className="flex justify-between text-green-600">
-                        <span>Change:</span>
-                        <span className="font-semibold">{formatCurrency(transaction.change)}</span>
-                      </div>
+                      {transaction.payment_method === 'cash' && (
+                        <div className="flex justify-between text-green-600">
+                          <span>Change:</span>
+                          <span className="font-semibold">{formatCurrency(transaction.change)}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Notes */}

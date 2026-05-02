@@ -379,6 +379,159 @@ describe('PaymentPage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/pos');
   });
 
+  // ── Payment Method Selector ──────────────────────────────────────────────
+
+  it('renders all three payment method buttons', () => {
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText('Cash')).toBeInTheDocument();
+    expect(screen.getByText('GCash')).toBeInTheDocument();
+    expect(screen.getByText('GoTyme')).toBeInTheDocument();
+  });
+
+  it('shows amount-paid input when Cash is selected (default)', () => {
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByRole('spinbutton', { name: /Amount Paid:/i })).toBeInTheDocument();
+  });
+
+  it('hides amount-paid input and shows digital payment notice when GCash is selected', async () => {
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText('GCash'));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('spinbutton', { name: /Amount Paid:/i })).not.toBeInTheDocument();
+      expect(screen.getByText(/Customer will pay the exact total via/i)).toBeInTheDocument();
+    });
+  });
+
+  it('hides amount-paid input and shows digital payment notice when GoTyme is selected', async () => {
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText('GoTyme'));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('spinbutton', { name: /Amount Paid:/i })).not.toBeInTheDocument();
+      expect(screen.getByText(/Customer will pay the exact total via/i)).toBeInTheDocument();
+    });
+  });
+
+  it('enables Complete Purchase button without entering amount when GCash is selected', async () => {
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText('GCash'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Complete Purchase')).not.toBeDisabled();
+    });
+  });
+
+  it('creates transaction with gcash payment_method when GCash is selected', async () => {
+    const mockCreateTransaction = vi.fn().mockResolvedValue({
+      transaction: { id: 1, total_amount: 250.0 },
+      message: 'Transaction completed successfully',
+    });
+
+    useAppStore.mockImplementation((selector) =>
+      selector({ ...defaultStoreState, createTransaction: mockCreateTransaction })
+    );
+
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText('GCash'));
+    fireEvent.click(screen.getByText('Complete Purchase'));
+
+    await waitFor(() => {
+      expect(mockCreateTransaction).toHaveBeenCalledWith(
+        expect.objectContaining({ payment_method: 'gcash', amount_paid: 250.0 })
+      );
+    });
+  });
+
+  it('creates transaction with gotyme payment_method when GoTyme is selected', async () => {
+    const mockCreateTransaction = vi.fn().mockResolvedValue({
+      transaction: { id: 1, total_amount: 250.0 },
+      message: 'Transaction completed successfully',
+    });
+
+    useAppStore.mockImplementation((selector) =>
+      selector({ ...defaultStoreState, createTransaction: mockCreateTransaction })
+    );
+
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText('GoTyme'));
+    fireEvent.click(screen.getByText('Complete Purchase'));
+
+    await waitFor(() => {
+      expect(mockCreateTransaction).toHaveBeenCalledWith(
+        expect.objectContaining({ payment_method: 'gotyme', amount_paid: 250.0 })
+      );
+    });
+  });
+
+  it('does not show "Your Change" in success modal for digital payment methods', async () => {
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText('GCash'));
+    fireEvent.click(screen.getByText('Complete Purchase'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Payment Complete!')).toBeInTheDocument();
+      expect(screen.queryByText('Your Change')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows payment method label in success modal', async () => {
+    render(
+      <BrowserRouter>
+        <PaymentPage />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText('GCash'));
+    fireEvent.click(screen.getByText('Complete Purchase'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Payment Complete!')).toBeInTheDocument();
+      // The selected method name appears in the success badge
+      expect(screen.getAllByText('GCash').length).toBeGreaterThan(0);
+    });
+  });
+
   it('navigates to POS from success modal', async () => {
     render(
       <BrowserRouter>
