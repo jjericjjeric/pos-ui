@@ -100,7 +100,7 @@ const ProductsManagementPage = () => {
   // Product actions
   const handleEditProduct = (product) => {
     // Navigate to the add-product page with the product ID
-    navigate(`/add-product/${product.id}`);
+    navigate(`/add-product/${product.id}`, { state: { returnTo: '/products-management' } });
   };
 
   const handleDeleteProduct = (product) => {

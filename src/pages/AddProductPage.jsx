@@ -13,6 +13,7 @@ const AddProductPage = () => {
   
   // Check if we should return to alerts modal
   const returnToAlerts = location.state?.returnToAlerts || false;
+  const returnTo = location.state?.returnTo || null;
   const focusStock = location.state?.focusStock || false;
   
   // Zustand store selectors
@@ -199,6 +200,8 @@ const AddProductPage = () => {
   const handleCancel = () => {
     if (returnToAlerts) {
       navigate('/analytics', { state: { openLowStockAlerts: true } });
+    } else if (returnTo) {
+      navigate(returnTo);
     } else {
       navigate('/pos');
     }
@@ -486,9 +489,10 @@ const AddProductPage = () => {
             setShowSuccessModal(false);
             if (returnToAlerts) {
               navigate('/analytics', { state: { openLowStockAlerts: true } });
-            } else {
-              navigate('/pos');
+            } else if (returnTo) {
+              navigate(returnTo);
             }
+            // If no returnTo and no returnToAlerts, just close the modal and stay
           }}
         >
           <div 
@@ -546,13 +550,15 @@ const AddProductPage = () => {
                   setShowSuccessModal(false);
                   if (returnToAlerts) {
                     navigate('/analytics', { state: { openLowStockAlerts: true } });
+                  } else if (returnTo) {
+                    navigate(returnTo);
                   } else {
                     navigate('/pos');
                   }
                 }}
                 className="w-full px-6 py-3.5 bg-[#00C853] text-white rounded-lg text-base font-bold transition-all hover:bg-[#00B548] active:bg-[#009E42] border border-[#00C853]"
               >
-                {returnToAlerts ? 'Back to Alerts' : 'Back to POS'}
+                {returnToAlerts ? 'Back to Alerts' : returnTo === '/products-management' ? 'Back to Products' : 'Back to POS'}
               </button>
             </div>
           </div>
