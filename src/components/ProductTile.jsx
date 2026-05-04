@@ -88,7 +88,7 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
     <div 
       className={`bg-white rounded-lg p-2 cursor-pointer transition-all duration-200 flex flex-col items-center text-center relative border ${
         isOutOfStock 
-          ? 'opacity-60 cursor-not-allowed bg-gray-50 border-gray-200' 
+          ? 'opacity-40 cursor-not-allowed bg-gray-200 border-gray-300 saturate-0' 
           : 'border-gray-200 hover:border-[#00C853] hover:shadow-sm'
       } ${isPressed ? 'scale-95' : ''}`}
       onClick={handleTileClick}
@@ -178,7 +178,7 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
               product.stock < 10 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
               'bg-green-50 text-green-700 border border-green-200'
             }`}>
-              {product.stock}
+              {product.stock === 0 ? 'Out of stock' : product.stock}
             </div>
           ) : (
             <div className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600 border border-blue-200">
@@ -187,13 +187,7 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
           )}
         </div>
       </div>
-      {isOutOfStock && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
-          <div className="bg-white px-4 py-2 rounded-lg shadow-lg">
-            <p className="font-bold text-gray-800 text-sm">Out of Stock</p>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };
