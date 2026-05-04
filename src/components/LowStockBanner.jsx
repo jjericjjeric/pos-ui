@@ -30,9 +30,9 @@ const LowStockBanner = ({ onViewDetails }) => {
     () => localStorage.getItem(DISMISS_KEY) === todayString(),
   );
 
-  // Calculate low stock products using dynamic threshold
-  const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= lowStockThreshold);
-  const outOfStockProducts = products.filter(p => p.stock === 0);
+  // Calculate low stock products using dynamic threshold (exclude non-tracked products)
+  const lowStockProducts = products.filter(p => p.track_inventory !== false && p.stock > 0 && p.stock <= lowStockThreshold);
+  const outOfStockProducts = products.filter(p => p.track_inventory !== false && p.stock === 0);
   const totalAlerts = lowStockProducts.length + outOfStockProducts.length;
 
   // Don't show if no alerts or dismissed

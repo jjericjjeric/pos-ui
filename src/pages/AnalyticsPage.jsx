@@ -181,21 +181,21 @@ const AnalyticsPage = () => {
 
   const lowStockThreshold = appSettings.lowStockThreshold || 10;
   const lowStockProducts = useMemo(
-    () => products.filter((p) => p.stock > 0 && p.stock <= lowStockThreshold),
+    () => products.filter((p) => p.track_inventory !== false && p.stock > 0 && p.stock <= lowStockThreshold),
     [products, lowStockThreshold],
   );
   const outOfStockProducts = useMemo(
-    () => products.filter((p) => p.stock === 0),
+    () => products.filter((p) => p.track_inventory !== false && p.stock === 0),
     [products],
   );
   const totalLowStockAlerts = lowStockProducts.length + outOfStockProducts.length;
 
-  /** Revenue attributed to products in the "Service" category for the selected period. */
+  /** Revenue attributed to products that do NOT track inventory (e.g. services) for the selected period. */
   const serviceRevenue = useMemo(() => {
     if (!analyticsData?.topProducts?.length || !products?.length) return 0;
     const serviceIds = new Set(
       products
-        .filter((p) => p.category?.toLowerCase() === 'service')
+        .filter((p) => p.track_inventory === false)
         .map((p) => p.id),
     );
     return analyticsData.topProducts
@@ -205,22 +205,32 @@ const AnalyticsPage = () => {
 
   const activeProducts = useMemo(() => products.filter((p) => !p.is_archived), [products]);
 
-  /** Current inventory value at selling price (stock × price). */
+  /**
+   * Inventory-tracked active products only.
+   * Products with track_inventory=false (services, intangibles) are excluded
+   * from inventory value and unit counts to avoid inflated numbers.
+   */
+  const physicalProducts = useMemo(
+    () => activeProducts.filter((p) => p.track_inventory !== false),
+    [activeProducts],
+  );
+
+  /** Current inventory value at selling price (stock × price), physical products only. */
   const stockValueSelling = useMemo(
-    () => activeProducts.reduce((sum, p) => sum + p.price * p.stock, 0),
-    [activeProducts],
+    () => physicalProducts.reduce((sum, p) => sum + Number(p.price) * Number(p.stock), 0),
+    [physicalProducts],
   );
 
-  /** Current inventory value at cost price (stock × cost_price). */
+  /** Current inventory value at cost price (stock × cost_price), physical products only. */
   const stockValueCost = useMemo(
-    () => activeProducts.reduce((sum, p) => sum + (p.cost_price || 0) * p.stock, 0),
-    [activeProducts],
+    () => physicalProducts.reduce((sum, p) => sum + (Number(p.cost_price) || 0) * Number(p.stock), 0),
+    [physicalProducts],
   );
 
-  /** Total units currently in stock across all active products. */
+  /** Total units currently in stock across physical products only. */
   const totalStockUnits = useMemo(
-    () => activeProducts.reduce((sum, p) => sum + p.stock, 0),
-    [activeProducts],
+    () => physicalProducts.reduce((sum, p) => sum + Number(p.stock), 0),
+    [physicalProducts],
   );
 
   /** Builds the dataset for the payment-method pie chart from API stats. */
@@ -440,7 +450,7 @@ const AnalyticsPage = () => {
           <MetricTile
             label="Total Stock Units"
             value={totalStockUnits.toLocaleString()}
-            sub={`${activeProducts.length} SKUs`}
+            sub={`${physicalProducts.length} physical SKUs`}
             accent="border-gray-400"
             hasChart={false}
             onClick={() => {}}

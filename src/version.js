@@ -1,10 +1,10 @@
 // version.js - Centralized version configuration for PinoyPOS
 // This file is auto-generated from package.json during build
 // DO NOT EDIT MANUALLY - Update package.json version instead
-// Generated: 2026-04-27T22:00:17.014Z
+// Generated: 2026-05-04T05:15:52.515Z
 
 export const APP_VERSION = '1.0.0'; // Semantic versioning: MAJOR.MINOR.PATCH
-export const BUILD_DATE = '2026-04-27T22:00:17.014Z';
+export const BUILD_DATE = '2026-05-04T05:15:52.515Z';
 export const CACHE_VERSION = 'v1-0-0'; // e.g., v1-0-0
 
 // Service Worker cache names (auto-generated from APP_VERSION)

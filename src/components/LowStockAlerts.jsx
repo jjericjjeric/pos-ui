@@ -21,13 +21,13 @@ const LowStockAlerts = ({ isOpen, onClose }) => {
   const lowStockThreshold = useAppStore((state) => state.appSettings.lowStockThreshold || 10);
   const [sortBy, setSortBy] = useState('stock'); // 'stock' | 'name'
 
-  // Filter and categorize products using dynamic threshold
+  // Filter and categorize products using dynamic threshold (exclude non-tracked products)
   const outOfStockProducts = products
-    .filter(p => p.stock === 0)
+    .filter(p => p.track_inventory !== false && p.stock === 0)
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const lowStockProducts = products
-    .filter(p => p.stock > 0 && p.stock <= lowStockThreshold)
+    .filter(p => p.track_inventory !== false && p.stock > 0 && p.stock <= lowStockThreshold)
     .sort((a, b) => {
       if (sortBy === 'stock') {
         return a.stock - b.stock; // Lowest stock first

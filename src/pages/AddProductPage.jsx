@@ -55,7 +55,8 @@ const AddProductPage = () => {
       cost_price: '',
       stock: '',
       category: '',
-      image: ''
+      image: '',
+      track_inventory: true
     },
     (values) => {
       const newErrors = {};
@@ -76,7 +77,8 @@ const AddProductPage = () => {
         newErrors.cost_price = 'Cost should not exceed selling price';
       }
       
-      if (!values.stock || parseInt(values.stock) < 0) {
+      // Only require stock when inventory is tracked
+      if (values.track_inventory !== false && (!values.stock || parseInt(values.stock) < 0)) {
         newErrors.stock = 'Stock must be a valid number (0 or greater)';
       }
       
@@ -100,7 +102,8 @@ const AddProductPage = () => {
         cost_price: existingProduct.cost_price?.toString() || '',
         stock: existingProduct.stock?.toString() || '',
         category: existingProduct.category || '',
-        image: existingProduct.image || ''
+        image: existingProduct.image || '',
+        track_inventory: existingProduct.track_inventory !== false
       });
       // Set the image preview
       setImage(existingProduct.image || null);
@@ -171,8 +174,9 @@ const AddProductPage = () => {
         name: formData.name.trim(),
         price: parseFloat(formData.price),
         cost_price: formData.cost_price ? parseFloat(formData.cost_price) : 0,
-        stock: parseInt(formData.stock),
+        stock: formData.track_inventory !== false ? parseInt(formData.stock) : 0,
         category: formData.category || 'Uncategorized',
+        track_inventory: formData.track_inventory !== false,
         image: formData.image || '🛍️'
       };
 
@@ -309,19 +313,22 @@ const AddProductPage = () => {
                 />
 
                 {/* Stock */}
-                <FormField
-                  label="Stock Quantity"
-                  name="stock"
-                  type="number"
-                  value={formData.stock}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={errors.stock}
-                  required
-                  placeholder="0"
-                  icon="📦"
-                  inputProps={{ min: '0' }}
-                />
+                <div className={formData.track_inventory === false ? 'opacity-50 pointer-events-none' : ''}>
+                  <FormField
+                    label="Stock Quantity"
+                    name="stock"
+                    type="number"
+                    value={formData.stock}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors.stock}
+                    required={formData.track_inventory !== false}
+                    placeholder="0"
+                    icon="📦"
+                    inputProps={{ min: '0' }}
+                    helpText={formData.track_inventory === false ? 'Not tracked' : undefined}
+                  />
+                </div>
               </div>
 
               {/* Category */}
@@ -376,6 +383,31 @@ const AddProductPage = () => {
                     ? 'Start typing to see existing categories or enter a new one' 
                     : 'Enter a category name for this product'}
                 </p>
+              </div>
+
+              {/* Track Inventory Toggle */}
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div>
+                  <div className="text-xs sm:text-sm font-semibold text-gray-700">Track Inventory</div>
+                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
+                    Disable for services or intangible products — stock won&apos;t be deducted on sale
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formData.track_inventory !== false}
+                  onClick={() => setFieldValue('track_inventory', formData.track_inventory === false)}
+                  className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00C853] ${
+                    formData.track_inventory !== false ? 'bg-[#00C853]' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`absolute left-0 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 ${
+                      formData.track_inventory !== false ? 'translate-x-5' : 'translate-x-0.5'
+                    }`}
+                  />
+                </button>
               </div>
 
               {/* Image Upload */}

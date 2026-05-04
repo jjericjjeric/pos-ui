@@ -7,7 +7,8 @@ import ProgressiveImage from './ProgressiveImage';
  * Large touch targets and optimized for mobile interactions
  */
 const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, userRole }) => {
-  const isOutOfStock = product.stock === 0;
+  // Products with track_inventory=false (services/intangibles) are never considered out of stock
+  const isOutOfStock = product.track_inventory !== false && product.stock === 0;
   const [showMenu, setShowMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState('right');
   const [isPressed, setIsPressed] = useState(false);
@@ -168,16 +169,22 @@ const ProductTile = ({ product, onAddToCart, onEdit, onDelete, onViewDetails, us
         
         {/* Stock Badge - Enhanced with visual indicators */}
         <div className="flex items-center gap-1">
-          {product.stock < 10 && product.stock > 0 && (
+          {product.track_inventory !== false && product.stock < 10 && product.stock > 0 && (
             <span className="text-xs animate-pulse" title="Low stock">⚠️</span>
           )}
-          <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium ${
-            product.stock === 0 ? 'bg-red-50 text-red-700 border border-red-200' :
-            product.stock < 10 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
-            'bg-green-50 text-green-700 border border-green-200'
-          }`}>
-            {product.stock}
-          </div>
+          {product.track_inventory !== false ? (
+            <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium ${
+              product.stock === 0 ? 'bg-red-50 text-red-700 border border-red-200' :
+              product.stock < 10 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
+              'bg-green-50 text-green-700 border border-green-200'
+            }`}>
+              {product.stock}
+            </div>
+          ) : (
+            <div className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600 border border-blue-200">
+              Service
+            </div>
+          )}
         </div>
       </div>
       {isOutOfStock && (
