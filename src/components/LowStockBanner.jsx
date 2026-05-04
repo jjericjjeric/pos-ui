@@ -1,22 +1,34 @@
 import { useState } from 'react';
 import useAppStore from '../store/useAppStore';
 
+const DISMISS_KEY = 'lowStockBannerDismissedDate';
+
+/** Returns today's date as a YYYY-MM-DD string in local time. */
+const todayString = () => new Date().toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD
+
 /**
  * LowStockBanner Component
  * Attention-grabbing banner inspired by Shopify, Square, and Toast POS
  * Shows critical inventory alerts at the top of pages
- * 
+ *
  * Design Principles:
  * - High contrast colors (amber/orange) for urgency
  * - Animated pulse for critical items (stock = 0)
  * - Quick-glance count with expandable details
- * - Dismissible but persists across sessions
+ * - Dismissible for the rest of the current day; reappears the next day
  * - Mobile-first responsive design
  */
 const LowStockBanner = ({ onViewDetails }) => {
   const products = useAppStore((state) => state.products);
   const lowStockThreshold = useAppStore((state) => state.appSettings.lowStockThreshold || 10);
-  const [isDismissed, setIsDismissed] = useState(false);
+
+  /**
+   * Initialise dismissed state by checking localStorage.
+   * If the stored date matches today, the banner was already dismissed today.
+   */
+  const [isDismissed, setIsDismissed] = useState(
+    () => localStorage.getItem(DISMISS_KEY) === todayString(),
+  );
 
   // Calculate low stock products using dynamic threshold
   const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= lowStockThreshold);
@@ -32,6 +44,7 @@ const LowStockBanner = ({ onViewDetails }) => {
 
   const handleDismiss = (e) => {
     e.stopPropagation();
+    localStorage.setItem(DISMISS_KEY, todayString());
     setIsDismissed(true);
   };
 
