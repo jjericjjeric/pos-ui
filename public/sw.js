@@ -1,8 +1,8 @@
 // Service Worker for PinoyPOS PWA
 // Version is auto-generated from package.json during build
-// Current version: 1.0.0
-const CACHE_NAME = 'pinoypos-v1-0-0';
-const API_CACHE = 'pinoypos-api-v1-0-0';
+// Current version: 1.1.0
+const CACHE_NAME = 'pinoypos-v1-1-0';
+const API_CACHE = 'pinoypos-api-v1-1-0';
 
 // Assets to cache immediately (updated paths to match actual file locations)
 const STATIC_ASSETS = [
