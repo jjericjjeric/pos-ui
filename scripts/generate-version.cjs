@@ -86,3 +86,14 @@ console.log(`✅ Generated version.js`);
 console.log(`   Version: ${version}`);
 console.log(`   Build Date: ${buildDate}`);
 console.log(`   Cache Version: ${cacheVersion}`);
+
+// Update sw.js cache names to match new version
+const swPath = path.join(__dirname, '../public/sw.js');
+let swContent = fs.readFileSync(swPath, 'utf-8');
+swContent = swContent
+  .replace(/^(const CACHE_NAME = ')pinoypos-[^']+(';\s*)$/m, `$1pinoypos-${cacheVersion}$2`)
+  .replace(/^(const API_CACHE = ')pinoypos-api-[^']+(';\s*)$/m, `$1pinoypos-api-${cacheVersion}$2`)
+  .replace(/^(\/\/ Current version: ).+$/m, `$1${version}`);
+fs.writeFileSync(swPath, swContent);
+
+console.log(`✅ Updated sw.js cache names to pinoypos-${cacheVersion}`);
